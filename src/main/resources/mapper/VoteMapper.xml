@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jessie.campusmutualassist.mapper.VoteMapper">
+
+    <resultMap id="BaseResultMap" type="com.jessie.campusmutualassist.entity.Vote">
+            <id property="vid" column="vid" jdbcType="INTEGER"/>
+            <result property="classID" column="classID" jdbcType="VARCHAR"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="limitation" column="limit" jdbcType="INTEGER"/>
+            <result property="publishedTime" column="publishedTime" jdbcType="TIMESTAMP"/>
+            <result property="anonymous" column="anonymous" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        vid,classID,title,
+        limit,publishedTime,anonymous
+    </sql>
+</mapper>

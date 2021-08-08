@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jessie.campusmutualassist.mapper.UserMapper">
+    <select id="getRealNameWithUsername" resultType="java.util.Map" parameterType="java.util.Set">
+        select username,realName from user
+        <where>
+            username in
+            <foreach item="item" collection="usernameSet" separator="," open="(" close=")" index="">
+                       #{item}
+            </foreach>
+        </where>
+    </select>
+    <insert id="insertNewUser" parameterType="com.jessie.campusmutualassist.entity.User">
+/*
+            注意不要写成parameterMap....
+*/
+    </insert>
+</mapper>

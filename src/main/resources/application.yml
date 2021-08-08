@@ -1,0 +1,125 @@
+server: #端口如果不配默认8080
+  port: 8099
+  servlet: #dispather
+    #servlet的监听路径，默认为: /
+    context-path: /
+
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/classaffairsmanage?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456cnm
+  mail:
+    host: smtp.office365.com
+    username: 6543x1@outlook.com
+    password: 123456cnmA
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    port: 587
+  servlet:
+    multipart:
+      enabled: true #是否启用http上传处理
+      max-request-size: 100MB #最大请求文件的大小
+      max-file-size: 20MB #设置单个文件最大长度
+  #redis配置
+  redis:
+    #是否开启redis缓存 true开启 false关闭
+    open: true
+    #Redis服务器地址
+    host: localhost
+    #Redis服务器连接端口
+    port: 6379
+    #Redis数据库索引（默认为0）
+    database: 0
+    jedis:
+      pool:
+        #连接池最大连接数（使用0表示没有限制）
+        max-active: 0
+        #连接池最大阻塞等待时间（使用0表示没有限制）
+        max-wait: 3000
+        #连接池中的最大空闲连接
+        max-idle: 100
+        #连接池中的最小空闲连接
+        min-idle: 50
+        #控制一个pool可分配多少个jedis实例,用来替换上面的redis.maxActive,如果是jedis 2.4以后用该属性
+        maxTotal: 500
+    #连接超时时间（毫秒）
+    timeout: 3000
+    #在空闲时检查有效性, 默认false
+    testWhileIdle: true
+    #是否在从池中取出连接前进行检验,如果检验失败,则从池中去除连接并尝试取出另一个
+    testOnBorrow: true
+  activemq:
+    broker-url: tcp://localhost:61616 #8161是监控端，61616是给Java使用的
+    user: admin
+    password: admin
+    pool:
+      enabled: true #注意pool版本与SpringBoot版本搭配，不要用了旧版pool
+      max-connections: 50
+  thymeleaf:
+    enabled: true
+    encoding: UTF-8
+    prefix: classpath:/Pages/
+    cache: true
+    mode: HTML
+    suffix: .html
+
+  jms:
+    pub-sub-domain: false
+    #点对点模式，true为发布订阅模式
+  aop:
+    proxy-target-class: true
+logging:
+  level:
+    root: info
+    # 配置日志输出位置
+  file:
+    name: logs/thisProject.log
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/*.xml
+  type-aliases-package: com.jessie.campusmutualassist.entity
+  type-enums-package: com.jessie.campusmutualassist.entity
+# 分页配置
+pagehelper:
+  helper-dialect: mysql #配置所使用的数据库类型
+  reasonable: true #当输入不合理的页数，返回第一页（小于0）或最后一页（大于最后一页）
+  support-methods-arguments: true
+  params: count=countSql
+# 配置JWT
+jwt:
+  route:
+    authentication:
+      path: /user/login
+  header: Authorization
+  expiration: 604800
+  secret: unknown
+  # secret是使用的密钥，目前暂时固定，因为弄成随机有点麻烦，要不直接用Bcrypt?。。。好像jjwt不支持
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true #上线到服务器后应该予以关闭
+aliyun:
+  accessKeyId: 123456
+  accessSecret: 123456
+wx:
+  mp:
+    app-id: wx11ca935e13bb174a
+    secret: 597869e8058d0eb033b16f7b81424203
+    token: wechatTestCAM
+#    aes-key: #目前公众号明文
+    #wx redis配置
+    config-storage:
+      type: redistemplate
+      key-prefix: wx
+      redis:
+        host: 127.0.0.1
+        port: 6379
+      http-client-type: httpclient

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jessie.campusmutualassist.mapper.StudentPointsMapper">
+
+    <resultMap id="BaseResultMap" type="com.jessie.campusmutualassist.entity.StudentPoints">
+            <id property="username" column="username" jdbcType="VARCHAR"/>
+            <id property="classID" column="classID" jdbcType="VARCHAR"/>
+            <result property="points" column="points" jdbcType="INTEGER"/>
+    </resultMap>
+
+<!--    <sql id="Base_Column_List">-->
+<!--        username,classID,points-->
+<!--    </sql>-->
+<!--    <insert id="newSP" parameterType="com.jessie.campusmutualassist.entity.StudentPoints">-->
+<!--        select points into @points from student_points where username=#{username} and classID=#{classID}-->
+<!--        <if test="points lt 100">-->
+<!--            update student_points set points=points+#{points} where username=#{username} and password=#{password}-->
+<!--        </if>-->
+<!--    </insert>-->
+<!--  有trigger之后，就不用再研究怎么在IF里去判断值是否越人为定的上界了（比如，分数不能超过100分）  -->
+<!--  在IF里调用也不是不行，就是在别的类里写方法，然后在这里的IF的test=里去调用，不过这样感觉挺麻烦的  -->
+<!--    但是不论何种实现，都会影响性能，因此除非范围不好列举（例如，>0之类的），否则都应该使用枚举类型）-->
+
+</mapper>
