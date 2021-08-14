@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface NoticeMapper {
-    @Insert("insert into notice (title, body, classID,publisher, publishedTime) VALUES (#{title},#{body},#{classID},#{publisher},#{publishedTime}) ")
+    @Insert("insert into notice (title, body, classID,publisher, publishedTime,deadLine,type) VALUES (#{title},#{body},#{classID},#{publisher},#{publishedTime},#{deadLine},#{type}) ")
     @Options(useGeneratedKeys = true, keyProperty = "nid", keyColumn = "nid")
     void newNotice(Notice notice);
     @Select("select * from notice where classID=#{classID}")

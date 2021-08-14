@@ -1,6 +1,7 @@
 package com.jessie.campusmutualassist.controller;
 
 import com.jessie.campusmutualassist.entity.Result;
+import com.jessie.campusmutualassist.utils.RedisUtil;
 import me.chanjar.weixin.common.bean.menu.WxMenu;
 import me.chanjar.weixin.common.bean.menu.WxMenuButton;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -26,17 +27,29 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+
+import static com.jessie.campusmutualassist.service.impl.MailServiceImpl.getRandomString;
+import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.getCurrentUsername;
 
 @RestController
 @RequestMapping("/wechat")
-public class WechatController {
-    private final String TOKEN = "wechatTestCAM";
+public class  WechatController {
     @Autowired
     WxMpService wechatService;
     @Autowired
     WxMpConfigStorage wxMpConfigStorage;
+    @Autowired
+    RedisUtil redisUtil;
     @Resource(name = "messageRouter")
     WxMpMessageRouter messageRouter;
+    static final Random random=new Random();
+    @PostMapping(value = "/bind",produces = "application/json;charset=UTF-8")
+    public Result bindWechat(){
+        String key= getRandomString();
+        redisUtil.set("type:"+"wechatBind:"+"key:"+key,getCurrentUsername(),5*60+random.nextInt(10));
+        return Result.success("已经获取到Key，请到公众号中回复绑定+key来绑定,五分钟内有效",key);
+    }
     @GetMapping(value = "/accessToken",produces = "application/json;charset=UTF-8")
     public Result accessToken(){
         try {
@@ -111,7 +124,7 @@ public class WechatController {
 
         return Result.success("创建菜单按钮成功");
     }
-    @PostMapping(value = "/testToken",produces = "text/plain;charset=UTF-8")
+    @RequestMapping(value = "/testToken",produces = "text/plain;charset=UTF-8",method = {RequestMethod.GET,RequestMethod.POST})
     public void receiveMsg(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String signature = request.getParameter("signature");
         String nonce = request.getParameter("nonce");
@@ -164,13 +177,15 @@ public class WechatController {
     }
     }
 
-    @GetMapping(value = "/testToken",produces = "text/plain;charset=UTF-8")
+    @GetMapping(value = "/testToken2",produces = "text/plain;charset=UTF-8")
+    //微信接口测试
     public String test(@RequestParam("signature") String signature,
                        @RequestParam("timestamp") String timestamp,
                        @RequestParam("nonce") String nonce,
                        @RequestParam("echostr") String echostr) {
 
         //排序
+        String TOKEN = "wechatTestCAM";
         String sortString = sort(TOKEN, timestamp, nonce);
         //加密
         String myString = sha1(sortString);

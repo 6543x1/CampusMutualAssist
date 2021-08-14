@@ -51,6 +51,7 @@ public class StudentPointsServiceImpl extends ServiceImpl<StudentPointsMapper, S
     public List<StuPointsWithRealName> StusPoints(String classID) {
         return studentPointsMapper.stusPoints(classID);
     }
+
 }
 
 

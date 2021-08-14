@@ -14,4 +14,6 @@ public interface PermissionService
 
     List<String> getAllUserPermissions(String username);//和All搭配是不是要加s啊。。。。我英语不太好
 
+    void deletePermission(String username,String permission);
+
 }

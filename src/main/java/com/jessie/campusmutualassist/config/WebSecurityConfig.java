@@ -96,6 +96,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/user/login").permitAll()
                 .antMatchers("/user/sendMail").permitAll()
                 .antMatchers("/user/ResetPwByMail").permitAll()
+                .antMatchers("/static/**").permitAll()
                 .anyRequest().permitAll()
 
                 .and()
@@ -134,7 +135,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                         "/favicon.ico",
                         "/**/*.html",
                         "/**/*.css",
-                        "/**/*.js"
+                        "/**/*.js",
+                        "/**/*.png",
+                        "/*.png"
                 );
     }
 

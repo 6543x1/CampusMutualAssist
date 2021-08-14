@@ -67,7 +67,7 @@ spring:
     enabled: true
     encoding: UTF-8
     prefix: classpath:/Pages/
-    cache: true
+    cache: false
     mode: HTML
     suffix: .html
 
@@ -93,6 +93,7 @@ pagehelper:
   reasonable: true #当输入不合理的页数，返回第一页（小于0）或最后一页（大于最后一页）
   support-methods-arguments: true
   params: count=countSql
+  autoRuntimeDialect: true
 # 配置JWT
 jwt:
   route:

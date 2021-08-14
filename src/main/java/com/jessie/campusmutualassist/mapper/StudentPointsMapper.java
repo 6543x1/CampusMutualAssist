@@ -28,7 +28,7 @@ public interface StudentPointsMapper extends BaseMapper<StudentPoints> {
 
     @Select("select s.*,u.realName from student_points s join user u on u.username = s.username where classID=#{classID}")
     @Results(id = "StuPointsWithRealName_Map", value = {
-            @Result(property = "realName", column = "u.realName"),
+            @Result(property = "realName", column = "realName"),
     })
     List<StuPointsWithRealName> stusPoints(String classID);
 }

@@ -3,8 +3,14 @@ package com.jessie.campusmutualassist.controller;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jessie.campusmutualassist.entity.*;
-import com.jessie.campusmutualassist.service.*;
+import com.jessie.campusmutualassist.entity.AdminOperation;
+import com.jessie.campusmutualassist.entity.Result;
+import com.jessie.campusmutualassist.entity.Role;
+import com.jessie.campusmutualassist.entity.User;
+import com.jessie.campusmutualassist.service.AdminOperationService;
+import com.jessie.campusmutualassist.service.MailService;
+import com.jessie.campusmutualassist.service.PermissionService;
+import com.jessie.campusmutualassist.service.UserService;
 import com.jessie.campusmutualassist.utils.JwtTokenUtil;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import io.swagger.annotations.Api;
@@ -51,17 +57,17 @@ public class UserController {
     private AdminOperationService adminOperationService;//仅用于查询用户被管理员操作记录
     @ApiOperation(value = "修改密码")
     @PostMapping(value = "/ResetPw", produces = "application/json;charset=UTF-8")
-    public String editPassword(String oldPassword, String newPassword) throws Exception
+    public Result editPassword(String oldPassword, String newPassword) throws Exception
     {
         User thisUser = userService.getUser(getCurrentUsername());
         if (bCryptPasswordEncoder.matches(oldPassword, thisUser.getPassword()))
         {
             thisUser.setPassword(bCryptPasswordEncoder.encode(newPassword));
             userService.editPassword(thisUser.getUsername(), thisUser.getPassword());
-            return JSON.toJSONString(Result.success("EditSuccess"));
+            return Result.success("修改成功");
         } else
         {
-            return JSON.toJSONString(Result.error("WrongPassword", 403));
+            return Result.error("原密码错误", 403);
         }
     }
 
@@ -69,7 +75,7 @@ public class UserController {
 
 
     @PostMapping(value = "/upload", produces = "text/html;charset=UTF-8")
-    public String UploadImg(HttpServletRequest request, @RequestParam("upload") MultipartFile upload, HttpServletRequest HttpServletRequest) throws Exception
+    public String UploadImg(HttpServletRequest request, @RequestParam("upload") MultipartFile upload) throws Exception
     {
 //        System.out.println("上传头像");
         String token = request.getHeader("token");
@@ -100,6 +106,7 @@ public class UserController {
             upload.transferTo(new File(path, userFileName));
             userService.saveImg(user);
             System.out.println("头像保存成功，开始向数据库中更新用户数据");
+
 
         } catch (NullPointerException e)
         {
@@ -174,12 +181,13 @@ public class UserController {
             return Result.error("账号或密码长度过长，请缩短");
         }
         //System.out.println("取得注册用数据，开始向数据库中写入数据...");
-        if (userService.queryUser(user.getUsername()))
-        {
-            System.out.println("该用户名已存在，请检查输入是否错误");
-            return Result.error("该用户名已存在", 500);
-        }
-        if(user.getRole()==Role.admin||user.getRole()==Role.instructor){
+
+//        if (userService.queryUser(user.getUsername()))
+//        {
+//            System.out.println("该用户名已存在，请检查输入是否错误");
+//            return Result.error("该用户名已存在", 500);
+//        }
+        if(user.getRole()==Role.admin||user.getRole()==Role.counsellor){
             return Result.error("请不要通过注册来注册管理员或辅导员,管理员需要后台手动设置");
         }
         user.setStatus(1);//封号与否 就不枚举了吧？
@@ -191,9 +199,9 @@ public class UserController {
         user.setEvaluation(2);
         //备注一下，应该在Redis中留下痕迹，表明邮箱未经过认证，同时也不授予其stu或teacher的认证........
         //我觉得此时这个User不应该保存到数据库里的，应该先把全部内容放到Redis中?
-        if(redisUtil.hasKey("type:"+"register:"+"username:"+user.getUsername())){
-            return Result.error("当前已经有相同的学号正在注册，请稍候再试！");
-        }
+//        if(redisUtil.hasKey("type:"+"register:"+"username:"+user.getUsername())){
+//            return Result.error("当前已经有相同的学号正在注册，请稍候再试！");
+//        }
         redisUtil.setObject("type:"+"register:"+"username:"+user.getUsername(),user,600);
         System.out.println(user);
         //int theUid = userService.newestUid();
@@ -202,6 +210,15 @@ public class UserController {
         //userService.newUserPortrait(userPortrait);
         //redisUtil.set("ClearExtraStatus|" + userPortrait.getUid(), "ONE YEAR", 60 * 60 * 24 * 365);
         return Result.success("请到邮箱接收验证码，完成后续注册操作");
+    }
+    @ApiOperation(value = "/比较验证码是否正确")
+    @PostMapping(value = "/compareCode",produces = "application/json;charset=UTF-8")
+    public boolean compareCode(String username,String mailCode){
+        if(redisUtil.hasKey("MailCode:"+username)){
+        return mailCode.equals(redisUtil.get("MailCode:"+username));}
+        else{
+            return false;
+        }
     }
     @ApiOperation(value = "完成注册",notes = "需要验证邮箱")
     @ApiImplicitParams({
@@ -224,13 +241,13 @@ public class UserController {
             return Result.error("服务器信息已过期，请重新注册");
         }
         System.out.println(user);
-        userService.saveUser(user);
-        if(user.getRole()== Role.teacher){
-            permissionService.setUserPermission(user.getUsername(),Role.teacher.name());
-        }
-        else if(user.getRole()==Role.student){
-            permissionService.setUserPermission(user.getUsername(),Role.student.name());
-        }
+//        userService.saveUser(user);
+//        if(user.getRole()== Role.teacher){
+//            permissionService.setUserPermission(user.getUsername(),Role.teacher.name());
+//        }
+//        else if(user.getRole()==Role.student){
+//            permissionService.setUserPermission(user.getUsername(),Role.student.name());
+//        }
         return Result.success("注册成功");
     }
     @ApiOperation(value = "测试用快速注册",notes = "相比普通注册，不用验证邮箱即可注册成功")
@@ -343,7 +360,7 @@ public class UserController {
         String theCode = getRandomString();
         mailAddr = username+"@fzu.edu.cn";
         if(!redisUtil.hasKey("type:"+"register:"+"username:"+username)||!userService.queryUser(username)){
-            return Result.error("当前用户不存在！");
+            System.out.println(Result.error("当前用户不存在！"));
     }
         System.out.println(username);
         if (redisUtil.hasKey("MailCodeTimes:" + username))

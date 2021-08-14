@@ -55,4 +55,9 @@ public class PermissionServiceImpl implements PermissionService
         return username;
 
     }
+
+    @Override
+    public void deletePermission(String username, String permission) {
+        permissionMapper.deletePermission(username,permission);
+    }
 }

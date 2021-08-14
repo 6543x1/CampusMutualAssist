@@ -1,5 +1,6 @@
 package com.jessie.campusmutualassist.service;
 
+import com.github.pagehelper.PageInfo;
 import com.jessie.campusmutualassist.entity.Notice;
 
 import java.util.List;
@@ -10,4 +11,5 @@ public interface NoticeService {
     List<Notice> getClassNotices(String classID);
     String getClassID(int nid);
     void urge(Set<String> urgeList);
+    PageInfo getClassNoticesPage(String classID, int num);
 }

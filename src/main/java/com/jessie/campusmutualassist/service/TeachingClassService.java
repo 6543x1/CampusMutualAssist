@@ -8,4 +8,5 @@ public interface TeachingClassService {
 
     public void createClass(TeachingClass teachingClass);
     public List<TeachingClass> getCreatedClass(String teacher);
+    void transferTeacher(String newTeacher);
 }

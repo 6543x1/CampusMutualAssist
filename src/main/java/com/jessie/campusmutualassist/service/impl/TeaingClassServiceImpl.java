@@ -22,4 +22,9 @@ public class TeaingClassServiceImpl implements TeachingClassService {
     public List<TeachingClass> getCreatedClass(String teacher) {
         return teachingClassMapper.getCreatedClass(teacher);
     }
+
+    @Override
+    public void transferTeacher(String newTeacher) {
+        teachingClassMapper.transferTeacher(newTeacher);
+    }
 }

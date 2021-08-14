@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="zh">
 <head>
     <meta charset="UTF-8">
     <title>Jessie的天地的的首页</title>
@@ -9,15 +9,15 @@
             margin: 0 auto;
         }
         #footer {
-            height: 40px;
-            line-height: 40px;
+            height: 60px;
+            line-height: 60px;
             position: fixed;
             bottom: 0;
             width: 100%;
             text-align: center;
             background: #ffffff;
             color: #fff;
-            font-family: Arial;
+            font-family: Arial,sans-serif;
             font-size: 12px;
             letter-spacing: 1px;
         }
@@ -30,6 +30,12 @@
 </head>
 <body>
 <div class="text" style=" text-align:center;">这个网站用于前后分离的后端使用，本页面只是静态首页</div>
-<div id="footer"><a href="http://beian.miit.gov.cn/"; target=_blank>闽ICP备2021011257号</a></div>
+<div id="footer">
+    <!--  我也不知道为啥这个公安备案官网给我的HTML代码这么麻烦，然后自己鼓捣半天最终效果总算可以接受了  -->
+    <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=35018202000285" style="text-decoration:none;height:20px;line-height:60px;"><p style="float:none;height:20px;line-height:60px;margin: 0px 0px 0px 5px; color:#939393;"><img src="/static/备案图标.png" style="height: 20px;width: 20px;" alt="备案图标"/>闽公网安备 35018202000285号</p></a>
+    <a href="http://beian.miit.gov.cn/" target=_blank>闽ICP备2021011257号;</a>
+</div>
+
+
 </body>
 </html>

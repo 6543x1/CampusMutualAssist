@@ -8,4 +8,5 @@ public interface StuSelectionService {
     List<StuSelection> getStuSelections(String stuName);
     void newSelections(StuSelection stuSelection);
     List<StuSelection> getClassSelections(String className);
+    List<String> getClassSelectStuName(String classID);
 }

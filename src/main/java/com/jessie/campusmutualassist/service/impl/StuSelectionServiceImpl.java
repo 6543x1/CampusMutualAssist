@@ -27,4 +27,9 @@ public class StuSelectionServiceImpl implements StuSelectionService {
     public List<StuSelection> getClassSelections(String className) {
         return stuSelectionMapper.getClassSelections(className);
     }
+
+    @Override
+    public List<String> getClassSelectStuName(String classID) {
+        return stuSelectionMapper.getClassSelectStuName(classID);
+    }
 }

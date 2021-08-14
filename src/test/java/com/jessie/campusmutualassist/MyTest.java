@@ -1,6 +1,8 @@
 package com.jessie.campusmutualassist;
 
-import com.jessie.campusmutualassist.controller.teacherController;
+import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageInfo;
+import com.jessie.campusmutualassist.controller.TeacherController;
 import com.jessie.campusmutualassist.entity.StuPointsWithRealName;
 import com.jessie.campusmutualassist.mapper.UserMapper;
 import com.jessie.campusmutualassist.service.PermissionService;
@@ -21,6 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -160,45 +163,94 @@ public class MyTest {
     @Test
     public void ProjectDir(){
         String projectName = System.getProperty("user.dir");
+        String path = Thread.currentThread().getContextClassLoader().getResource("/").getPath();
         System.out.println(projectName);
+        System.out.println(path);
     }
     @Test
     public void writeToXlsx() throws Exception{
         String classID="CIRD9F";
-        String path = teacherController.class.getResource("").toString().substring(5) + classID + "/";
+        String path = TeacherController.class.getResource("").toString().substring(5) + classID + "/";
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
         }
         File file2 = new File(path, classID + ".xlsx");
-        Workbook workbook = new XSSFWorkbook(file2);
-        Sheet sheet = workbook.getSheetAt(0);     //读取sheet 0
+        file2.createNewFile();
+        Workbook workbook = new XSSFWorkbook();
 
-        int firstRowIndex = sheet.getFirstRowNum() + 1;   //第一行是列名，所以不读
-        int lastRowIndex = sheet.getLastRowNum();
+        Sheet sheet = workbook.createSheet("sheet1");     //读取sheet 0
+
+        int firstRowIndex = 1;   //第一行是列名，所以不读
+        int lastRowIndex = 100;
         System.out.println("firstRowIndex: " + firstRowIndex);
         System.out.println("lastRowIndex: " + lastRowIndex);
-        Row firstRow = sheet.getRow(0);
-        Cell cell1 = firstRow.getCell(0);
+        Row firstRow = sheet.createRow(0);
+        Cell cell1 = firstRow.createCell(0);
         cell1.setCellValue("学号");
-        Cell cell2 = firstRow.getCell(1);
+        Cell cell2 = firstRow.createCell(1);
         cell2.setCellValue("姓名");
-        Cell cell3 = firstRow.getCell(2);
+        Cell cell3 = firstRow.createCell(2);
         cell3.setCellValue("Points");
-        Row row0 = sheet.getRow(firstRowIndex);
-        int theNoIndex = 0;
         List<StuPointsWithRealName> list = studentPointsService.StusPoints(classID);
+        System.out.println(list);
         for (int rIndex = 1; rIndex <= list.size(); rIndex++) {   //遍历行
             System.out.println("rIndex: " + rIndex);
-            Row row = sheet.getRow(rIndex);
-            Cell cellNo = row.getCell(0);
+            Row row = sheet.createRow(rIndex);
+            Cell cellNo = row.createCell(0);
             cellNo.setCellType(CellType.STRING);
-            cell1.setCellValue(list.get(rIndex).getUsername());
-            Cell cellName = row.getCell(1);
-            cell2.setCellValue(list.get(rIndex).getRealName());
-            Cell cellPoints = row.getCell(2);
-            cell3.setCellValue(list.get(rIndex).getPoints());
+            cellNo.setCellValue("031902000");
+            Cell cellName = row.createCell(1);
+            cellName.setCellValue(list.get(rIndex-1).getRealName());
+            Cell cellPoints = row.createCell(2);
+            cellPoints.setCellValue(list.get(rIndex-1).getPoints());
             //非文本型读取后会变成数字(强行toString情况下），有时候变成科学计数法了。。。。并且缺失掉0，实在是懒得做这个检测
         }       //所以只能要求硬性设置为文本型
+    workbook.write(new FileOutputStream(file2));
     }
+    @Test
+    public void testPageInfo(){
+        String json="{\n" +
+                "    \"endRow\": 2,\n" +
+                "    \"hasNextPage\": true,\n" +
+                "    \"hasPreviousPage\": true,\n" +
+                "    \"isFirstPage\": false,\n" +
+                "    \"isLastPage\": false,\n" +
+                "    \"list\": [\n" +
+                "        {\n" +
+                "            \"body\": \"好康，是新公告哦？\",\n" +
+                "            \"classID\": \"CIRD9F\",\n" +
+                "            \"confirm\": false,\n" +
+                "            \"deadLine\": null,\n" +
+                "            \"nid\": 2,\n" +
+                "            \"publishedTime\": \"2021-08-05 01:39:58\",\n" +
+                "            \"publisher\": \"teacher1\",\n" +
+                "            \"title\": \"这是第二个公告的标题\",\n" +
+                "            \"type\": \"\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"navigateFirstPage\": 1,\n" +
+                "    \"navigateLastPage\": 6,\n" +
+                "    \"navigatePages\": 8,\n" +
+                "    \"navigatepageNums\": [\n" +
+                "        1,\n" +
+                "        2,\n" +
+                "        3,\n" +
+                "        4,\n" +
+                "        5,\n" +
+                "        6\n" +
+                "    ],\n" +
+                "    \"nextPage\": 3,\n" +
+                "    \"pageNum\": 2,\n" +
+                "    \"pageSize\": 1,\n" +
+                "    \"pages\": 6,\n" +
+                "    \"prePage\": 1,\n" +
+                "    \"size\": 1,\n" +
+                "    \"startRow\": 2,\n" +
+                "    \"total\": 6\n" +
+                "}";
+        PageInfo pageInfo= JSON.parseObject(json,PageInfo.class);
+        System.out.println(pageInfo);
+    }
+
 }

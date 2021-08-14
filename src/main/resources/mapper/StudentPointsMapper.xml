@@ -10,9 +10,9 @@
             <result property="points" column="points" jdbcType="INTEGER"/>
     </resultMap>
 
-<!--    <sql id="Base_Column_List">-->
-<!--        username,classID,points-->
-<!--    </sql>-->
+    <sql id="Base_Column_List">
+        username,classID,points
+    </sql>
 <!--    <insert id="newSP" parameterType="com.jessie.campusmutualassist.entity.StudentPoints">-->
 <!--        select points into @points from student_points where username=#{username} and classID=#{classID}-->
 <!--        <if test="points lt 100">-->

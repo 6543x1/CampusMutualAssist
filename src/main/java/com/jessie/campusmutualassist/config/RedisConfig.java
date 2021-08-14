@@ -1,7 +1,6 @@
 package com.jessie.campusmutualassist.config;
 
 import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -98,7 +97,9 @@ public class RedisConfig extends CachingConfigurerSupport
         //RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig();//该语句相当于序列化方式1
 
         //序列化方式2
-        FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);//JSONObject
+        //FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);//JSONObject
+        FastJson2JsonRedisSerializer fastJsonRedisSerializer=new FastJson2JsonRedisSerializer(Object.class);
+        //换用了自定义的序列化器后，缓存突然就正常了不会报JSONObject cant be cast to PageInfo的bug了，我也搞不懂是什么原理，不知道有什么细节上的差别
         RedisSerializationContext.SerializationPair<Object> pair = RedisSerializationContext.SerializationPair.fromSerializer(fastJsonRedisSerializer);
         RedisCacheConfiguration defaultCacheConfig=RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(pair);
 
@@ -107,13 +108,14 @@ public class RedisConfig extends CachingConfigurerSupport
         //RedisSerializationContext.SerializationPair<Object> pair = RedisSerializationContext.SerializationPair.fromSerializer(serializer);
         //RedisCacheConfiguration defaultCacheConfig=RedisCacheConfiguration.defaultCacheConfig().serializeValuesWith(pair);
 
-        defaultCacheConfig = defaultCacheConfig.entryTtl(Duration.ofSeconds(100));//设置过期时间
+        defaultCacheConfig = defaultCacheConfig.entryTtl(Duration.ofSeconds(1000));//设置过期时间
 //        //设置默认超过期时间是30秒
 //        defaultCacheConfig.entryTtl(Duration.ofSeconds(30));
 
         //初始化RedisCacheManager
-        RedisCacheManager cacheManager = new RedisCacheManager(redisCacheWriter, defaultCacheConfig);
-
+//        RedisCacheManager cacheManager = new RedisCacheManager(redisCacheWriter, defaultCacheConfig);
+        RedisCacheManager cacheManager=new MyRedisCacheManager(redisCacheWriter,defaultCacheConfig);
+        //这一步调用自定义的CacheManager，然后自定义CacheManager调用自定义的RedisCache，来达到删除时通配的效果
         //设置白名单---非常重要********
         /*
         使用fastjson的时候：序列化时将class信息写入，反解析的时候，
@@ -123,22 +125,23 @@ public class RedisConfig extends CachingConfigurerSupport
         可参考 https://blog.csdn.net/u012240455/article/details/80538540
          */
         ParserConfig.getGlobalInstance().addAccept("com.jessie.campusmutualassist.entity");
+        //也可以设置AutoType的开启，但是据说这个功能之前被爆出了漏洞，现在仍然可能有安全风险,反正实体类都写在entity里了，就这样吧
         return cacheManager;
     }
 
-
-    /**
-     *  设置 redis 数据默认过期时间
-     *  设置@cacheable 序列化方式
-     * @return
-     */
-    @Bean
-    public RedisCacheConfiguration redisCacheConfiguration(){
-        FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
-        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
-        configuration = configuration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(fastJsonRedisSerializer)).entryTtl(Duration.ofDays(30));
-        return configuration;
-    }
+    //推测下面那玩意没啥卵用
+//    /**
+//     *  设置 redis 数据默认过期时间
+//     *  设置@cacheable 序列化方式
+//     * @return
+//     */
+//    @Bean
+//    public RedisCacheConfiguration redisCacheConfiguration(){
+//        FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
+//        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
+//        configuration = configuration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(fastJsonRedisSerializer)).entryTtl(Duration.ofDays(30));
+//        return configuration;
+//    }
 
 
 

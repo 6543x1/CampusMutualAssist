@@ -3,6 +3,7 @@ package com.jessie.campusmutualassist.mapper;
 import com.jessie.campusmutualassist.entity.TeachingClass;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface TeachingClassMapper {
     void createClass(TeachingClass teachingClass);
     @Select("select * from teaching_class where teacher=#{teacher}")
     List<TeachingClass> getCreatedClass(String teacher);
+    @Update("update teaching_class set teacher=#{newTeacher}")
+    void transferTeacher(String newTeacher);
 }
