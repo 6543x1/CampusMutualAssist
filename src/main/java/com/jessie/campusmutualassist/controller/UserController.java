@@ -3,10 +3,8 @@ package com.jessie.campusmutualassist.controller;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jessie.campusmutualassist.entity.AdminOperation;
-import com.jessie.campusmutualassist.entity.Result;
-import com.jessie.campusmutualassist.entity.Role;
-import com.jessie.campusmutualassist.entity.User;
+import com.jessie.campusmutualassist.entity.*;
+import com.jessie.campusmutualassist.entity.myEnum.Role;
 import com.jessie.campusmutualassist.service.AdminOperationService;
 import com.jessie.campusmutualassist.service.MailService;
 import com.jessie.campusmutualassist.service.PermissionService;
@@ -180,14 +178,14 @@ public class UserController {
         {
             return Result.error("账号或密码长度过长，请缩短");
         }
-        //System.out.println("取得注册用数据，开始向数据库中写入数据...");
+        System.out.println("取得注册用数据，开始向数据库中写入数据...");
 
-//        if (userService.queryUser(user.getUsername()))
-//        {
-//            System.out.println("该用户名已存在，请检查输入是否错误");
-//            return Result.error("该用户名已存在", 500);
-//        }
-        if(user.getRole()==Role.admin||user.getRole()==Role.counsellor){
+        if (userService.queryUser(user.getUsername()))
+        {
+            System.out.println("该用户名已存在，请检查输入是否错误");
+            return Result.error("该用户名已存在", 500);
+        }
+        if(user.getRole()== Role.admin||user.getRole()==Role.counsellor){
             return Result.error("请不要通过注册来注册管理员或辅导员,管理员需要后台手动设置");
         }
         user.setStatus(1);//封号与否 就不枚举了吧？
@@ -199,16 +197,16 @@ public class UserController {
         user.setEvaluation(2);
         //备注一下，应该在Redis中留下痕迹，表明邮箱未经过认证，同时也不授予其stu或teacher的认证........
         //我觉得此时这个User不应该保存到数据库里的，应该先把全部内容放到Redis中?
-//        if(redisUtil.hasKey("type:"+"register:"+"username:"+user.getUsername())){
-//            return Result.error("当前已经有相同的学号正在注册，请稍候再试！");
-//        }
-        redisUtil.setObject("type:"+"register:"+"username:"+user.getUsername(),user,600);
+        if(redisUtil.hasKey("type:"+"register:"+"username:"+user.getUsername())){
+            return Result.error("当前已经有相同的学号正在注册，请稍候再试！");
+        }
+        redisUtil.setObject("type:"+"register:"+"username:"+user.getUsername(),user,1800);
         System.out.println(user);
-        //int theUid = userService.newestUid();
-        //userTokenService.newUser(user.getUid(), user.getUsername());
-        //UserPortrait userPortrait = new UserPortrait(user.getUid());
-        //userService.newUserPortrait(userPortrait);
-        //redisUtil.set("ClearExtraStatus|" + userPortrait.getUid(), "ONE YEAR", 60 * 60 * 24 * 365);
+//        int theUid = userService.newestUid();
+//        userTokenService.newUser(user.getUid(), user.getUsername());
+//        UserPortrait userPortrait = new UserPortrait(user.getUid());
+//        userService.newUserPortrait(userPortrait);
+//        redisUtil.set("ClearExtraStatus|" + userPortrait.getUid(), "ONE YEAR", 60 * 60 * 24 * 365);
         return Result.success("请到邮箱接收验证码，完成后续注册操作");
     }
     @ApiOperation(value = "/比较验证码是否正确")
@@ -241,13 +239,13 @@ public class UserController {
             return Result.error("服务器信息已过期，请重新注册");
         }
         System.out.println(user);
-//        userService.saveUser(user);
-//        if(user.getRole()== Role.teacher){
-//            permissionService.setUserPermission(user.getUsername(),Role.teacher.name());
-//        }
-//        else if(user.getRole()==Role.student){
-//            permissionService.setUserPermission(user.getUsername(),Role.student.name());
-//        }
+        userService.saveUser(user);
+        if(user.getRole()== Role.teacher){
+            permissionService.setUserPermission(user.getUsername(),Role.teacher.name());
+        }
+        else if(user.getRole()==Role.student){
+            permissionService.setUserPermission(user.getUsername(),Role.student.name());
+        }
         return Result.success("注册成功");
     }
     @ApiOperation(value = "测试用快速注册",notes = "相比普通注册，不用验证邮箱即可注册成功")
@@ -429,6 +427,7 @@ public class UserController {
             return Result.error("未检测到登录用户的信息");
         }
     }
+
 
 
     @PostMapping(value = "/getAdminHistory", produces = "application/json;charset=UTF-8")

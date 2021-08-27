@@ -3,6 +3,7 @@ package com.jessie.campusmutualassist.entity;
 import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Vote implements Serializable {
     long vid;
     String classID;
@@ -26,5 +28,8 @@ public class Vote implements Serializable {
     LocalDateTime publishedTime;
     @ApiModelProperty(value = "是否匿名")
     boolean anonymous;
+    String publisher;
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime deadLine;
     //友情提示：现在不加这个format注解时间会变成乱码
 }

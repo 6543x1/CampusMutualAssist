@@ -1,5 +1,6 @@
 package com.jessie.campusmutualassist.service.impl;
 
+import com.jessie.campusmutualassist.entity.SimpleStu;
 import com.jessie.campusmutualassist.entity.TeachingClass;
 import com.jessie.campusmutualassist.mapper.TeachingClassMapper;
 import com.jessie.campusmutualassist.service.TeachingClassService;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service("teachingClassService")
-public class TeaingClassServiceImpl implements TeachingClassService {
+public class TeachingClassServiceImpl implements TeachingClassService {
 
     @Autowired
     TeachingClassMapper teachingClassMapper;
@@ -26,5 +27,10 @@ public class TeaingClassServiceImpl implements TeachingClassService {
     @Override
     public void transferTeacher(String newTeacher) {
         teachingClassMapper.transferTeacher(newTeacher);
+    }
+
+    @Override
+    public List<SimpleStu> getSimpleStuList(String classID) {
+        return teachingClassMapper.getSimpleStuList(classID);
     }
 }

@@ -1,7 +1,8 @@
-package com.jessie.campusmutualassist.config;
+package com.jessie.campusmutualassist.filter;
 
 
 import com.alibaba.fastjson.JSON;
+import com.jessie.campusmutualassist.config.UserDetailServiceImpl;
 import com.jessie.campusmutualassist.entity.Result;
 import com.jessie.campusmutualassist.utils.JwtTokenUtil;
 import com.jessie.campusmutualassist.utils.RedisUtil;
@@ -38,7 +39,11 @@ public class JwtRequestFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException
     {
-        final String requestTokenHeader = request.getHeader("token");
+        String requestTokenHeader = request.getHeader("token");
+        if(requestTokenHeader==null){
+            requestTokenHeader=request.getParameter("token");//为了兼容websocket
+            System.out.println(requestTokenHeader);
+        }
         String username = null;
         String jwtToken = null;
         //原本有Bearer前缀 现在我直接干掉了直接放不好吗

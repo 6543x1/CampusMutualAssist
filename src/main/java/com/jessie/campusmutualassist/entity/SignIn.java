@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.jessie.campusmutualassist.entity.myEnum.SignType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -60,6 +61,16 @@ public class SignIn implements Serializable {
     @TableField(value = "deadLine")
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deadLine;
+
+    @TableField(value = "signType")
+    private SignType signType;
+
+    @TableField(value = "publishedTime")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishedTime;
+
+    @TableField(value = "publisher")
+    private String publisher;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -8,8 +8,15 @@ import java.util.Set;
 
 public interface NoticeService {
     void newNotice(Notice notice);
+    void newUnPublicNotice(Notice notice,List<String> readers);
     List<Notice> getClassNotices(String classID);
-    String getClassID(int nid);
+    List<Notice> getClassPublicNotices(String classID);
+    List<Notice> getClassUnPublicNotices(String classID,String username);
+    List<Notice> getUnConfirmedNotices(String classID,String username);
+    String getClassID(long nid);
     void urge(Set<String> urgeList);
     PageInfo getClassNoticesPage(String classID, int num);
+    boolean getNoticeDeadLine(long nid);
+
+    void deleteNotice(long nid,String classID);
 }

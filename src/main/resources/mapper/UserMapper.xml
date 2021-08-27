@@ -10,9 +10,19 @@
             </foreach>
         </where>
     </select>
-    <insert id="insertNewUser" parameterType="com.jessie.campusmutualassist.entity.User">
-/*
-            注意不要写成parameterMap....
-*/
-    </insert>
+    <select id="getNoPasswordUser" resultType="com.jessie.campusmutualassist.entity.User"
+            parameterType="java.lang.String">
+        select <include refid="NoPassword_User"/>
+            from user where username=#{username}
+    </select>
+    <!--    <insert id="insertNewUser" parameterType="com.jessie.campusmutualassist.entity.User">-->
+<!--/*-->
+<!--            注意不要写成parameterMap....-->
+<!--*/-->
+<!--    </insert>-->
+
+
+    <sql id="NoPassword_User">
+        username,uid, mailAddr, realName, status, role, img_path, evaluation,mobileNumber
+    </sql>
 </mapper>

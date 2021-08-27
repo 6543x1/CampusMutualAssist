@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jessie.campusmutualassist.mapper.StuPointsDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.jessie.campusmutualassist.entity.StuPointsDetail">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="classID" column="classID" jdbcType="VARCHAR"/>
+            <result property="operator" column="operator" jdbcType="VARCHAR"/>
+            <result property="target" column="target" jdbcType="VARCHAR"/>
+            <result property="points" column="points" jdbcType="INTEGER"/>
+            <result property="reason" column="reason" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,classID,operator,
+        target,points,reason
+    </sql>
+</mapper>

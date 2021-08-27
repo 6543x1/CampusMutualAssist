@@ -207,23 +207,11 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 <!--   微信SDK     -->
-<!--        <dependency>-->
-<!--            <groupId>com.github.binarywang</groupId>-->
-<!--            <artifactId>weixin-java-common</artifactId>-->
-<!--            <version>2.9.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.binarywang</groupId>-->
-<!--            <artifactId>weixin-java-mp</artifactId>-->
-<!--            <version>2.9.0</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>wx-java-mp-spring-boot-starter</artifactId>
             <version>4.1.0</version>
         </dependency>
-
-
     </dependencies>
 
     <build>

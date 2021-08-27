@@ -1,4 +1,4 @@
-package com.jessie.campusmutualassist.entity;
+package com.jessie.campusmutualassist.entity.myEnum;
 
 
 

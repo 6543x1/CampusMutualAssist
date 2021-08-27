@@ -5,8 +5,8 @@ import com.jessie.campusmutualassist.entity.User;
 import com.jessie.campusmutualassist.entity.UserPortrait;
 import com.jessie.campusmutualassist.mapper.UserMapper;
 import com.jessie.campusmutualassist.service.UserService;
+import com.jessie.campusmutualassist.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +18,13 @@ public class UserServiceImpl implements UserService
 {
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
+    @Override
+    public User getNoPasswordUser(String username) {
+        return userMapper.getNoPasswordUser(username);
+    }
 
     @Override
     public void saveUser(User user)
@@ -48,13 +54,6 @@ public class UserServiceImpl implements UserService
     public User getUser(String username)
     {
         return userMapper.getUser(username);
-    }
-
-    @Override
-    @Cacheable(value = "getUser",key="#root.method.name",condition = "#uid>1")
-    public User getUser(int uid)
-    {
-        return userMapper.getUserByUid(uid);
     }
 
     @Override
@@ -101,17 +100,12 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public void setStatus(int uid, int status)
+    public void setStatus(String username, int status)
     {
-        userMapper.setStatus(uid, status);
-        userMapper.updateEvaluation(uid, calculateEvaluation(status));
+        userMapper.setStatus(username, status);
     }
 
-    @Override
-    public void plusStatus(int uid, int score)
-    {
-        userMapper.setStatus(uid, userMapper.getStatus(uid) + score);
-    }
+
 
     @Override
     public void saveImg(User user)
@@ -185,5 +179,6 @@ public class UserServiceImpl implements UserService
     {
         return userMapper.newestUid();
     }
+
 
 }

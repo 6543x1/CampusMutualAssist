@@ -16,4 +16,5 @@ public interface StudentPointsService extends IService<StudentPoints> {
     void addStusPoints(Set<String> stuList,String classID,int points);
     StudentPoints StuPoints(String username);
     List<StuPointsWithRealName> StusPoints(String classID);
+    void remakePoints(String classID);
 }

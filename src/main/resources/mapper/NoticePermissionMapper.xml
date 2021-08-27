@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jessie.campusmutualassist.mapper.NoticePermissionMapper">
+    <resultMap id="BaseResultMap" type="com.jessie.campusmutualassist.entity.NoticePermission">
+            <id property="reader" column="reader" jdbcType="VARCHAR"/>
+            <id property="nid" column="nid" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        reader,nid
+    </sql>
+    <insert id="newNoticePermission">
+        insert into notice_permission (nid, reader)
+            VALUES
+            <foreach collection="list" item="item" separator=",">
+                    (#{nid},#{item})
+            </foreach>
+    </insert>
+</mapper>

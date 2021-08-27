@@ -14,7 +14,7 @@ import java.util.Set;
 public interface UserMapper
 {
 
-    @Insert("insert into user (username,password,status,role,evaluation) values (#{username},#{password},#{status},#{role},#{evaluation})")
+    @Insert("insert into user (username,password,status,role,evaluation,realName) values (#{username},#{password},#{status},#{role},#{evaluation},#{realName})")
     @Options(useGeneratedKeys = true, keyProperty = "uid", keyColumn = "uid")
     void saveUser(User user);
     @Update("update user set mobileNumber=#{mobileNumber} where username=#{username}")
@@ -25,19 +25,17 @@ public interface UserMapper
     @Update("update user set img_path=#{img_path} where uid=#{uid} ")
     void saveImg(User user);
 
-    @Select("select * from user")
-    List<User> findAll();
 
     @Select("select * from user where username= #{username}")
     User getUser(String username);
+    //上面这个方法可以优化一下，只要Username和Password用于登录
+    User getNoPasswordUser(String username);
 
     @Select("select realName from user where username=#{username}")
     String getNickNameByUsername(String username);
     @MapKey("username")
     List<Map<String,String>> getRealNameWithUsername(Set<String> usernameSet);
     //mybatis这个东西不能直接返回Map，必须用List封装Map，然后再把里面Map一个个取出来，放入新的Map...合着你这Map当Pair使用是吧
-    @Select("select realName from user where uid=#{uid}")
-    String getNickNameByUid(int uid);
 
     @Select("select mailAddr from user where username=#{username}")
     String getMailAddrByUsername(String username);
@@ -60,8 +58,8 @@ public interface UserMapper
     @Update("update user set mailAddr=#{mailAddr} where uid=#{uid}")
     void setMailAddr(@Param("uid") int uid, @Param("mailAddr") String mailAddr);
 
-    @Update("update user set status=#{status} where uid=#{uid}")
-    void setStatus(@Param("uid") int uid, @Param("status") int status);
+    @Update("update user set status=#{status} where username=#{username}")
+    void setStatus(@Param("username") String username, @Param("status") int status);
 
     @Select("select status from user where uid=#{uid}")
     int getStatus(int uid);
@@ -74,6 +72,8 @@ public interface UserMapper
 
     @Update("update user set evaluation=#{evaluation} where uid=#{uid}")
     void updateEvaluation(@Param("uid") int uid, @Param("evaluation") int evaluation);
+
+
 
 
 }

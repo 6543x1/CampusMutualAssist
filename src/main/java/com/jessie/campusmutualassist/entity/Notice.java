@@ -33,6 +33,8 @@ public class Notice implements Serializable {
   private boolean confirm;
   @ApiModelProperty("分类")
   private String type;
+  @ApiModelProperty("是否所有人可见")
+  private boolean isPublic=true;
 
 
 

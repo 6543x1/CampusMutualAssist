@@ -1,5 +1,7 @@
 package com.jessie.campusmutualassist.service;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.util.List;
 
 public interface PermissionService
@@ -15,5 +17,5 @@ public interface PermissionService
     List<String> getAllUserPermissions(String username);//和All搭配是不是要加s啊。。。。我英语不太好
 
     void deletePermission(String username,String permission);
-
+    public JSONObject getClassListSortByPermission(String classID);
 }

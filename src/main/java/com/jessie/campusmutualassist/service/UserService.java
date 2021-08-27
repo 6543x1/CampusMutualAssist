@@ -21,7 +21,7 @@ public interface UserService
 
     User getUser(String username);
 
-    User getUser(int uid);
+    User getNoPasswordUser(String username);
 
     void setNickName(User user);
 
@@ -35,9 +35,9 @@ public interface UserService
 
     void editPassword(String uid, String password);
 
-    void setStatus(int uid, int status);
+    void setStatus(String username, int status);
 
-    void plusStatus(int uid, int score);
+
 
     int getUid(String username);
 
@@ -58,4 +58,6 @@ public interface UserService
     int newestUser();
 
     int getStatus(int uid);
+
+
 }

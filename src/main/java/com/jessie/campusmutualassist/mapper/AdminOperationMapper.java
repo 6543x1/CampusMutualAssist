@@ -23,5 +23,6 @@ public interface AdminOperationMapper
 
     @Select("select * from admin_operation where operation=#{operation};")
     List<AdminOperation> getOperationsByType(String operation);
-
+    @Select("select * from  admin_operation")
+    List<AdminOperation> findAll();
 }

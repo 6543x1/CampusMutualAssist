@@ -2,6 +2,7 @@ package com.jessie.campusmutualassist.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.jessie.campusmutualassist.entity.myEnum.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

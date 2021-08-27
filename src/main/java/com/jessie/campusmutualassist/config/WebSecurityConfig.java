@@ -1,6 +1,7 @@
 package com.jessie.campusmutualassist.config;
 
 
+import com.jessie.campusmutualassist.filter.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -97,8 +98,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/user/sendMail").permitAll()
                 .antMatchers("/user/ResetPwByMail").permitAll()
                 .antMatchers("/static/**").permitAll()
-                .anyRequest().permitAll()
-
+                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore((Filter) jwtRequestFilter, (Class<? extends Filter>) UsernamePasswordAuthenticationFilter.class)
                 //这里不知道为啥IDEA给我报错
@@ -110,7 +110,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .failureForwardUrl("/user/loginError")
                 .and()
                 .logout()
-                .logoutSuccessUrl("/user/Logout")
+                .logoutSuccessUrl("/user/logout")
         ;
 
     }
@@ -137,8 +137,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                         "/**/*.css",
                         "/**/*.js",
                         "/**/*.png",
-                        "/*.png"
-                );
+                        "/*.png",
+                        "/v2/api-docs",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs",
+                        "/doc.html"
+
+
+                );//mdzz忘记加swagger到忽略规则里了
     }
 
 }

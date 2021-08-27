@@ -1,5 +1,6 @@
-package com.jessie.campusmutualassist.config;
+package com.jessie.campusmutualassist.filter;
 
+import com.jessie.campusmutualassist.config.XssHttpServletRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;

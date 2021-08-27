@@ -1,5 +1,6 @@
 package com.jessie.campusmutualassist.mapper;
 
+import com.jessie.campusmutualassist.entity.SimpleStu;
 import com.jessie.campusmutualassist.entity.TeachingClass;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
@@ -15,4 +16,6 @@ public interface TeachingClassMapper {
     List<TeachingClass> getCreatedClass(String teacher);
     @Update("update teaching_class set teacher=#{newTeacher}")
     void transferTeacher(String newTeacher);
+
+    List<SimpleStu> getSimpleStuList(String classID);
 }

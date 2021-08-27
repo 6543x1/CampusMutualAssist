@@ -52,6 +52,10 @@ public class StudentPointsServiceImpl extends ServiceImpl<StudentPointsMapper, S
         return studentPointsMapper.stusPoints(classID);
     }
 
+    @Override
+    public void remakePoints(String classID) {
+        studentPointsMapper.remakePoints(classID);
+    }
 }
 
 

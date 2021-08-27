@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jessie.campusmutualassist.mapper.PermissionMapper">
+
+
+
+    <select id="getClassMemByPermissions" resultType="com.jessie.campusmutualassist.entity.SimpleStu" parameterType="java.lang.String">
+        select up.username,u.realName from user_permission up join user u on up.username = u.username
+        where up.permission in (#{p1},#{p2})
+        group by up.username having count(distinct up.permission)=2
+    </select>
+    <select id="getClassMemByPermission" resultType="com.jessie.campusmutualassist.entity.SimpleStu" parameterType="java.lang.String">
+        select up.username,u.realName from user_permission up join user u on up.username = u.username
+        where up.permission=#{p1}
+    </select>
+</mapper>

@@ -23,7 +23,7 @@ public class AdminOperationServiceImpl implements AdminOperationService
     @Override
     public List<AdminOperation> getAllOperations(int targetUser)
     {
-        return adminOperationMapper.getAllOperations(targetUser);
+        return null;
     }
 
     @Override

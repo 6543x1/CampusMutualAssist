@@ -24,8 +24,6 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
 
 
 
-//    @Autowired
-//    UserService userService;
     @Autowired
     RedisUtil redisUtil;
     @Autowired

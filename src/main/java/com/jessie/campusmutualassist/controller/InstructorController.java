@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Api(value = "辅导员操作相关类")
+@Api(tags= "辅导员操作相关类")
 @RestController
 @RequestMapping(value = "/instructor")
 public class InstructorController {
@@ -31,7 +31,7 @@ public class InstructorController {
         }
         return Result.success("授权成功");
     }
-
+    @ApiOperation(value = "授予班长权限",notes = "需要辅导员具备相应学院的权限才能执行")
     @PreAuthorize("hasAnyAuthority('instructor_'+#college)")
     @PostMapping(value = "/setMonitor",produces = "application/json")
     public Result setMonitorPermission(@RequestParam("username") List<String> username,String college){

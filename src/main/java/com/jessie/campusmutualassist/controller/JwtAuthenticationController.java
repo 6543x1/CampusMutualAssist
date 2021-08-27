@@ -26,7 +26,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-@Api(value = "登录类")
+
+import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.getCurrentUsername;
+
+@Api("登录登出")
 @RestController
 @CrossOrigin
 public class JwtAuthenticationController {
@@ -77,7 +80,7 @@ public class JwtAuthenticationController {
 
         final String token = jwtTokenUtil.generateToken(userDetails, userService.getUser(userDetails.getUsername()).getUid());//这一步生成token并返回
         redisUtil.set("Jwt_TOKEN" + ":" + authenticationRequest.getUsername(), token, 72 * 60 * 60);
-        return Result.success("loginSuccess", new JwtResponse(token, userService.getUser(authenticationRequest.getUsername())));
+        return Result.success("loginSuccess", new JwtResponse(token, userService.getNoPasswordUser(authenticationRequest.getUsername())));
     }
 
     private void authenticate(String username, String password) throws Exception
@@ -102,5 +105,11 @@ public class JwtAuthenticationController {
         System.out.println("username=" + username);
         System.out.println(jwtTokenUtil.getUidFromToken(token));
         return userService.getUser(username);
+    }
+    @PostMapping(value = "/user/logout", produces = "application/json;charset=UTF-8")
+    public Result logout()
+    {
+       redisUtil.delete("Jwt_TOKEN" + ":" + getCurrentUsername());
+       return Result.success("登出成功");
     }
 }

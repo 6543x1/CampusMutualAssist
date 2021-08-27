@@ -2,6 +2,8 @@ package com.jessie.campusmutualassist.controller;
 
 import com.jessie.campusmutualassist.entity.Result;
 import com.jessie.campusmutualassist.utils.RedisUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.bean.menu.WxMenu;
 import me.chanjar.weixin.common.bean.menu.WxMenuButton;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -31,12 +33,12 @@ import java.util.Random;
 
 import static com.jessie.campusmutualassist.service.impl.MailServiceImpl.getRandomString;
 import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.getCurrentUsername;
-
+@Api(tags = "微信相关操作")
 @RestController
 @RequestMapping("/wechat")
 public class  WechatController {
     @Autowired
-    WxMpService wechatService;
+    WxMpService wxService;
     @Autowired
     WxMpConfigStorage wxMpConfigStorage;
     @Autowired
@@ -44,16 +46,17 @@ public class  WechatController {
     @Resource(name = "messageRouter")
     WxMpMessageRouter messageRouter;
     static final Random random=new Random();
+    @ApiOperation(value = "绑定微信")
     @PostMapping(value = "/bind",produces = "application/json;charset=UTF-8")
     public Result bindWechat(){
         String key= getRandomString();
         redisUtil.set("type:"+"wechatBind:"+"key:"+key,getCurrentUsername(),5*60+random.nextInt(10));
-        return Result.success("已经获取到Key，请到公众号中回复绑定+key来绑定,五分钟内有效",key);
+        return Result.success("已经获取到Key，请到公众号中回复绑定+key来绑定或解绑+key来解绑,五分钟内有效",key);
     }
     @GetMapping(value = "/accessToken",produces = "application/json;charset=UTF-8")
     public Result accessToken(){
         try {
-            System.out.println(wechatService.getAccessToken());
+            System.out.println(wxService.getAccessToken());
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
@@ -64,7 +67,7 @@ public class  WechatController {
         WxMpTemplateMessage wxMpTemplateMessage=WxMpTemplateMessage.builder().toUser("oUqup56c23bBkqGBcCLOvbkneM80").templateId("klDAhI9LH25atQsT07gUnXE4Z5i7rMmUwY0Pi9Jw6Rg").build();
         wxMpTemplateMessage.addData(new WxMpTemplateData("content","Hello world","000000"));
         try {
-            wechatService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
+            wxService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
         } catch (WxErrorException e) {
             e.printStackTrace();
             return Result.error("错误");
@@ -76,38 +79,20 @@ public class  WechatController {
 
     @GetMapping(value = "/quickStart",produces = "application/json;charset=UTF-8")
     public Result quickStart() throws Exception{
-//        WxMpDefaultConfigImpl config = new WxMpDefaultConfigImpl();
-//        config.setAppId("wx11ca935e13bb174a"); // 设置微信公众号的appid
-//        config.setSecret("597869e8058d0eb033b16f7b81424203"); // 设置微信公众号的app corpSecret
-//        config.setToken("wechatTestCAM"); // 设置微信公众号的token
-//        //config.setAesKey("..."); // 设置微信公众号的EncodingAESKey
-//        //wxMpService.setWxMpConfigStorage(config);
-//        DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
-//        clientBuilder.setConnectionRequestTimeout(10000);//从连接池获取链接的超时时间(单位ms)
-//        clientBuilder.setConnectionTimeout(10000);//建立链接的超时时间(单位ms)
-//        clientBuilder.setSoTimeout(10000);//连接池socket超时时间(单位ms)
-//        clientBuilder.setIdleConnTimeout(10000);//空闲链接的超时时间(单位ms)
-//        clientBuilder.setCheckWaitTime(1000);//空闲链接的检测周期(单位ms)
-//        clientBuilder.setMaxConnPerHost(50);//每路最大连接数
-//        clientBuilder.setMaxTotalConn(100);//连接池最大连接数
-//        //clientBuilder.setUserAgent(..)//HttpClient请求时使用的User Agent
-//        config.setApacheHttpClientBuilder(clientBuilder);
-//        wxService.setWxMpConfigStorage(config);
-//        System.out.println(wxService.getAccessToken());
-        String openid = "oUqup56c23bBkqGBcCLOvbkneM80";
+        String openid = "不可说";
         WxMpKefuMessage message = WxMpKefuMessage.TEXT().toUser(openid).content("Hello World").build();
-        wechatService.getKefuService().sendKefuMessage(message);
+        wxService.getKefuService().sendKefuMessage(message);
         return Result.success("success");//届到了！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
     }
     @GetMapping(value = "/testMenu",produces = "application/json;charset=UTF-8")
     public Result test(){
         String accessToken="";
         try {
-            accessToken= wechatService.getAccessToken();
+            accessToken= wxService.getAccessToken();
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
-        WxMpMenuServiceImpl wxMpMenuService=new WxMpMenuServiceImpl(wechatService);
+        WxMpMenuServiceImpl wxMpMenuService=new WxMpMenuServiceImpl(wxService);
         WxMenu wxMenu=new WxMenu();
         WxMenuButton wxMenuButton=new WxMenuButton();
         wxMenuButton.setType("click");
@@ -120,7 +105,7 @@ public class  WechatController {
         wxMpMenuService.menuCreate(wxMenu);}catch (Exception e){
             e.printStackTrace();
         }
-        wechatService.setMenuService(wxMpMenuService);
+        wxService.setMenuService(wxMpMenuService);
 
         return Result.success("创建菜单按钮成功");
     }
@@ -133,7 +118,7 @@ public class  WechatController {
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
-        if (!wechatService.checkSignature(timestamp, nonce, signature)) {
+        if (!wxService.checkSignature(timestamp, nonce, signature)) {
             // 消息签名不正确，说明不是公众平台发过来的消息
             response.getWriter().println("非法请求");
             return;

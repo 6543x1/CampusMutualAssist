@@ -31,6 +31,10 @@ public interface StudentPointsMapper extends BaseMapper<StudentPoints> {
             @Result(property = "realName", column = "realName"),
     })
     List<StuPointsWithRealName> stusPoints(String classID);
+
+    @Update("update student_points set points=60 where classID=#{classID}")
+    void remakePoints(String classID);
+
 }
 
 

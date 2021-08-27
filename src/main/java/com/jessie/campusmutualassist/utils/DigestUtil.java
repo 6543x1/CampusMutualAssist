@@ -14,13 +14,13 @@ import java.security.NoSuchAlgorithmException;
 @Component
 public class DigestUtil {
     //用于判断文件是不是同一个文件
-    public static String getSHA1(File file){
+    public static String getSHA256(File file){
         String value = null;
         FileInputStream fis=null;
         try {
             fis = new FileInputStream(file);
             MappedByteBuffer byteBuffer = fis.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-            MessageDigest messageDigest=MessageDigest.getInstance("SHA-1");
+            MessageDigest messageDigest=MessageDigest.getInstance("SHA-256");
             messageDigest.update(byteBuffer);
             BigInteger bigInteger = new BigInteger(1, messageDigest.digest());
             value = bigInteger.toString(16);

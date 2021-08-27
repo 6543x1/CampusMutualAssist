@@ -10,8 +10,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StuSelection implements Serializable {
-
+  //实际上兼具记录学生选择＆分数情况作用
   private String stuName;
+  private String name;
   private String classID;
   private long scores;
 }

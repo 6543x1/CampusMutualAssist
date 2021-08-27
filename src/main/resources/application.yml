@@ -10,11 +10,11 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/classaffairsmanage?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
-    password: 123456cnm
+    password: 123456
   mail:
     host: smtp.office365.com
     username: 6543x1@outlook.com
-    password: 123456cnmA
+    password:
     properties:
       mail:
         smtp:
@@ -86,7 +86,7 @@ logging:
 mybatis-plus:
   mapper-locations: classpath*:/mapper/*.xml
   type-aliases-package: com.jessie.campusmutualassist.entity
-  type-enums-package: com.jessie.campusmutualassist.entity
+  type-enums-package: com.jessie.campusmutualassist.entity.myEnum
 # 分页配置
 pagehelper:
   helper-dialect: mysql #配置所使用的数据库类型
@@ -112,8 +112,8 @@ aliyun:
   accessSecret: 123456
 wx:
   mp:
-    app-id: wx11ca935e13bb174a
-    secret: 597869e8058d0eb033b16f7b81424203
+    app-id: 123
+    secret: 123
     token: wechatTestCAM
 #    aes-key: #目前公众号明文
     #wx redis配置

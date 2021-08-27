@@ -1,12 +1,15 @@
 package com.jessie.campusmutualassist.wechatMsgHandler;
 
 import com.alibaba.fastjson.JSON;
+import com.jessie.campusmutualassist.mapper.UserWechatMapper;
+import com.jessie.campusmutualassist.utils.RedisUtil;
 import com.jessie.campusmutualassist.wechatMsgBuilder.TextBuilder;
 import me.chanjar.weixin.common.session.WxSessionManager;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -18,7 +21,10 @@ import static me.chanjar.weixin.common.api.WxConsts.XmlMsgType;
  */
 @Component
 public class MsgHandler extends AbstractHandler {
-
+    @Autowired
+    UserWechatMapper userWechatMapper;
+    @Autowired
+    RedisUtil redisUtil;
     @Override
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
                                     Map<String, Object> context, WxMpService wechatService,
@@ -35,9 +41,18 @@ public class MsgHandler extends AbstractHandler {
                 return new TextBuilder().build("你好",wxMessage,wechatService);
             }
             if(wxMessage.getContent().matches("绑定[0-9a-zA-Z]{6}")){
-                System.out.println("绑定码"+wxMessage.getContent().substring(2));
+              //  System.out.println("绑定码"+wxMessage.getContent().substring(2));
                 String thisUserOpenID=wxMessage.getFromUser();
+                String username=redisUtil.get("type:"+"wechatBind:"+"key:"+wxMessage.getContent().substring(2));
+                userWechatMapper.newOpenID(username,thisUserOpenID);
                 return new TextBuilder().build("绑定成功",wxMessage,wechatService);
+            }
+            if(wxMessage.getContent().matches("解绑[0-9a-zA-Z]{6}")){
+                //System.out.println("绑定码"+wxMessage.getContent().substring(2));
+                String thisUserOpenID=wxMessage.getFromUser();
+                String username=redisUtil.get("type:"+"wechatBind:"+"key:"+wxMessage.getContent().substring(2));
+                userWechatMapper.cancelBind(username);
+                return new TextBuilder().build("解绑成功",wxMessage,wechatService);
             }
             if(StringUtils.startsWithAny(wxMessage.getContent(),"绑定")){
                 System.out.println("绑定码"+wxMessage.getContent().substring(2));

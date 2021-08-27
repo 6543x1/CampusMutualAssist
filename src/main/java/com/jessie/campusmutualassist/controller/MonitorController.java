@@ -5,6 +5,7 @@ import com.jessie.campusmutualassist.entity.Result;
 import com.jessie.campusmutualassist.entity.TeachingClass;
 import com.jessie.campusmutualassist.service.PermissionService;
 import com.jessie.campusmutualassist.service.TeachingClassService;
+import com.jessie.campusmutualassist.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static com.jessie.campusmutualassist.service.impl.MailServiceImpl.getRandomString;
 import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.getCurrentUsername;
-@Api(value = "班长操作")
+@Api(tags = "班长相关操作")
 @RestController
 @RequestMapping("/monitor")
 public class MonitorController {
@@ -29,6 +30,8 @@ public class MonitorController {
     PermissionService permissionService;
     @Autowired
     TeachingClassService teachingClassService;
+    @Autowired
+    RedisUtil redisUtil;
 
 
     @ApiOperation(value = "班长创建班级")
@@ -47,15 +50,17 @@ public class MonitorController {
             permissionService.setUserPermission(username, "teacher_" + teachingClass.getId());
             permissionService.setUserPermission(username,"monitor_"+teachingClass.getId());//这个权限主要是可以移交
             //其实我也不知道给老师移交有啥用，所以就只给班长移交了
+            permissionService.setUserPermission(username,"student_"+teachingClass.getId());//注意！班长自己也是学生
         } catch (Exception e) {
             e.printStackTrace();
             return Result.error("创建失败，请检查是否有误后重试");
         }
-        //redisUtil.sAdd("class:"+teachingClass.getId()+"type:"+"members",getCurrentUsername());//一定要把老师自己加入！
+        redisUtil.sAdd("class:"+teachingClass.getId()+"type:"+"members",getCurrentUsername());//一定要把自己加入！
         return Result.success("班级创建成功", teachingClass.getId());
     }
-    @PreAuthorize("hasAnyAuthority ('monitor_'+#classID)")
-    @RequestMapping(value = "/{classID}/transfer",produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "转移班长权限",notes = "需要班长才能执行")
+    @PreAuthorize("hasAuthority ('monitor_'+#classID) AND hasAuthority('monitor')")
+    @PostMapping(value = "/{classID}/transfer",produces = "application/json;charset=UTF-8")
     public Result transferMonitorPermission(@PathVariable("classID") String classID, String newMonitor){
         //此处应当设置一个安全检查
         permissionService.setUserPermission(newMonitor,"monitor");
