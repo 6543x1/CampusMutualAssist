@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jessie.campusmutualassist.mapper.VoteVotersMapper">
+
+    <resultMap id="BaseResultMap" type="com.jessie.campusmutualassist.entity.VoteVoters">
+            <id property="vid" column="vid" jdbcType="INTEGER"/>
+            <result property="voters" column="voters" jdbcType="OTHER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        vid,voters
+    </sql>
+</mapper>

@@ -373,7 +373,8 @@ public class TeacherController {
         redisUtil.set("class:" + classID + ":" + "type:" + "RandomSelectInfo",System.currentTimeMillis()+":"+getCurrentUsername());
         //建议有多次选人，直接截图吧.....
         //其实本来这东西应该直接Push到客户端的，服务器不该保存到Redis中的......搞的现在前端得不断轮询服务器。。。。。
-        pushService.pushSocketMessage(new HashSet<>(strings),"你被老师选中了");
+        pushService.pushSocketMessage(new HashSet<>(strings),"你被选中了");
+        pushService.pushSocketMessage(redisUtil.sGetMembers("class:" + classID + ":" + "type:" + "members"),"被选中的人："+strings);
         return Result.success("已抽取", strings);
     }
 
@@ -388,6 +389,8 @@ public class TeacherController {
         redisUtil.expire("class:" + classID + ":" + "type:" + "CourseRandomSelect", 125*60, TimeUnit.SECONDS);
         redisUtil.set("class:" + classID + ":" + "type:" + "CourseRandomSelectInfo",System.currentTimeMillis()+":"+getCurrentUsername());
         pushService.pushSocketMessage(Collections.singleton(string),"你被老师选中了");
+        pushService.pushSocketMessage(redisUtil.sGetMembers("class:" + classID + ":" + "type:" + "members"),"被选中的人："+string);
+
         return Result.success("已抽取",string);
     }
     @ApiOperation(value = "课堂随机选人加活跃分",notes = "会直接体现在随机选人的全部结果中，传入时，连带username:时间戳")
@@ -476,7 +479,9 @@ public class TeacherController {
         }
         String[] members = memSet.toArray(new String[0]);
         redisUtil.sAdd("class:" + classID + ":type:" + "signIn" + ":" + "signId:"+signIn.getSignID(), members);
-        redisUtil.expire("class:" + classID + ":type:" + "signIn" + ":" +  "signId:"+signIn.getSignID(), expiredTime, TimeUnit.SECONDS);
+        //redisUtil.expire("class:" + classID + ":type:" + "signIn" + ":" +  "signId:"+signIn.getSignID(), expiredTime, TimeUnit.SECONDS);
+        redisUtil.set("scheduledTask:" + "signInExpire:" + "classID:" + classID + ":" + "signID" + ":" + signIn.getSignID(), classID, expiredTime + random.nextInt(3));
+
         pushService.pushSocketMessage(memSet,
                 JSON.toJSONString(Result.success("新的签到",signIn.getSignID())));
         return Result.success("签到已经发布了",signIn.getSignID());

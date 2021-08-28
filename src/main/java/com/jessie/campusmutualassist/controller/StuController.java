@@ -82,7 +82,7 @@ public class StuController {
         }
         Vote vote=voteService.getVote(vid);
         if(vote.getDeadLine().isBefore(LocalDateTime.now())){
-            return Result.error("投票已经过期!");
+            return Result.error("投票已经过期!");//emmmm...因为从数据库取出来了就懒得再去redis看还存在不存在了
         }
         if(vote.getLimitation()<selections.size()){
             return Result.error("最多只能选择"+vote.getLimitation()+"项选项！");
@@ -109,7 +109,7 @@ public class StuController {
         if(!signInService.getSignIn(signID).getSignKey().equals(key)){
             return Result.error("key不对");
         }
-       if(redisUtil.hasKey("class:" + classID + ":type:" + "signIn"+":"+"signID:"+signID)){
+       if(redisUtil.hasKey("scheduledTask:" + "signInExpire:" + "classID:" + classID + ":" + "signID" + ":" + signID)){
            redisUtil.sRemove("class:" + classID + ":type:" + "signIn"+":"+"signID:"+signID,getCurrentUsername());
        }
        else{
@@ -121,10 +121,10 @@ public class StuController {
     @PreAuthorize("hasAnyAuthority('student_'+#classID)")//和下面保持一致
     @PostMapping(value = "/{classID}/notice/confirm", produces = "application/json;charset=UTF-8")
     public Result confirmNotice(@PathVariable("classID") String classID, long nid) {
-        if(!noticeService.getNoticeDeadLine(nid)){
-            return Result.error("已经超过了公告的确认时间！");
-        }
         redisUtil.sAdd("class:" + classID + ":type:" + "noticeConfirmed"+":"+"nid:"+nid,getCurrentUsername());
+        if(!noticeService.getNoticeDeadLine(nid)){
+            return Result.error("超时确认成功");
+        }
         return Result.success("已确认");
     }
     @ApiOperation(value = "退出班级")

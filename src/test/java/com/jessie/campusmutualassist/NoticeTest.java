@@ -1,6 +1,9 @@
 package com.jessie.campusmutualassist;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jessie.campusmutualassist.entity.Notice;
+import com.jessie.campusmutualassist.mapper.JsonTest;
 import com.jessie.campusmutualassist.service.NoticeService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -20,6 +23,8 @@ public class NoticeTest {
 
     @Autowired
     NoticeService noticeService;
+    @Autowired
+    JsonTest jsonTest;
     @Test
     public void testUnPublicInsert(){
         Notice notice=new Notice();
@@ -36,5 +41,18 @@ public class NoticeTest {
         list.add("student2");
         list.add("student3");
         noticeService.newUnPublicNotice(notice,list);
+    }
+    @Test
+    public void TestSaveJson(){
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("json","object");
+        jsonTest.newJson(jsonObject.toJSONString());//看来只能存JSON罢了
+    }
+    @Test
+    public void TestReadJson(){
+       String json= jsonTest.getJson(1);
+        System.out.println(json);
+        JSONObject jsonObject= JSON.parseObject(json);
+        System.out.println(jsonObject.toJSONString());//pass 看来只能以String传，不然直接JSONObject会出事
     }
 }
