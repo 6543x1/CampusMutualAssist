@@ -205,7 +205,9 @@ CREATE TABLE `signin` (
   `signType` enum('normal','key') NOT NULL,
   `publishedTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `publisher` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`signID`)
+  PRIMARY KEY (`signID`),
+  KEY `signin_FK` (`classID`),
+  CONSTRAINT `signin_FK` FOREIGN KEY (`classID`) REFERENCES `teaching_class` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -540,4 +542,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-29  0:38:49
+-- Dump completed on 2021-08-29  1:07:09
