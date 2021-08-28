@@ -5,7 +5,9 @@ import com.jessie.campusmutualassist.entity.Files;
 import com.jessie.campusmutualassist.mapper.FilesMapper;
 import com.jessie.campusmutualassist.service.FilesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +21,10 @@ public class FilesServiceImpl extends ServiceImpl<FilesMapper, Files>
     @Autowired
     FilesMapper filesMapper;
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "fileByFid",key="#files.fid"),
+            @CacheEvict(value = "classFiles",key="#files.classID")
+    })
     public void newFile(Files files) {
         filesMapper.newFile(files);
     }

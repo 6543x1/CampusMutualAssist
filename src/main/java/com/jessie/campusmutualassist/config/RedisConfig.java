@@ -109,24 +109,20 @@ public class RedisConfig extends CachingConfigurerSupport
                 .serializeValuesWith(pair)
                 .entryTtl(Duration.ofSeconds(180));//7200
 
-
-
-//        defaultCacheConfig = defaultCacheConfig.entryTtl();//设置过期时间
-//        defaultCacheConfig.entryTtl(Duration.ofSeconds(30));
-
         //初始化RedisCacheManager
-//        RedisCacheManager cacheManager = new RedisCacheManager(redisCacheWriter, defaultCacheConfig);
         List<CacheItemConfig> cacheItemConfigs= new ArrayList<>();
-        cacheItemConfigs.add(new CacheItemConfig("noticeCache",60+ random.nextInt(10),5));//86400
-        cacheItemConfigs.add(new CacheItemConfig("classVotes",60+random.nextInt(10),5));//86400
-        cacheItemConfigs.add(new CacheItemConfig("classSignIn",60,5));//200
+        //可能由于测试原因，会导致服务器中实际过期时间更短一些
+        cacheItemConfigs.add(new CacheItemConfig("noticeCache",86400+ random.nextInt(10),5));//86400
+        cacheItemConfigs.add(new CacheItemConfig("classVotes",86400+random.nextInt(10),5));//86400
+        cacheItemConfigs.add(new CacheItemConfig("classSignIn",600,5));//600秒
+        cacheItemConfigs.add(new CacheItemConfig("userPermissions",300,3));//每次经过jwt filter会用到
+        cacheItemConfigs.add(new CacheItemConfig("classMembers",86400,5));//课堂成员，就24小时先顶着吧
         //RedisCacheManager cacheManager=new MyRedisCacheManager(redisCacheWriter,defaultCacheConfig);
 //        Map<String, RedisCacheConfiguration> initialCacheConfiguration = new HashMap<String, RedisCacheConfiguration>() {{
 //            put("noticeCache", RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1))); //1小时
 //            put("ClassVotes", RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10))); // 10分钟
 //            // ...
 //        }};
-        //RedisCacheManager cacheManager=new MyRedisCacheManager(redisCacheWriter,defaultCacheConfig,initialCacheConfiguration);
         RedisCacheManager cacheManager=new MyRedisCacheManager(redisCacheWriter,defaultCacheConfig,redisTemplate(),cacheItemConfigs,pair);
         //这一步调用自定义的CacheManager，然后自定义CacheManager调用自定义的RedisCache，来达到删除时通配的效果
         //设置白名单---非常重要********
@@ -138,14 +134,8 @@ public class RedisConfig extends CachingConfigurerSupport
         可参考 https://blog.csdn.net/u012240455/article/details/80538540
          */
         ParserConfig.getGlobalInstance().addAccept("com.jessie.campusmutualassist.entity");
-//        RedisCacheManager cacheManager=RedisCacheManager
-//                .builder(factory)
-//                .cacheWriter(redisCacheWriter)
-//                .cacheDefaults(defaultCacheConfig)
-//                .withInitialCacheConfigurations(initialCacheConfiguration)
-//                .build();
         //RedisCacheManager cacheManager=new RedisCacheManager(redisCacheWriter,defaultCacheConfig,initialCacheConfiguration);
-        //没有问题
+        //注意下，貌似使用builder生成RedisCacheManager，需要保证initial那啥的在default前面?忘了
         //也可以设置AutoType的开启，但是据说这个功能之前被爆出了漏洞，现在仍然可能有安全风险,反正实体类都写在entity里了，就这样吧
         return cacheManager;
     }

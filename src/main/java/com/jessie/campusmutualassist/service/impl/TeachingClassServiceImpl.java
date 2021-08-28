@@ -6,6 +6,8 @@ import com.jessie.campusmutualassist.mapper.TeachingClassMapper;
 import com.jessie.campusmutualassist.service.TeachingClassService;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,11 +21,13 @@ public class TeachingClassServiceImpl implements TeachingClassService {
     @Autowired
     RedisUtil redisUtil;
     @Override
+    @CacheEvict(value = "createdClass",key = "#teacher+'*'")
     public void createClass(TeachingClass teachingClass) {
         teachingClassMapper.createClass(teachingClass);
     }
 
     @Override
+    @Cacheable(value = "createdClass",key = "#teacher")
     public List<TeachingClass> getCreatedClass(String teacher) {
         return teachingClassMapper.getCreatedClass(teacher);
     }
