@@ -70,14 +70,15 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
         else if("VoteDeadLine".equals(type)){
             String classID=Key[3];
             int vid=Integer.parseInt(Key[5]);
-
-
+            voteVotersService.newVoters(vid,redisUtil.get("class:" + classID + ":" + "type:" + "members"));
+            //累了，只先保存投了的人吧
+            //选项对应的人不存了不存了
         }
         else if("signInExpire".equals(type)){
             String classID=Key[3];
             int signID=Integer.parseInt(Key[5]);
-            Set<String> notSingInList = redisUtil.sGetMembers("class:" + classID + ":type:" + "signIn" + ":" + "signId:"+signID);
-            signinSignedService.newSigned(signID, JSONObject.toJSONString(notSingInList));
+            Set<String> SignInList = redisUtil.sDifference("class:" + classID + ":type:" + "signIn" + ":" + "signId:"+signID,"class:" + classID + ":" + "type:" + "members");
+            signinSignedService.newSigned(signID, JSONObject.toJSONString(SignInList));
         }
         else{
             log.info("Detected Expired Key: "+theInfo);

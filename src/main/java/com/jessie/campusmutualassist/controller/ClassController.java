@@ -168,6 +168,12 @@ public class ClassController {
     public Result autoAcceptStudentJoin(@PathVariable("classID") String classID) {
         return Result.success(redisUtil.hasKey("classID" + ":" + classID + ":type:" + "Auto_AcceptStu").toString());
     }
+    @ApiOperation(value = "查询已经投票的人")
+    @PreAuthorize("hasAnyAuthority('teacher_'+#classID,'student_'+#classID)")
+    @GetMapping(value = "/voter", produces = "application/json;charset=UTF-8")
+    public Result getVoter(@PathVariable("classID") String classID,String vid) {
+        return Result.success("查询成功",redisUtil.sGetMembers("class:" + classID + ":" + "type:" + "members"));
+    }
     @ApiOperation(value = "查询投票每个人对应选项选的啥")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID,'student_'+#classID)")
     @GetMapping(value = "/voterSelections", produces = "application/json;charset=UTF-8")

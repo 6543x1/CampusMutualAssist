@@ -157,7 +157,7 @@ public class MyRedisCacheManager extends RedisCacheManager {
     * 重写getCache实现缓存时间自定义
     * */
 
-    //就这个方法导致全部是默认设置
+    //就这个方法导致全部是默认设置，估计是原作者的版本比较老是这样实现的没问题，但是新版本不再是这样了
 //    @Override
 //    public Cache getCache(String name) {
 //
