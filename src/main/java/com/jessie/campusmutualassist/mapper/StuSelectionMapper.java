@@ -20,8 +20,9 @@ public interface StuSelectionMapper {
     List<StuSelection> getClassSelections(String classID);
     @Select("select stuName from stu_selection where classID=#{classID}")
     List<String> getClassSelectStuName(String classID);
-
-    @Delete("delete from  stu_selection where classID=#{classID}")
-    void quitClass(String classID);
+    @Delete("delete from stu_selection where classID=#{classID}")
+    void deleteClass(String classID);
+    @Delete("delete from stu_selection where classID=#{classID} and stuName=#{username} ")
+    void quitClass(String classID,String username);
 
 }

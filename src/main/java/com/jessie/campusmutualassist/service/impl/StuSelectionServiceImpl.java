@@ -3,6 +3,7 @@ package com.jessie.campusmutualassist.service.impl;
 import com.jessie.campusmutualassist.entity.StuSelection;
 import com.jessie.campusmutualassist.mapper.StuSelectionMapper;
 import com.jessie.campusmutualassist.service.StuSelectionService;
+import com.jessie.campusmutualassist.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import java.util.List;
 public class StuSelectionServiceImpl implements StuSelectionService {
     @Autowired
     StuSelectionMapper stuSelectionMapper;
+    @Autowired
+    RedisUtil redisUtil;
     @Override
     public List<StuSelection> getStuSelections(String stuName) {
         return stuSelectionMapper.getStuSelections(stuName);
@@ -31,5 +34,11 @@ public class StuSelectionServiceImpl implements StuSelectionService {
     @Override
     public List<String> getClassSelectStuName(String classID) {
         return stuSelectionMapper.getClassSelectStuName(classID);
+    }
+
+    @Override
+    public void quitClass(String classID, String username) {
+        redisUtil.sRemove("class:"+classID+":"+"type:"+"members",username);
+        stuSelectionMapper.quitClass(classID,username);
     }
 }

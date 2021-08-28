@@ -9,4 +9,6 @@ public interface StuSelectionService {
     void newSelections(StuSelection stuSelection);
     List<StuSelection> getClassSelections(String className);
     List<String> getClassSelectStuName(String classID);
+
+    void quitClass(String classID,String username);
 }

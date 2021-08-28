@@ -8,6 +8,7 @@ import com.jessie.campusmutualassist.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Service("permissionService")
 public class PermissionServiceImpl implements PermissionService
@@ -90,8 +92,14 @@ public class PermissionServiceImpl implements PermissionService
 
     @Override
     @CacheEvict(value = "userPermissions",key ="#username+'*'" )
-    public void deletePermission(String username, String permission) {
+    public void deleteUserPermission(String username, String permission) {
         permissionMapper.deletePermission(username,permission);
+    }
+
+    @Override
+    @Async
+    public void deleteUsersPermission(Set<String> usernames, String permission) {
+        usernames.forEach((username)->deleteUserPermission(username,permission));//lambda还挺好写的，之前的就懒得改了吧
     }
 
     @Override

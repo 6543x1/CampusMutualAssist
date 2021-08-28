@@ -23,7 +23,7 @@ public interface UserService
 
     User getNoPasswordUser(String username);
 
-    void setNickName(User user);
+    void setNickName(String user);
 
     void setMailAddr(int uid, String mailAddr);
 
@@ -43,10 +43,6 @@ public interface UserService
 
     int calculateEvaluation(int status);
 
-    void newUserPortrait(UserPortrait userPortrait);
-
-    UserPortrait getUserPortrait(int uid);
-
     void updateAdditionalScore(int uid, int score);
 
     void updatePunishedScore(int uid, int score);
@@ -55,9 +51,8 @@ public interface UserService
 
     String getImgPath(int uid);
 
-    int newestUser();
-
     int getStatus(int uid);
+    boolean cmpPassword(String username,String password);
 
 
 }

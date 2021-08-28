@@ -1,7 +1,7 @@
 package com.jessie.campusmutualassist.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.jessie.campusmutualassist.aop.OperationLog;
+import com.jessie.campusmutualassist.aop.PointsOperationLog;
 import com.jessie.campusmutualassist.entity.*;
 import com.jessie.campusmutualassist.entity.myEnum.SignType;
 import com.jessie.campusmutualassist.service.*;
@@ -9,7 +9,6 @@ import com.jessie.campusmutualassist.service.impl.DumpService;
 import com.jessie.campusmutualassist.service.impl.PushService;
 import com.jessie.campusmutualassist.utils.JwtTokenUtil;
 import com.jessie.campusmutualassist.utils.RedisUtil;
-import com.jessie.campusmutualassist.websocket.WebSocketServer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -22,7 +21,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -63,10 +61,10 @@ public class TeacherController {
     DumpService dumpService;
     @Autowired
     StuPointsDetailService stuPointsDetailService;
-    @Resource
-    WebSocketServer webSocketServer;
     @Autowired
     PushService pushService;
+    @Autowired
+    UserService userService;
 
     static final Random random = new Random();
 
@@ -223,6 +221,14 @@ public class TeacherController {
         //待加入的暂时存放于数据库中，然后传入时比对是否有待加入存在，否则无法加入
         return Result.success("同意成功");
     }
+    @ApiOperation(value = "驱逐学生(踢出班级)")
+    @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/removeStu", produces = "application/json;charset=UTF-8")
+    public Result removeStu(@PathVariable("classID") String classID,String username) {
+        stuSelectionService.quitClass(classID,username);
+        pushService.pushWechatMessage(Collections.singleton(username),"你被踢出班级:"+classID);
+        return Result.success("驱逐成功");
+    }
 
     @ApiOperation(value = "自动同意学生加入")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
@@ -277,6 +283,13 @@ public class TeacherController {
                 JSON.toJSONString(Result.success("新的投票",vote.getVid())));
         return Result.success("投票已经开始",vote.getVid());
     }
+    @ApiOperation(value = "删除投票",notes = "有管理员权限就行，不考虑管理员内讧")
+    @PreAuthorize("hasAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/deleteVote", produces = "application/json;charset=UTF-8")
+    public Result deleteVote(@PathVariable("classID") String classID, long vid) {
+        voteService.deleteVote(classID,vid);
+        return Result.success("删除成功!");
+    }
 
     @ApiOperation(value = "发布公告")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")//和下面保持一致
@@ -316,6 +329,14 @@ public class TeacherController {
         pushService.pushSocketMessage(redisUtil.sGetMembers("class:" + classID + ":" + "type:" + "members"),
                 JSON.toJSONString(Result.success("新的公告",notice.getNid())));
         return Result.success("公告已发布");
+    }
+
+    @ApiOperation(value = "删除公告",notes = "有管理员权限就行，不考虑管理员内讧")
+    @PreAuthorize("hasAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/deleteNotice", produces = "application/json;charset=UTF-8")
+    public Result deleteNotice(@PathVariable("classID") String classID, long nid) {
+        noticeService.deleteNotice(nid,classID);
+        return Result.success("删除成功!");
     }
 
     @ApiOperation(value = "催还没读公告的")
@@ -370,7 +391,7 @@ public class TeacherController {
         return Result.success("已抽取",string);
     }
     @ApiOperation(value = "课堂随机选人加活跃分",notes = "会直接体现在随机选人的全部结果中，传入时，连带username:时间戳")
-    @OperationLog(module = "课堂回答加分",type = "common",desc = "课堂加分")
+    @PointsOperationLog(module = "课堂回答加分",type = "common",desc = "课堂加分")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/addCourseRandomStu", produces = "application/json;charset=UTF-8")
     public Result addRandomStuPointsInCourse(@PathVariable("classID") String classID,String student,int points) {
@@ -392,7 +413,7 @@ public class TeacherController {
 
 
     @ApiOperation(value = "加活跃分", notes = "活跃分上限为100，超过自动记为100分")
-    @OperationLog(module = "老师加分",type = "common",desc = "普通加分")
+    @PointsOperationLog(module = "老师加分",type = "common",desc = "普通加分")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/addStuPoints", produces = "application/json;charset=UTF-8")
     public Result addStuPoints(@PathVariable("classID") String classID, @RequestParam("students") Set<String> students, int points,@RequestParam(defaultValue = "加分") String reason) {
@@ -412,6 +433,19 @@ public class TeacherController {
 //
 //        stuPointsDetailService.newDetail(stuPointsDetail,students);
         return Result.success("已加分");
+    }
+
+    @ApiOperation(value = "清空活跃分到60", notes = "会清空当前时间之前的全部记录！需要再次输入密码")
+    @PointsOperationLog(module = "清空全部分数",type = "common",desc = "清空")
+    @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/remakeStuPoints", produces = "application/json;charset=UTF-8")
+    public Result clearStuPoints(@PathVariable("classID") String classID, String password) {
+        if(userService.cmpPassword(getCurrentUsername(),password)){
+        studentPointsService.remakePoints(classID);//同时会清空当前时间前的全部记录,
+        stuPointsDetailService.deleteOldItems(classID);
+            return Result.success("已加分");
+        }
+        return Result.error("密码错误，需要正确的密码才能清空！",403);
     }
 
     @ApiOperation(value = "发布签到")
@@ -447,6 +481,13 @@ public class TeacherController {
                 JSON.toJSONString(Result.success("新的签到",signIn.getSignID())));
         return Result.success("签到已经发布了",signIn.getSignID());
     }
+    @ApiOperation(value = "删除签到",notes = "有管理员权限就行，不考虑管理员内讧")
+    @PreAuthorize("hasAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/supplySign", produces = "application/json;charset=UTF-8")
+    public Result deleteSign(@PathVariable("classID") String classID, long signID) {
+        signInService.deleteSignIn(classID,signID);
+        return Result.success("删除成功!");
+    }
     @ApiOperation(value = "补签",notes = "一次签一个")
     @PreAuthorize("hasAuthority('teacher_'+#classID) AND hasAuthority('teacher')")
     @PostMapping(value = "/{classID}/supplySign", produces = "application/json;charset=UTF-8")
@@ -454,24 +495,35 @@ public class TeacherController {
         if(redisUtil.hasKey("class:" + classID + ":type:" + "signIn"+":"+"signID:"+signID)){
             redisUtil.sRemove("class:" + classID + ":type:" + "signIn"+":"+"signID:"+signID,student);
         }
-        return Result.success("该功能尚未完成!");
+        return Result.success("补签成功!");
     }
 
-    @ApiOperation(value = "删除班级（尚未完成）")
+    @ApiOperation(value = "删除班级（需要验证密码）")
     @PreAuthorize("hasAuthority('teacher_'+#classID) AND hasAuthority('teacher')")
     @PostMapping(value = "/{classID}/deleteClass", produces = "application/json;charset=UTF-8")
-    public Result deleteClass(@PathVariable("classID") String classID, String key) {
-        //Set<String> notSingInList = redisUtil.sGetMembers("class:" + classID + ":type:" + "signIn" + ":" + "key:" + key);
-        return Result.success("该功能尚未完成!");
+    public Result deleteClass(@PathVariable("classID") String classID, String password) {
+        if(userService.cmpPassword(getCurrentUsername(),password)){
+        teachingClassService.deleteClass(classID);
+        return Result.success("班级已经删除");
+        }
+        return Result.error("密码不对");
     }
     @ApiOperation(value = "设置管理员",notes = "最多10个")
     @PreAuthorize("hasAuthority ('monitor_'+#classID) AND hasAuthority('monitor')")
     @PostMapping(value = "/{classID}/setAssistant",produces = "application/json;charset=UTF-8")
     public Result setAssistant(@PathVariable("classID") String classID, @RequestParam("assistants") List<String> assistants){
-        for(String assistant:assistants) {
-            permissionService.setUserPermission(assistant,"teacher_"+classID);
-        }
+       //这个就不异步了吧
+        assistants.forEach((assistant)->{
+           permissionService.setUserPermission(assistant,"teacher_"+classID);
+       });
         return Result.success("设置成功");
     }
-    //老师可以以xlsx导出学生成绩
+    @ApiOperation(value = "撤销管理员",notes = "可以一次全删除")
+    @PreAuthorize("hasAuthority ('monitor_'+#classID) AND hasAuthority('monitor')")
+    @PostMapping(value = "/{classID}/setAssistant",produces = "application/json;charset=UTF-8")
+    public Result cancelAssistant(@PathVariable("classID") String classID, @RequestParam("assistants") Set<String> assistants){
+        permissionService.deleteUsersPermission(assistants,"teacher_"+classID);
+        return Result.success("撤销管理员成功(请稍候刷新");
+    }
+
 }

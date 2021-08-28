@@ -36,6 +36,10 @@ public class StuPointsDetailServiceImpl extends ServiceImpl<StuPointsDetailMappe
     public List<StuPointsDetail> stuClassDetails(String classID, String target) {
         return stuPointsDetailMapper.stuClassDetails(classID,target);
     }
+    @Override
+    public void deleteOldItems(String classID){
+        stuPointsDetailMapper.deleteOldItems(classID);
+    }
 }
 
 

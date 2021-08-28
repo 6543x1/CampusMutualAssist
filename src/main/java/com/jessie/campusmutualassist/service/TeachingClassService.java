@@ -11,4 +11,6 @@ public interface TeachingClassService {
     public List<TeachingClass> getCreatedClass(String teacher);
     void transferTeacher(String newTeacher);
     List<SimpleStu> getSimpleStuList(String classID);
+
+    void deleteClass(String classID);
 }

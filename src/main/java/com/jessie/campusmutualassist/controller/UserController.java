@@ -57,11 +57,11 @@ public class UserController {
     @PostMapping(value = "/ResetPw", produces = "application/json;charset=UTF-8")
     public Result editPassword(String oldPassword, String newPassword) throws Exception
     {
-        User thisUser = userService.getUser(getCurrentUsername());
-        if (bCryptPasswordEncoder.matches(oldPassword, thisUser.getPassword()))
+
+        if (userService.cmpPassword(getCurrentUsername(),oldPassword))
         {
-            thisUser.setPassword(bCryptPasswordEncoder.encode(newPassword));
-            userService.editPassword(thisUser.getUsername(), thisUser.getPassword());
+            BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
+            userService.editPassword(getCurrentUsername(), bCryptPasswordEncoder.encode(newPassword));
             return Result.success("修改成功");
         } else
         {

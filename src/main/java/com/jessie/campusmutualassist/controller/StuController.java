@@ -5,6 +5,7 @@ import com.jessie.campusmutualassist.entity.StuSelection;
 import com.jessie.campusmutualassist.entity.StudentPoints;
 import com.jessie.campusmutualassist.entity.Vote;
 import com.jessie.campusmutualassist.service.*;
+import com.jessie.campusmutualassist.service.impl.PushService;
 import com.jessie.campusmutualassist.utils.JwtTokenUtil;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import io.swagger.annotations.Api;
@@ -41,6 +42,8 @@ public class StuController {
     SignInService signInService;
     @Autowired
     StudentPointsService studentPointsService;
+    @Autowired
+    PushService pushService;
     @ApiOperation(value = "加入班级",notes = "老师生成班级后会获得一个ID，请妥善保存")
     @PreAuthorize("hasAnyAuthority('student')")
     @PostMapping(value = "/{classID}/join",produces = "application/json;charset=UTF-8")
@@ -123,6 +126,14 @@ public class StuController {
         }
         redisUtil.sAdd("class:" + classID + ":type:" + "noticeConfirmed"+":"+"nid:"+nid,getCurrentUsername());
         return Result.success("已确认");
+    }
+    @ApiOperation(value = "退出班级")
+    @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/quit", produces = "application/json;charset=UTF-8")
+    public Result quit(@PathVariable("classID") String classID,String username) {
+        stuSelectionService.quitClass(classID,username);
+        //考虑到一般可能是加错班级然后退出，就不向老师们及管理员推送消息了
+        return Result.success("退出成功");
     }
 
 

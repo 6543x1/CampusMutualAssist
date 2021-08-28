@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = CampusMutualAssistApplication.class)
+@SpringBootTest(classes = CampusMutualAssistApplication.class,webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Slf4j
 public class NoticeTest {
 

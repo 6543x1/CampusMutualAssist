@@ -2,11 +2,11 @@ package com.jessie.campusmutualassist.service.impl;
 
 
 import com.jessie.campusmutualassist.entity.User;
-import com.jessie.campusmutualassist.entity.UserPortrait;
 import com.jessie.campusmutualassist.mapper.UserMapper;
 import com.jessie.campusmutualassist.service.UserService;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,9 +57,9 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public void setNickName(User user)
+    public void setNickName(String username)
     {
-        userMapper.setNickName(user);
+        userMapper.setRealName(username);
     }
 
     @Override
@@ -164,21 +164,9 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public UserPortrait getUserPortrait(int uid) {
-        return null;
+    public boolean cmpPassword(String username, String password) {
+        BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
+        String realPassword=userMapper.getPassword(username);
+        return bCryptPasswordEncoder.matches(password,realPassword);
     }
-
-    @Override
-    public void newUserPortrait(UserPortrait userPortrait) {
-
-    }
-
-
-    @Override
-    public int newestUser()
-    {
-        return userMapper.newestUid();
-    }
-
-
 }

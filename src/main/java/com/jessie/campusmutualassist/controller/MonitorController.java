@@ -66,9 +66,9 @@ public class MonitorController {
         permissionService.setUserPermission(newMonitor,"monitor");
         permissionService.setUserPermission(newMonitor,"monitor_"+classID);
         permissionService.setUserPermission(newMonitor,"teacher_"+classID);
-        permissionService.deletePermission(newMonitor,"teacher_"+classID);
-        permissionService.deletePermission(getCurrentUsername(),"monitor_classID");
-        permissionService.deletePermission(getCurrentUsername(),"monitor");
+        permissionService.deleteUserPermission(newMonitor,"teacher_"+classID);
+        permissionService.deleteUserPermission(getCurrentUsername(),"monitor_classID");
+        permissionService.deleteUserPermission(getCurrentUsername(),"monitor");
         teachingClassService.transferTeacher(newMonitor);
         return Result.success("移交成功");
     }

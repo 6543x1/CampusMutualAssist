@@ -1,5 +1,6 @@
-package com.jessie.campusmutualassist.aop;
+package com.jessie.campusmutualassist.aop.aspect;
 
+import com.jessie.campusmutualassist.aop.PointsOperationLog;
 import com.jessie.campusmutualassist.entity.StuPointsDetail;
 import com.jessie.campusmutualassist.service.StuPointsDetailService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,12 @@ import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.g
 @Aspect
 @Component
 @Slf4j
-public class OperationLogAspect {
+public class PointsOperationLogAspect {
 
     @Autowired
     StuPointsDetailService stuPointsDetailService;
 
-    @Pointcut("@annotation(com.jessie.campusmutualassist.aop.OperationLog)")
+    @Pointcut("@annotation(com.jessie.campusmutualassist.aop.PointsOperationLog)")
     public void pointcut() {
     }
 
@@ -43,7 +44,7 @@ public class OperationLogAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         //获取切入点所在的方法
         Method method = signature.getMethod();
-        OperationLog annotation = method.getAnnotation(OperationLog.class);
+        PointsOperationLog annotation = method.getAnnotation(PointsOperationLog.class);
         if(annotation!=null){
             log.info(annotation.module());
             log.info(annotation.type());

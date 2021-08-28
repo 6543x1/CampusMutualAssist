@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = CampusMutualAssistApplication.class)
+@SpringBootTest(classes = CampusMutualAssistApplication.class,webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MyTest {
     @Autowired
     UserService userService;

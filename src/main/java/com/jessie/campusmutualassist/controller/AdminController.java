@@ -20,8 +20,8 @@ public class AdminController {
     @Autowired
     StudentPointsService studentPointsService;
     @PostMapping(value = "/banUser",produces = "application/json;charset=UTF-8")
-    public Result banUser(String username,@RequestParam(defaultValue = "0") int status){
-        userService.setStatus(username,status);
+    public Result banUser(String targetUser,@RequestParam(defaultValue = "0") int status,String reason){
+        userService.setStatus(targetUser,status);
         return Result.success("封号成功");//话说这真的可以封号吗？？
     }
     @PostMapping(value = "/clearAllScores",produces = "application/json;charset=UTF-8")

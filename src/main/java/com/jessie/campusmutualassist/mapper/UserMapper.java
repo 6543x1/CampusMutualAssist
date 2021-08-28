@@ -64,14 +64,14 @@ public interface UserMapper
     @Select("select status from user where uid=#{uid}")
     int getStatus(int uid);
 
-    @Update("update user set realName=#{nickName} where uid=#{uid}")
-    void setNickName(User user);
-
-    @Select("SELECT LAST_INSERT_ID()")
-    int newestUid();//说回来这东西是线程安全的吗？？？要不是线程安全那不是要出事了
+    @Update("update user set realName=#{nickName} where username=#{username}")
+    void setRealName(String username);
 
     @Update("update user set evaluation=#{evaluation} where uid=#{uid}")
     void updateEvaluation(@Param("uid") int uid, @Param("evaluation") int evaluation);
+
+    @Select("select password from user where username=#{username}")
+    String getPassword(String username);
 
 
 

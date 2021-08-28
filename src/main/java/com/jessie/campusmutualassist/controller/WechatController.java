@@ -1,6 +1,7 @@
 package com.jessie.campusmutualassist.controller;
 
 import com.jessie.campusmutualassist.entity.Result;
+import com.jessie.campusmutualassist.service.impl.PushService;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,6 +44,8 @@ public class  WechatController {
     WxMpConfigStorage wxMpConfigStorage;
     @Autowired
     RedisUtil redisUtil;
+    @Autowired
+    PushService pushService;
     @Resource(name = "messageRouter")
     WxMpMessageRouter messageRouter;
     static final Random random=new Random();
@@ -76,6 +79,7 @@ public class  WechatController {
         //success
         //代码里可以设置出现异常自动发送到指定邮箱
     }
+
 
     @GetMapping(value = "/quickStart",produces = "application/json;charset=UTF-8")
     public Result quickStart() throws Exception{
