@@ -483,7 +483,7 @@ public class TeacherController {
     }
     @ApiOperation(value = "删除签到",notes = "有管理员权限就行，不考虑管理员内讧")
     @PreAuthorize("hasAuthority('teacher_'+#classID)")
-    @PostMapping(value = "/{classID}/supplySign", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/{classID}/deleteSign", produces = "application/json;charset=UTF-8")
     public Result deleteSign(@PathVariable("classID") String classID, long signID) {
         signInService.deleteSignIn(classID,signID);
         return Result.success("删除成功!");
@@ -520,7 +520,7 @@ public class TeacherController {
     }
     @ApiOperation(value = "撤销管理员",notes = "可以一次全删除")
     @PreAuthorize("hasAuthority ('monitor_'+#classID) AND hasAuthority('monitor')")
-    @PostMapping(value = "/{classID}/setAssistant",produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/{classID}/cancelAssistant",produces = "application/json;charset=UTF-8")
     public Result cancelAssistant(@PathVariable("classID") String classID, @RequestParam("assistants") Set<String> assistants){
         permissionService.deleteUsersPermission(assistants,"teacher_"+classID);
         return Result.success("撤销管理员成功(请稍候刷新");
