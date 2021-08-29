@@ -271,6 +271,7 @@ public class TeacherController {
                 .build();
                 //舒服了，不然长的和杀人书一样
         voteService.newVote(vote);
+        System.out.println(vote.getVid());
         for (String x : selections) {
             redisUtil.zAdd("class:" + classID + ":" + "type:" + "VoteSelections" + ":" + "vid:" + vote.getVid(),
                     x, 0);
@@ -514,7 +515,8 @@ public class TeacherController {
         return Result.error("密码不对");
     }
     @ApiOperation(value = "设置管理员",notes = "最多10个")
-    @PreAuthorize("hasAuthority ('monitor_'+#classID) AND hasAuthority('monitor')")
+    @PreAuthorize("hasAuthority ('teacher_'+#classID) AND hasAuthority('teacher') OR hasAuthority ('monitor_'+#classID) AND hasAuthority('monitor')")
+    //@PreAuthorize("(hasAuthority('teacher_'+#classID) and hasAuthority('teahcer')) OR (hasAuthority ('monitor_'+#classID) AND hasAuthority('monitor'))")
     @PostMapping(value = "/{classID}/setAssistant",produces = "application/json;charset=UTF-8")
     public Result setAssistant(@PathVariable("classID") String classID, @RequestParam("assistants") List<String> assistants){
        //这个就不异步了吧
@@ -524,11 +526,12 @@ public class TeacherController {
         return Result.success("设置成功");
     }
     @ApiOperation(value = "撤销管理员",notes = "可以一次全删除")
-    @PreAuthorize("hasAuthority ('monitor_'+#classID) AND hasAuthority('monitor')")
+    @PreAuthorize("hasAuthority ('teacher_'+#classID) AND hasAuthority('teacher') OR hasAuthority ('monitor_'+#classID) AND hasAuthority('monitor')")
     @PostMapping(value = "/{classID}/cancelAssistant",produces = "application/json;charset=UTF-8")
     public Result cancelAssistant(@PathVariable("classID") String classID, @RequestParam("assistants") Set<String> assistants){
         permissionService.deleteUsersPermission(assistants,"teacher_"+classID);
         return Result.success("撤销管理员成功(请稍候刷新");
     }
+
 
 }

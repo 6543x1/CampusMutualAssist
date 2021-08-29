@@ -11,6 +11,7 @@ import com.jessie.campusmutualassist.service.PermissionService;
 import com.jessie.campusmutualassist.service.StuPointsDetailService;
 import com.jessie.campusmutualassist.service.StudentPointsService;
 import com.jessie.campusmutualassist.service.UserService;
+import com.jessie.campusmutualassist.utils.RedisUtil;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -45,6 +46,8 @@ public class MyTest {
     StudentPointsService studentPointsService;
     @Autowired
     StuPointsDetailService stuPointsDetailService;
+    @Autowired
+    RedisUtil redisUtil;
     private static Logger logger = LoggerFactory.getLogger(MyTest.class);
 
     @Test
@@ -292,11 +295,17 @@ public class MyTest {
 //        List<SimpleStu> list =.getSimpleStuList(classID);
 //        System.out.println(list);
     }
+
     @Test
     public void testClassMemQuery() {
         JSONObject MyObject = permissionService.getClassListSortByPermission("CIRD9F");
         System.out.println(MyObject);
     }
 
+    @Test
+    public void testRedisError() {
+        redisUtil.zAdd("class:" + "CIRD9F" + ":" + "type:" + "VoteSelections" + ":" + "vid:" + 11,
+                "选项1", 0);
+    }
 
 }

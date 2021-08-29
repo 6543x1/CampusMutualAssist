@@ -37,9 +37,9 @@ public class StudentPointsServiceImpl extends ServiceImpl<StudentPointsMapper, S
 
     @Override
     public void addPoints(StudentPoints studentPoints) {
-        RLock lock = redissonClient.getLock("PointsLock:"+studentPoints.getUsername());
+       RLock lock = redissonClient.getLock("PointsLock:"+studentPoints.getUsername());
         try{
-            if(lock.tryLock(1,3,TimeUnit.SECONDS)){//第一个：等待获取锁的时间 第二个：超时释放时间
+            if(lock.tryLock(1,3, TimeUnit.SECONDS)){//第一个：等待获取锁的时间 第二个：超时释放时间
                 //考虑到一个班级里同时操作加分的可能性不太高（？），所以等待时间并没有设置的很长
                 studentPointsMapper.addPoints(studentPoints);
             }

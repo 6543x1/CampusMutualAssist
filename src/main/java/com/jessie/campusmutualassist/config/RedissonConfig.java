@@ -16,11 +16,13 @@ public class RedissonConfig {
     private String port;
     // 配置文件中你自己的redis密码
 
-    @Bean
+    @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient(){
 
         Config config = new Config();
         config.useSingleServer().setAddress("redis://" + host + ":" + port)
+        .setConnectionMinimumIdleSize(10)
+        .setSubscriptionConnectionPoolSize(64)
         ;
         //添加主从配置
         return Redisson.create(config);
