@@ -3,7 +3,9 @@ package com.jessie.campusmutualassist.controller;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jessie.campusmutualassist.entity.*;
+import com.jessie.campusmutualassist.entity.AdminOperation;
+import com.jessie.campusmutualassist.entity.Result;
+import com.jessie.campusmutualassist.entity.User;
 import com.jessie.campusmutualassist.entity.myEnum.Role;
 import com.jessie.campusmutualassist.service.AdminOperationService;
 import com.jessie.campusmutualassist.service.MailService;
@@ -15,19 +17,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -69,70 +65,6 @@ public class UserController {
     }
 
     //Spring Security获取当前会话的用户信息
-
-
-    @PostMapping(value = "/upload", produces = "text/html;charset=UTF-8")
-    public String UploadImg(HttpServletRequest request, @RequestParam("upload") MultipartFile upload) throws Exception {
-//        System.out.println("上传头像");
-        String token = request.getHeader("token");
-        int uid = jwtTokenUtil.getUidFromToken(token);
-        String path = "/usr/tomcat/Img/" + getCurrentUsername();
-        System.out.println(path);
-        //如果文件重名，应该覆盖原文件吧（是否覆盖由前端决定）
-        //选的是war exploded 那么文件会在工程目录下
-        //否则在tomcat目录下
-
-        File file = new File(path);
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        try {
-            String filename = upload.getOriginalFilename();
-            String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-            String userFileName = uid + getCurrentUsername() + "." + suffix;
-            if (!theImgSuffix.containsValue(suffix)) {
-                throw new Exception("?");
-            }
-            User user = new User();
-            user.setUid(uid);
-            user.setImg_path(path + "/" + userFileName);
-            upload.transferTo(new File(path, userFileName));
-            userService.saveImg(user);
-            System.out.println("头像保存成功，开始向数据库中更新用户数据");
-
-
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return JSON.toJSONString(Result.error("找不到文件的名字"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JSON.toJSONString(Result.error("未知错误"));
-        }
-        return JSON.toJSONString(Result.success("上传成功"));
-    }
-
-    @GetMapping(value = "/downPic", produces = "text/html;charset=UTF-8")
-    public String down(int uid, HttpServletRequest request, HttpServletResponse response) {
-
-        String path = "/usr/tomcat/Img/" + getCurrentUsername() + ".jpg";
-
-        try {
-            //获取页面输出流
-            ServletOutputStream outputStream = response.getOutputStream();
-            //读取文件
-            byte[] bytes = FileUtils.readFileToByteArray(new File(path));
-            //向输出流写文件
-            //写之前设置响应流以附件的形式打开返回值,这样可以保证前边打开文件出错时异常可以返回给前台
-            response.setHeader("Content-Disposition", "attachment;filename=" + uid + "_Img" + path.substring(path.lastIndexOf(".") + 1));
-            outputStream.write(bytes);
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return JSON.toJSONString(Result.error("服务器发生错误", 500));
-        }
-        return JSON.toJSONString(Result.success("开始下载"));
-    }
 
     @GetMapping(value = "/loginSuccess", produces = "application/json;charset=UTF-8")
     public Result isLogin() throws Exception {
@@ -195,17 +127,12 @@ public class UserController {
         }
         //备注一下，应该在Redis中留下痕迹，表明邮箱未经过认证，同时也不授予其stu或teacher的认证........
         //我觉得此时这个User不应该保存到数据库里的，应该先把全部内容放到Redis中?
-//        if(redisUtil.hasKey("type:"+"register:"+"username:"+user.getUsername())){
-//            return Result.error("当前已经有相同的学号正在注册，请稍候再试！");
-//        }
+        if(redisUtil.hasKey("type:"+"register:"+"username:"+user.getUsername())){
+            return Result.error("当前已经有相同的学号正在注册，请稍候再试！如果疑问联系客服");
+        }
         redisUtil.setObject("type:" + "register:" + "username:" + user.getUsername(), user, 1800);
 
         System.out.println(user);
-//        int theUid = userService.newestUid();
-//        userTokenService.newUser(user.getUid(), user.getUsername());
-//        UserPortrait userPortrait = new UserPortrait(user.getUid());
-//        userService.newUserPortrait(userPortrait);
-//        redisUtil.set("ClearExtraStatus|" + userPortrait.getUid(), "ONE YEAR", 60 * 60 * 24 * 365);
         return Result.success("请到邮箱接收验证码，完成后续注册操作。");
     }
 
@@ -248,7 +175,7 @@ public class UserController {
         return Result.success("注册成功");
     }
 
-    @ApiOperation(value = "测试用快速注册", notes = "相比普通注册，不用验证邮箱即可注册成功")
+    @ApiOperation(value = "测试用快速注册", notes = "相比普通注册，不用验证邮箱即可注册成功，上线后会删除")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "username", value = "用户名，请使用学号，暂时不用附带邮箱"),
             @ApiImplicitParam(name = "password", value = "密码"),

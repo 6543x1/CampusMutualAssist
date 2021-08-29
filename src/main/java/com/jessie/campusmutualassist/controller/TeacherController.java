@@ -5,6 +5,7 @@ import com.jessie.campusmutualassist.aop.PointsOperationLog;
 import com.jessie.campusmutualassist.entity.*;
 import com.jessie.campusmutualassist.entity.myEnum.SignType;
 import com.jessie.campusmutualassist.service.*;
+import com.jessie.campusmutualassist.service.impl.AliyunGreenService;
 import com.jessie.campusmutualassist.service.impl.DumpService;
 import com.jessie.campusmutualassist.service.impl.PushService;
 import com.jessie.campusmutualassist.utils.JwtTokenUtil;
@@ -65,6 +66,8 @@ public class TeacherController {
     PushService pushService;
     @Autowired
     UserService userService;
+    @Autowired
+    AliyunGreenService aliyunGreenService;
 
     static final Random random = new Random();
 
@@ -317,6 +320,14 @@ public class TeacherController {
         if(minTimes!=0){
             notice.setDeadLine(LocalDateTime.now().plusSeconds(minTimes));
         }
+        Result textSafeResult=aliyunGreenService.testTextSafe(notice.getBody());
+        if(!textSafeResult.isStatus()){
+            if(textSafeResult.getCode()!=400){
+            return textSafeResult;
+            }else{
+                notice.setBody(textSafeResult.getData().toString());
+            }
+        }
         if(notice.isPublic()){
         noticeService.newNotice(notice);}
         else{
@@ -347,6 +358,7 @@ public class TeacherController {
         String classID2 = noticeService.getClassID(nid);
         Set<String> notConfirmed = redisUtil.sDifference("class:" + classID2 + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid, "class:" + classID + ":" + "type:" + "members");
         noticeService.urge(notConfirmed);
+        pushService.pushUrgeWechatMessage(notConfirmed,"公告","老师催你了去读公告了！","无摘要");
         return Result.success("在催了在催了");
     }
 
@@ -356,6 +368,7 @@ public class TeacherController {
     public Result urgeVote(@PathVariable("vid") long vid, @PathVariable("classID") String classID) {
         Set<String> notConfirmed = redisUtil.sDifference("class:" + classID + ":" + "type:" + "Voter" + ":" + "vid:" +vid, "class:" + classID + ":" + "type:" + "members");
         mailService.urgeStu(notConfirmed, "快去投票！");
+        pushService.pushUrgeWechatMessage(notConfirmed,"投票","老师催你了去投票了！","无摘要");
         return Result.success("在催了在催了");
     }
 
