@@ -212,6 +212,8 @@
             <artifactId>wx-java-mp-spring-boot-starter</artifactId>
             <version>4.1.0</version>
         </dependency>
+<!--   Redisson中的SpringData那个依赖版本必须和springboot版本匹配！！！否则会StackOverflow     -->
+<!--   说直白点redisson版本必须和springboot版本匹配     -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>

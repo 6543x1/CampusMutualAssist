@@ -98,6 +98,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/user/sendMail").permitAll()
                 .antMatchers("/user/ResetPwByMail").permitAll()
                 .antMatchers("/static/**").permitAll()
+                .antMatchers("/compareCode").permitAll()
+                .antMatchers("/user/**").permitAll()//方法权限比这个
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore((Filter) jwtRequestFilter, (Class<? extends Filter>) UsernamePasswordAuthenticationFilter.class)
