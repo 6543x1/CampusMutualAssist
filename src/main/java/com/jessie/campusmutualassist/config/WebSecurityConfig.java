@@ -100,6 +100,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                 .antMatchers("/static/**").permitAll()
                 .antMatchers("/compareCode").permitAll()
                 .antMatchers("/user/**").permitAll()//方法权限比这个
+                .antMatchers("/wechat/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore((Filter) jwtRequestFilter, (Class<? extends Filter>) UsernamePasswordAuthenticationFilter.class)
