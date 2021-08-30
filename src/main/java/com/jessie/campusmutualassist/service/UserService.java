@@ -8,16 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface UserService
-{
+public interface UserService {
 
     void saveUser(User user);
 
     void savePhoneNumber(String username, String mobileNumber);
+
     boolean queryUser(String username);
+
     void saveImg(User user);
 
-    List<Map<String,String>> getRealNameWithUsername(Set<String> usernameSet);
+    List<Map<String, String>> getRealNameWithUsername(Set<String> usernameSet);
 
     User getUser(String username);
 
@@ -38,7 +39,6 @@ public interface UserService
     void setStatus(String username, int status);
 
 
-
     int getUid(String username);
 
     int calculateEvaluation(int status);
@@ -52,7 +52,8 @@ public interface UserService
     String getImgPath(int uid);
 
     int getStatus(int uid);
-    boolean cmpPassword(String username,String password);
+
+    boolean cmpPassword(String username, String password);
 
 
 }

@@ -20,14 +20,15 @@ public class TeachingClassServiceImpl implements TeachingClassService {
     TeachingClassMapper teachingClassMapper;
     @Autowired
     RedisUtil redisUtil;
+
     @Override
-    @CacheEvict(value = "createdClass",key = "#teacher+'*'")
+    @CacheEvict(value = "createdClass", key = "#teacher+'*'")
     public void createClass(TeachingClass teachingClass) {
         teachingClassMapper.createClass(teachingClass);
     }
 
     @Override
-    @Cacheable(value = "createdClass",key = "#teacher")
+    @Cacheable(value = "createdClass", key = "#teacher")
     public List<TeachingClass> getCreatedClass(String teacher) {
         return teachingClassMapper.getCreatedClass(teacher);
     }
@@ -43,7 +44,7 @@ public class TeachingClassServiceImpl implements TeachingClassService {
     }
 
     @Override
-    public void deleteClass(String classID){
+    public void deleteClass(String classID) {
         Set<String> keys = redisUtil.keys("class:" + classID + "*");
         redisUtil.delete(keys);
         teachingClassMapper.deleteClass(classID);

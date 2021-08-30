@@ -31,19 +31,19 @@ public class AdminOperationLogAspect {
     AdminOperationService adminOperationService;
 
     @Pointcut("@annotation(com.jessie.campusmutualassist.aop.AdminOperationLog)")
-    public void pointcut(){
+    public void pointcut() {
     }
 
     @AfterReturning(returning = "returnOb", pointcut = "pointcut()")
     public void doAfterReturning(JoinPoint joinPoint, Object returnOb) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();//这个RequestContextHolder是Springmvc提供来获得请求的东西
-        HttpServletRequest request = ((ServletRequestAttributes)requestAttributes).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         // 从切面织入点处通过反射机制获取织入点处的方法
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         //获取切入点所在的方法
         Method method = signature.getMethod();
         AdminOperationLog annotation = method.getAnnotation(AdminOperationLog.class);
-        if(annotation!=null){
+        if (annotation != null) {
             log.info(annotation.module());
         }
         // 记录下请求内容
@@ -59,17 +59,17 @@ public class AdminOperationLogAspect {
         Object[] args = joinPoint.getArgs();
 //        LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
 //        String[] paramNames = u.getParameterNames(method);
-        String[] paramNames=signature.getParameterNames();
-        HashMap<String,Object> map=new HashMap<String,Object>();
+        String[] paramNames = signature.getParameterNames();
+        HashMap<String, Object> map = new HashMap<String, Object>();
         if (args != null && paramNames != null) {
             String params = "";
             for (int i = 0; i < args.length; i++) {
                 params += "  " + paramNames[i] + ": " + args[i];
-                map.put(paramNames[i],args[i]);
+                map.put(paramNames[i], args[i]);
             }
             System.out.println(params);
         }
-        AdminOperation adminOperation= AdminOperation.builder()
+        AdminOperation adminOperation = AdminOperation.builder()
                 .operation(annotation.module())
                 .operator(getCurrentUsername())
                 .targetUser(map.get("targetUser").toString())

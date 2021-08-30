@@ -14,46 +14,45 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 
  * @TableName signin
  */
-@TableName(value ="signin")
+@TableName(value = "signin")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignIn implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(value = "signID", type = IdType.AUTO)
     private Integer signID;
 
     /**
-     * 
+     *
      */
     @TableField(value = "title")
     private String title;
 
     /**
-     * 
+     *
      */
     @TableField(value = "signKey")
     private String signKey;
 
     /**
-     * 
+     *
      */
     @TableField(value = "classID")
     private String classID;
 
     /**
-     * 
+     *
      */
     @TableField(value = "signedNum")
     private Integer signedNum;
 
     /**
-     * 
+     *
      */
     @TableField(value = "totalNum")
     private Integer totalNum;
@@ -88,11 +87,11 @@ public class SignIn implements Serializable {
         }
         SignIn other = (SignIn) that;
         return (this.getSignID() == null ? other.getSignID() == null : this.getSignID().equals(other.getSignID()))
-            && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
-            && (this.getSignKey() == null ? other.getSignKey() == null : this.getSignKey().equals(other.getSignKey()))
-            && (this.getClassID() == null ? other.getClassID() == null : this.getClassID().equals(other.getClassID()))
-            && (this.getSignedNum() == null ? other.getSignedNum() == null : this.getSignedNum().equals(other.getSignedNum()))
-            && (this.getTotalNum() == null ? other.getTotalNum() == null : this.getTotalNum().equals(other.getTotalNum()));
+                && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
+                && (this.getSignKey() == null ? other.getSignKey() == null : this.getSignKey().equals(other.getSignKey()))
+                && (this.getClassID() == null ? other.getClassID() == null : this.getClassID().equals(other.getClassID()))
+                && (this.getSignedNum() == null ? other.getSignedNum() == null : this.getSignedNum().equals(other.getSignedNum()))
+                && (this.getTotalNum() == null ? other.getTotalNum() == null : this.getTotalNum().equals(other.getTotalNum()));
     }
 
     @Override

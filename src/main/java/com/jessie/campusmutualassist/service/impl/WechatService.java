@@ -16,19 +16,20 @@ public class WechatService {
     WxMpService wxService;
 
 
-
-    public void pushUrgeMessage(String targetOpenID,String type,String title,String body){//推送老师催促消息
-        HashMap<String,String> map=new HashMap<String,String>(){{
-           put("type",type);
-           put("title",title);
-           put("body",body);
+    public void pushUrgeMessage(String targetOpenID, String type, String title, String body) {//推送老师催促消息
+        HashMap<String, String> map = new HashMap<String, String>() {{
+            put("type", type);
+            put("title", title);
+            put("body", body);
         }};
-        sendTemplateMsg(targetOpenID,"yCovAV6rNyrmUpJ1RYAtEKFdZiQmrpp9Ksom5xmAeNU",map);
+        sendTemplateMsg(targetOpenID, "yCovAV6rNyrmUpJ1RYAtEKFdZiQmrpp9Ksom5xmAeNU", map);
     }
-    public String sendTemplateMsg(String targetOpenID, String templateID, Map<String,String> argus){
-        WxMpTemplateMessage wxMpTemplateMessage=WxMpTemplateMessage.builder().toUser(targetOpenID).templateId(templateID).build();
-        for(Map.Entry<String,String> entry:argus.entrySet()){
-        wxMpTemplateMessage.addData(new WxMpTemplateData(entry.getKey(),entry.getValue(),"000000"));}
+
+    public String sendTemplateMsg(String targetOpenID, String templateID, Map<String, String> argus) {
+        WxMpTemplateMessage wxMpTemplateMessage = WxMpTemplateMessage.builder().toUser(targetOpenID).templateId(templateID).build();
+        for (Map.Entry<String, String> entry : argus.entrySet()) {
+            wxMpTemplateMessage.addData(new WxMpTemplateData(entry.getKey(), entry.getValue(), "000000"));
+        }
         try {
             wxService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
         } catch (WxErrorException e) {

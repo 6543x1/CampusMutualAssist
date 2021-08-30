@@ -9,12 +9,10 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
  * 注册redisTemplate，作为消息队列的发布者
  */
 @Configuration
-public class RedisListenerConfig
-{
+public class RedisListenerConfig {
 
     @Bean
-    public RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory)
-    {
+    public RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory) {
 
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);

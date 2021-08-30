@@ -33,10 +33,12 @@ public class SwaggerConfig {
 
 
     }
+
     private List<SecurityScheme> securitySchemes() {
         ApiKey apiKey = new ApiKey("token", "token", In.HEADER.toValue());
         return Collections.singletonList(apiKey);
     }
+
     private List<SecurityContext> securityContexts() {
         return Collections.singletonList(
                 SecurityContext.builder()
@@ -44,6 +46,7 @@ public class SwaggerConfig {
                         .build()
         );
     }
+
     private ApiInfo apiInfo() {
         // 获取工程名称
         //注意！在服务器环境中这个是项目所在文件夹的名字
@@ -55,7 +58,6 @@ public class SwaggerConfig {
                 .description("API文档")
                 .build();
     }
-
 
 
 }

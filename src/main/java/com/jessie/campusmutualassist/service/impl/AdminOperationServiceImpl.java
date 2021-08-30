@@ -9,32 +9,27 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service("adminOperationService")
-public class AdminOperationServiceImpl implements AdminOperationService
-{
+public class AdminOperationServiceImpl implements AdminOperationService {
     @Autowired
     AdminOperationMapper adminOperationMapper;
 
     @Override
-    public void newOperation(AdminOperation adminOperation)
-    {
+    public void newOperation(AdminOperation adminOperation) {
         adminOperationMapper.newOperation(adminOperation);
     }
 
     @Override
-    public List<AdminOperation> getAllOperations(int targetUser)
-    {
+    public List<AdminOperation> getAllOperations(int targetUser) {
         return null;
     }
 
     @Override
-    public List<AdminOperation> getAnAdminOperations(int operator)
-    {
+    public List<AdminOperation> getAnAdminOperations(int operator) {
         return adminOperationMapper.getAnAdminOperations(operator);
     }
 
     @Override
-    public List<AdminOperation> getOperationsByType(String operation)
-    {
+    public List<AdminOperation> getOperationsByType(String operation) {
         return adminOperationMapper.getOperationsByType(operation);
     }
 }

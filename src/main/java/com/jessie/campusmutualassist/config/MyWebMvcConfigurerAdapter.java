@@ -19,5 +19,4 @@ public class MyWebMvcConfigurerAdapter implements WebMvcConfigurer {
     }
 
 
-
 }

@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
  */
 @Service("NoticeConfirmersService")
 public class NoticeConfirmersServiceImpl extends ServiceImpl<NoticeConfirmersMapper, NoticeConfirmers>
-    implements NoticeConfirmersService{
+        implements NoticeConfirmersService {
     @Autowired
     NoticeConfirmersMapper noticeConfirmersMapper;
 
     @Async
     @Override
-    public void newConfirmers(long nid,String data){
-        noticeConfirmersMapper.saveConfirmers(nid,data);
+    public void newConfirmers(long nid, String data) {
+        noticeConfirmersMapper.saveConfirmers(nid, data);
     }
 }
 

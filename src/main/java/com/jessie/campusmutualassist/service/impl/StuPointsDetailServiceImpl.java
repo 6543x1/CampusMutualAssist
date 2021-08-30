@@ -16,15 +16,17 @@ import java.util.Set;
  */
 @Service
 public class StuPointsDetailServiceImpl extends ServiceImpl<StuPointsDetailMapper, StuPointsDetail>
-    implements StuPointsDetailService{
+        implements StuPointsDetailService {
     @Autowired
     StuPointsDetailMapper stuPointsDetailMapper;
+
     @Override
     @Async
     public void newDetail(StuPointsDetail stuPointsDetail, Set<String> students) {
-        for(String x:students){
+        for (String x : students) {
             stuPointsDetail.setTarget(x);
-        stuPointsDetailMapper.newDetail(stuPointsDetail);}
+            stuPointsDetailMapper.newDetail(stuPointsDetail);
+        }
     }
 
     @Override
@@ -34,10 +36,11 @@ public class StuPointsDetailServiceImpl extends ServiceImpl<StuPointsDetailMappe
 
     @Override
     public List<StuPointsDetail> stuClassDetails(String classID, String target) {
-        return stuPointsDetailMapper.stuClassDetails(classID,target);
+        return stuPointsDetailMapper.stuClassDetails(classID, target);
     }
+
     @Override
-    public void deleteOldItems(String classID){
+    public void deleteOldItems(String classID) {
         stuPointsDetailMapper.deleteOldItems(classID);
     }
 }

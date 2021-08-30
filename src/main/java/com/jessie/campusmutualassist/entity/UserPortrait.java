@@ -3,9 +3,8 @@ package com.jessie.campusmutualassist.entity;
 
 import java.io.Serializable;
 
-public class UserPortrait implements Serializable
-{
-//原定是用于记录用户的数据，但是后面功能被刀了，就。。。就其中有一部分没有使用吧
+public class UserPortrait implements Serializable {
+    //原定是用于记录用户的数据，但是后面功能被刀了，就。。。就其中有一部分没有使用吧
     private int uid;
     private int countGoodComment;
     private int countMediumComment;
@@ -16,8 +15,7 @@ public class UserPortrait implements Serializable
     private int countSendMediumComment;
     private int countSendBadComment;
 
-    public UserPortrait(int uid, int countGoodComment, int countMediumComment, int countBadComment, int countPunishedScore, int countAdditionalScore, int countSendGoodsComment, int countSendMediumComment, int countSendBadComment)
-    {
+    public UserPortrait(int uid, int countGoodComment, int countMediumComment, int countBadComment, int countPunishedScore, int countAdditionalScore, int countSendGoodsComment, int countSendMediumComment, int countSendBadComment) {
         this.uid = uid;
         this.countGoodComment = countGoodComment;
         this.countMediumComment = countMediumComment;
@@ -29,12 +27,10 @@ public class UserPortrait implements Serializable
         this.countSendBadComment = countSendBadComment;
     }
 
-    public UserPortrait()
-    {
+    public UserPortrait() {
     }
 
-    public UserPortrait(int uid)
-    {
+    public UserPortrait(int uid) {
         this.uid = uid;
         this.countGoodComment = 0;
         this.countMediumComment = 0;
@@ -46,101 +42,83 @@ public class UserPortrait implements Serializable
         this.countSendBadComment = 0;
     }
 
-    public int getUid()
-    {
+    public int getUid() {
         return uid;
     }
 
-    public void setUid(int uid)
-    {
+    public void setUid(int uid) {
         this.uid = uid;
     }
 
 
-    public int getCountGoodComment()
-    {
+    public int getCountGoodComment() {
         return countGoodComment;
     }
 
-    public void setCountGoodComment(int countGoodComment)
-    {
+    public void setCountGoodComment(int countGoodComment) {
         this.countGoodComment = countGoodComment;
     }
 
 
-    public int getCountMediumComment()
-    {
+    public int getCountMediumComment() {
         return countMediumComment;
     }
 
-    public void setCountMediumComment(int countMediumComment)
-    {
+    public void setCountMediumComment(int countMediumComment) {
         this.countMediumComment = countMediumComment;
     }
 
 
-    public int getCountBadComment()
-    {
+    public int getCountBadComment() {
         return countBadComment;
     }
 
-    public void setCountBadComment(int countBadComment)
-    {
+    public void setCountBadComment(int countBadComment) {
         this.countBadComment = countBadComment;
     }
 
 
-    public int getCountPunishedScore()
-    {
+    public int getCountPunishedScore() {
         return countPunishedScore;
     }
 
-    public void setCountPunishedScore(int countPunishedScore)
-    {
+    public void setCountPunishedScore(int countPunishedScore) {
         this.countPunishedScore = countPunishedScore;
     }
 
 
-    public int getCountAdditionalScore()
-    {
+    public int getCountAdditionalScore() {
         return countAdditionalScore;
     }
 
-    public void setCountAdditionalScore(int countAdditionalScore)
-    {
+    public void setCountAdditionalScore(int countAdditionalScore) {
         this.countAdditionalScore = countAdditionalScore;
     }
 
 
-    public int getCountSendGoodsComment()
-    {
+    public int getCountSendGoodsComment() {
         return countSendGoodsComment;
     }
 
-    public void setCountSendGoodsComment(int countSendGoodsComment)
-    {
+    public void setCountSendGoodsComment(int countSendGoodsComment) {
         this.countSendGoodsComment = countSendGoodsComment;
     }
 
 
-    public int getCountSendMediumComment()
-    {
+    public int getCountSendMediumComment() {
         return countSendMediumComment;
     }
 
-    public void setCountSendMediumComment(int countSendMediumComment)
-    {
+    public void setCountSendMediumComment(int countSendMediumComment) {
         this.countSendMediumComment = countSendMediumComment;
     }
 
 
-    public int getCountSendBadComment()
-    {
+    public int getCountSendBadComment() {
         return countSendBadComment;
     }
 
-    public void setCountSendBadComment(int countSendBadComment)
-    {
+    public void setCountSendBadComment(int countSendBadComment) {
         this.countSendBadComment = countSendBadComment;
     }
 

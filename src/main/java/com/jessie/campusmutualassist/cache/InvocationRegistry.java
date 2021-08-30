@@ -8,6 +8,6 @@ import java.util.Set;
  */
 public interface InvocationRegistry {
 
-	void registerInvocation(Object invokedBean, Method invokedMethod, Object[] invocationArguments, Set<String> cacheNames);
+    void registerInvocation(Object invokedBean, Method invokedMethod, Object[] invocationArguments, Set<String> cacheNames);
 
 }

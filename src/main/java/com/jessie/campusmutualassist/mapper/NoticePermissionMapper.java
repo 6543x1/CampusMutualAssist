@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface NoticePermissionMapper extends BaseMapper<NoticePermission> {
 
-    void newNoticePermission(long nid,List<String> list);
+    void newNoticePermission(long nid, List<String> list);
 
     @Select("select * from notice_permission where nid=#{nid}")
     List<NoticePermission> getAllByNid(long nid);

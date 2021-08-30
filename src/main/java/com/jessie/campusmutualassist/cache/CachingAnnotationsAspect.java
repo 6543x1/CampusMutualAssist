@@ -26,63 +26,64 @@ import java.util.*;
 @Component
 public class CachingAnnotationsAspect {
 
-	private static final Logger logger = LoggerFactory.getLogger(CachingAnnotationsAspect.class);
+    private static final Logger logger = LoggerFactory.getLogger(CachingAnnotationsAspect.class);
 
-	@Autowired
-	private InvocationRegistry cacheRefreshSupport;
+    @Autowired
+    private InvocationRegistry cacheRefreshSupport;
 
-	private <T extends Annotation> List<T> getMethodAnnotations(AnnotatedElement ae, Class<T> annotationType) {
-		List<T> anns = new ArrayList<T>(2);
-		// look for raw annotation
-		T ann = ae.getAnnotation(annotationType);
-		if (ann != null) {
-			anns.add(ann);
-		}
-		// look for meta-annotations
-		for (Annotation metaAnn : ae.getAnnotations()) {
-			ann = metaAnn.annotationType().getAnnotation(annotationType);
-			if (ann != null) {
-				anns.add(ann);
-			}
-		}
-		return (anns.isEmpty() ? null : anns);
-	}
+    private <T extends Annotation> List<T> getMethodAnnotations(AnnotatedElement ae, Class<T> annotationType) {
+        List<T> anns = new ArrayList<T>(2);
+        // look for raw annotation
+        T ann = ae.getAnnotation(annotationType);
+        if (ann != null) {
+            anns.add(ann);
+        }
+        // look for meta-annotations
+        for (Annotation metaAnn : ae.getAnnotations()) {
+            ann = metaAnn.annotationType().getAnnotation(annotationType);
+            if (ann != null) {
+                anns.add(ann);
+            }
+        }
+        return (anns.isEmpty() ? null : anns);
+    }
 
-	private Method getSpecificmethod(ProceedingJoinPoint pjp) {
-		MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
-		Method method = methodSignature.getMethod();
-		// The method may be on an interface, but we need attributes from the
-		// target class. If the target class is null, the method will be
-		// unchanged.
-		Class<?> targetClass = AopProxyUtils.ultimateTargetClass(pjp.getTarget());
-		if (targetClass == null && pjp.getTarget() != null) {
-			targetClass = pjp.getTarget().getClass();
-		}
-		Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
-		// If we are dealing with method with generic parameters, find the
-		// original method.
-		specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
-		return specificMethod;
-	}
+    private Method getSpecificmethod(ProceedingJoinPoint pjp) {
+        MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
+        Method method = methodSignature.getMethod();
+        // The method may be on an interface, but we need attributes from the
+        // target class. If the target class is null, the method will be
+        // unchanged.
+        Class<?> targetClass = AopProxyUtils.ultimateTargetClass(pjp.getTarget());
+        if (targetClass == null && pjp.getTarget() != null) {
+            targetClass = pjp.getTarget().getClass();
+        }
+        Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
+        // If we are dealing with method with generic parameters, find the
+        // original method.
+        specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
+        return specificMethod;
+    }
 
-	@Pointcut("@annotation(org.springframework.cache.annotation.Cacheable)")
-	public void pointcut(){}
+    @Pointcut("@annotation(org.springframework.cache.annotation.Cacheable)")
+    public void pointcut() {
+    }
 
-	@Around("pointcut()")
-	public Object registerInvocation(ProceedingJoinPoint joinPoint) throws Throwable{
+    @Around("pointcut()")
+    public Object registerInvocation(ProceedingJoinPoint joinPoint) throws Throwable {
 
-		Method method = this.getSpecificmethod(joinPoint);
+        Method method = this.getSpecificmethod(joinPoint);
 
-		List<Cacheable> annotations=this.getMethodAnnotations(method,Cacheable.class);
+        List<Cacheable> annotations = this.getMethodAnnotations(method, Cacheable.class);
 
-		Set<String> cacheSet = new HashSet<String>();
-		for (Cacheable cacheables : annotations) {
-			cacheSet.addAll(Arrays.asList(cacheables.value()));
-		}
-		cacheRefreshSupport.registerInvocation(joinPoint.getTarget(), method, joinPoint.getArgs(), cacheSet);
-		return joinPoint.proceed();
+        Set<String> cacheSet = new HashSet<String>();
+        for (Cacheable cacheables : annotations) {
+            cacheSet.addAll(Arrays.asList(cacheables.value()));
+        }
+        cacheRefreshSupport.registerInvocation(joinPoint.getTarget(), method, joinPoint.getArgs(), cacheSet);
+        return joinPoint.proceed();
 
-	}
+    }
 
 
 }

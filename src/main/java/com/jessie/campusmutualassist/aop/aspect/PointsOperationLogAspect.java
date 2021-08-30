@@ -39,13 +39,13 @@ public class PointsOperationLogAspect {
     @AfterReturning(returning = "returnOb", pointcut = "pointcut()")
     public void doAfterReturning(JoinPoint joinPoint, Object returnOb) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();//这个RequestContextHolder是Springmvc提供来获得请求的东西
-        HttpServletRequest request = ((ServletRequestAttributes)requestAttributes).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         // 从切面织入点处通过反射机制获取织入点处的方法
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         //获取切入点所在的方法
         Method method = signature.getMethod();
         PointsOperationLog annotation = method.getAnnotation(PointsOperationLog.class);
-        if(annotation!=null){
+        if (annotation != null) {
             log.info(annotation.module());
             log.info(annotation.type());
             log.info(annotation.desc());
@@ -64,31 +64,30 @@ public class PointsOperationLogAspect {
         Object[] args = joinPoint.getArgs();
 //        LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
 //        String[] paramNames = u.getParameterNames(method);
-        String[] paramNames=signature.getParameterNames();
-        HashMap<String,Object> map=new HashMap<String,Object>();
+        String[] paramNames = signature.getParameterNames();
+        HashMap<String, Object> map = new HashMap<String, Object>();
         if (args != null && paramNames != null) {
             String params = "";
             for (int i = 0; i < args.length; i++) {
                 params += "  " + paramNames[i] + ": " + args[i];
-                map.put(paramNames[i],args[i]);
+                map.put(paramNames[i], args[i]);
             }
             System.out.println(params);
         }
-        StuPointsDetail stuPointsDetail=new StuPointsDetail();
+        StuPointsDetail stuPointsDetail = new StuPointsDetail();
         stuPointsDetail.setPoints((Integer) map.get("points"));
         stuPointsDetail.setClassID((String) map.get("classID"));
         stuPointsDetail.setOperator(getCurrentUsername());
         stuPointsDetail.setReason((String) map.get("reason"));
         stuPointsDetail.setId(0);
-        if(map.containsKey("student")){
-        stuPointsDetail.setTarget((String) map.get("student"));
-        //注意一下 那个批量加分的里面是students}
-        stuPointsDetailService.newDetail(stuPointsDetail, Collections.singleton((String) map.get("student")));
-        //System.out.println(stuPointsDetail);
-        }
-        else if(map.containsKey("students")){
-            Set<String> set= (Set<String>) map.get("students");//别慌，强转就完事了
-            stuPointsDetailService.newDetail(stuPointsDetail,set);
+        if (map.containsKey("student")) {
+            stuPointsDetail.setTarget((String) map.get("student"));
+            //注意一下 那个批量加分的里面是students}
+            stuPointsDetailService.newDetail(stuPointsDetail, Collections.singleton((String) map.get("student")));
+            //System.out.println(stuPointsDetail);
+        } else if (map.containsKey("students")) {
+            Set<String> set = (Set<String>) map.get("students");//别慌，强转就完事了
+            stuPointsDetailService.newDetail(stuPointsDetail, set);
         }
     }
 

@@ -118,16 +118,14 @@ public class UserController {
             user.setRole(Role.student);//不好意思没设置研究生
         } else if (thisUsername.matches("[0-9]{9}")) {
             user.setRole(Role.student);
-        }
-        else if(thisUsername.matches("T[0-9]{5}")||thisUsername.matches("F[0-9]{5}")){
+        } else if (thisUsername.matches("T[0-9]{5}") || thisUsername.matches("F[0-9]{5}")) {
             user.setRole(Role.teacher);
-        }
-        else {
+        } else {
             user.setRole(Role.student);
         }
         //备注一下，应该在Redis中留下痕迹，表明邮箱未经过认证，同时也不授予其stu或teacher的认证........
         //我觉得此时这个User不应该保存到数据库里的，应该先把全部内容放到Redis中?
-        if(redisUtil.hasKey("type:"+"register:"+"username:"+user.getUsername())){
+        if (redisUtil.hasKey("type:" + "register:" + "username:" + user.getUsername())) {
             return Result.error("当前已经有相同的学号正在注册，请稍候再试！如果疑问联系客服");
         }
         redisUtil.setObject("type:" + "register:" + "username:" + user.getUsername(), user, 1800);

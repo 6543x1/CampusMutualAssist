@@ -29,44 +29,46 @@ public class NoticeServiceImpl implements NoticeService {
     NoticePermissionMapper noticePermissionMapper;
     @Autowired
     RedisUtil redisUtil;
+
     @Override
-    @Cacheable(value = "noticeCache",key="#classID")
+    @Cacheable(value = "noticeCache", key = "#classID")
     public List<Notice> getClassPublicNotices(String classID) {
         return noticeMapper.getClassPublicNotices(classID);
     }
 
     @Override
-    @CacheEvict(value = "noticeCache",key = "#notice.classID+'*'")//这个Key是通配的吗？还是...可以删除？
+    @CacheEvict(value = "noticeCache", key = "#notice.classID+'*'")//这个Key是通配的吗？还是...可以删除？
     public void newNotice(Notice notice) {
         noticeMapper.newNotice(notice);
     }
 
     @Override
-    public void newUnPublicNotice(Notice notice,List<String> readers) {
+    public void newUnPublicNotice(Notice notice, List<String> readers) {
         newNotice(notice);
-        noticePermissionMapper.newNoticePermission(notice.getNid(),readers);
+        noticePermissionMapper.newNoticePermission(notice.getNid(), readers);
     }
 
     //破案了，是单调的，不能通配
     //成啦！通配成功啦！
     @Override
     public String getClassID(long nid) {
-       return noticeMapper.getClassID(nid);
+        return noticeMapper.getClassID(nid);
     }
+
     @Async
     @Override
     public void urge(Set<String> urgeList) {
-        for(String x:urgeList){
-            mailService.newMessage("快去看公告啦",x+"@fzu.edu.cn","你有一个公告还没确认，快去看啦！");
+        for (String x : urgeList) {
+            mailService.newMessage("快去看公告啦", x + "@fzu.edu.cn", "你有一个公告还没确认，快去看啦！");
             //暂时写死
         }
     }
 
     @Override
-    @Cacheable(value = "noticeCache",key="#classID+':'+#num")
+    @Cacheable(value = "noticeCache", key = "#classID+':'+#num")
     public PageInfo getClassNoticesPage(String classID, int num) {
-        PageHelper.startPage(num,1);
-        List<Notice> list=noticeMapper.getClassPublicNotices(classID);
+        PageHelper.startPage(num, 1);
+        List<Notice> list = noticeMapper.getClassPublicNotices(classID);
         System.out.println("getClassNoticesPage没有使用缓存");
         return new PageInfo<>(list);
     }
@@ -81,15 +83,15 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public List<Notice> getClassUnPublicNotices(String classID, String username) {
-        return noticeMapper.getClassUnPublicNotices(classID,username);
+        return noticeMapper.getClassUnPublicNotices(classID, username);
     }
 
     @Override
     public List getUnConfirmedNotices(String classID, String username) {
-        List<Notice> needConfirm=noticeMapper.getClassConfirmNotices(classID);
-        List<Long> returnList=new ArrayList<>();
-        for(Notice notice:needConfirm){
-            if(!redisUtil.sIsMember("class:" + classID + ":type:" + "noticeConfirmed"+":"+"nid:"+notice.getNid(),username)){
+        List<Notice> needConfirm = noticeMapper.getClassConfirmNotices(classID);
+        List<Long> returnList = new ArrayList<>();
+        for (Notice notice : needConfirm) {
+            if (!redisUtil.sIsMember("class:" + classID + ":type:" + "noticeConfirmed" + ":" + "nid:" + notice.getNid(), username)) {
                 returnList.add(notice.getNid());
             }
         }
@@ -102,8 +104,8 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void deleteNotice(long nid,String classID){
-        redisUtil.delete("class:" + classID + ":type:" + "noticeConfirmed"+":"+"nid:"+nid);
+    public void deleteNotice(long nid, String classID) {
+        redisUtil.delete("class:" + classID + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid);
         noticeMapper.deleteNotice(nid);
     }
 }

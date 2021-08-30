@@ -17,32 +17,33 @@ import java.util.List;
  */
 @Service("filesService")
 public class FilesServiceImpl extends ServiceImpl<FilesMapper, Files>
-    implements FilesService{
+        implements FilesService {
     @Autowired
     FilesMapper filesMapper;
+
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "fileByFid",key="#files.fid"),
-            @CacheEvict(value = "classFiles",key="#files.classID")
+            @CacheEvict(value = "fileByFid", key = "#files.fid"),
+            @CacheEvict(value = "classFiles", key = "#files.classID")
     })
     public void newFile(Files files) {
         filesMapper.newFile(files);
     }
 
     @Override
-    @Cacheable(value = "filesByFid",key="#fid")
+    @Cacheable(value = "filesByFid", key = "#fid")
     public Files getFile(long fid) {
         return filesMapper.getFile(fid);
     }
 
     @Override
-    @Cacheable(value = "classFiles",key="#classID")
+    @Cacheable(value = "classFiles", key = "#classID")
     public List<Files> getClassFiles(String classID) {
         return filesMapper.getClassFiles(classID);
     }
 
     @Override
-    @Cacheable(value = "filesByHash",key="#hash")//可以设置短些时间
+    @Cacheable(value = "filesByHash", key = "#hash")//可以设置短些时间
     public Files getFilesByHash(String hash) {
         return filesMapper.getFilesByHash(hash);
     }

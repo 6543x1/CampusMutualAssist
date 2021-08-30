@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 /**
  * xss过滤包装类
  */
-public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper
-{
+public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     private static final Logger logger = LoggerFactory.getLogger(XssHttpServletRequestWrapper.class);
 
     /**
@@ -22,17 +21,14 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper
      * @param request The request to wrap
      * @throws IllegalArgumentException if the request is null
      */
-    public XssHttpServletRequestWrapper(HttpServletRequest request)
-    {
+    public XssHttpServletRequestWrapper(HttpServletRequest request) {
         super(request);
     }
 
     @Override
-    public String getHeader(String name)
-    {
+    public String getHeader(String name) {
         String strHeader = super.getHeader(name);
-        if (StringUtils.isEmpty(strHeader))
-        {
+        if (StringUtils.isEmpty(strHeader)) {
             return strHeader;
 
         }
@@ -40,11 +36,9 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper
     }
 
     @Override
-    public String getParameter(String name)
-    {
+    public String getParameter(String name) {
         String strParameter = super.getParameter(name);
-        if (StringUtils.isEmpty(strParameter))
-        {
+        if (StringUtils.isEmpty(strParameter)) {
             return strParameter;
         }
         return Jsoup.clean(super.getParameter(name), Whitelist.relaxed());
@@ -52,21 +46,17 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper
 
 
     @Override
-    public String[] getParameterValues(String name)
-    {
+    public String[] getParameterValues(String name) {
         String[] values = super.getParameterValues(name);
-        if (values == null)
-        {
+        if (values == null) {
             return values;
         }
         int length = values.length;
         String[] escapseValues = new String[length];
-        for (int i = 0; i < length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             //过滤一切可能的xss攻击字符串
             escapseValues[i] = Jsoup.clean(values[i], Whitelist.relaxed()).trim();
-            if (!StringUtils.equals(escapseValues[i], values[i]))
-            {
+            if (!StringUtils.equals(escapseValues[i], values[i])) {
                 logger.debug("xss字符串过滤前：" + values[i] + "\r\n" + "过滤后：" + escapseValues[i]);
             }
         }

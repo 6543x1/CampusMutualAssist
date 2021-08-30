@@ -12,16 +12,16 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel("用户类")
-public class User implements Serializable
-{
+public class User implements Serializable {
     //@Email
-    @Length(min=2,max=20,message = "2<=长度<=20")//设置为2因为之前前端注册了个两个长度的号。。。
-    String username;
-    @Length(min=6,max=100,message = "密码长度为6-100")
+    @Length(min = 2, max = 20, message = "2<=长度<=20")//设置为2因为之前前端注册了个两个长度的号。。。
+            String username;
+    @Length(min = 6, max = 100, message = "密码长度为6-100")
     //@JSONField(serialize = false)
     String password;
     int uid;
@@ -36,8 +36,7 @@ public class User implements Serializable
     String mobileNumber;
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
@@ -51,8 +50,7 @@ public class User implements Serializable
     }
 
     @JSONField(serialzeFeatures = SerializerFeature.WriteNullStringAsEmpty)//为啥BEAN里的没用？？？
-    public String getRealName()
-    {
+    public String getRealName() {
         return realName;
     }//5.8日 答：因为当时Bean里可能是注入到最后一个了
 

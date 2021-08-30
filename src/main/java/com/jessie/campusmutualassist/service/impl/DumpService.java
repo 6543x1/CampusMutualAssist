@@ -27,8 +27,8 @@ public class DumpService {
     StuPointsDetailServiceImpl stuPointsDetailService;
 
     @Async
-    public void dumpClassPointsXlsx(String classID, String username,String className){
-        String path = "/usr/camFiles/"+classID+"/";
+    public void dumpClassPointsXlsx(String classID, String username, String className) {
+        String path = "/usr/camFiles/" + classID + "/";
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
@@ -58,11 +58,11 @@ public class DumpService {
             Row row = sheet.createRow(rIndex);
             Cell cellNo = row.createCell(0);
             cellNo.setCellType(CellType.STRING);
-            cellNo.setCellValue(list.get(rIndex-1).getUsername());
+            cellNo.setCellValue(list.get(rIndex - 1).getUsername());
             Cell cellName = row.createCell(1);
-            cellName.setCellValue(list.get(rIndex-1).getRealName());
+            cellName.setCellValue(list.get(rIndex - 1).getRealName());
             Cell cellPoints = row.createCell(2);
-            cellPoints.setCellValue(list.get(rIndex-1).getPoints());
+            cellPoints.setCellValue(list.get(rIndex - 1).getPoints());
             //在Excel 2019中测试，发现虽然打开文件的时候，学号前面有0，但是一旦点击，马上。。。就变成无0
             //不知道是Excel的锅还是啥，我已经尽力了（指设置Type为String）
         }
@@ -95,7 +95,7 @@ public class DumpService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Files files=new Files();
+        Files files = new Files();
         files.setName(className + "Points.xlsx");
         files.setPath(path);
         files.setClassID(classID);

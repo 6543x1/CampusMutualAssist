@@ -19,13 +19,15 @@ public class AdminController {
     UserService userService;
     @Autowired
     StudentPointsService studentPointsService;
-    @PostMapping(value = "/banUser",produces = "application/json;charset=UTF-8")
-    public Result banUser(String targetUser,@RequestParam(defaultValue = "0") int status,String reason){
-        userService.setStatus(targetUser,status);
+
+    @PostMapping(value = "/banUser", produces = "application/json;charset=UTF-8")
+    public Result banUser(String targetUser, @RequestParam(defaultValue = "0") int status, String reason) {
+        userService.setStatus(targetUser, status);
         return Result.success("封号成功");//话说这真的可以封号吗？？
     }
-    @PostMapping(value = "/clearAllScores",produces = "application/json;charset=UTF-8")
-    public Result banUser(String password){
+
+    @PostMapping(value = "/clearAllScores", produces = "application/json;charset=UTF-8")
+    public Result banUser(String password) {
         //userService.setStatus(username,status);
         return Result.success("封号成功");//话说这真的可以封号吗？？
     }

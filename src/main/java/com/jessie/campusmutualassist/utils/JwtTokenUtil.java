@@ -16,8 +16,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtTokenUtil implements Serializable
-{
+public class JwtTokenUtil implements Serializable {
     public static final long JWT_TOKEN_VALIDITY = 72 * 60 * 60;
     private static final long serialVersionUID = -2550185165626007488L;
     @Value("${jwt.secret}")
@@ -25,41 +24,35 @@ public class JwtTokenUtil implements Serializable
 
 
     //retrieve username from jwt token
-    public String getUsernameFromToken(String token)
-    {
+    public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public int getUidFromToken(String token)
-    {
+    public int getUidFromToken(String token) {
 
         return (int) getAllClaimsFromToken(token).get("uid");
 
     }
 
     //retrieve expiration date from jwt token
-    public LocalDateTime getExpirationDateFromToken(String token)
-    {
+    public LocalDateTime getExpirationDateFromToken(String token) {
         //jjwt只支持date还有点麻烦，转成LocalDateTime扔回去吧
         //Date也算是JAVA里一大屎山了
         return LocalDateTime.ofInstant(getClaimFromToken(token, Claims::getExpiration).toInstant(), ZoneId.systemDefault());
     }
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver)
-    {
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
     //for retrieveing any information from token we will need the secret key
-    private Claims getAllClaimsFromToken(String token)
-    {
+    private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
     //check if the token has expired
-    public Boolean isTokenExpired(String token)
-    {
+    public Boolean isTokenExpired(String token) {
         final LocalDateTime expiration = getExpirationDateFromToken(token);
         System.out.println(expiration.toString());
         System.out.println(new Date().toString());
@@ -67,8 +60,7 @@ public class JwtTokenUtil implements Serializable
     }
 
     //generate token for user
-    public String generateToken(UserDetails userDetails, int uid)
-    {
+    public String generateToken(UserDetails userDetails, int uid) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("uid", uid);
         return doGenerateToken(claims, userDetails.getUsername());
@@ -79,8 +71,7 @@ public class JwtTokenUtil implements Serializable
 //2. Sign the JWT using the HS512 algorithm and secret key.
 //3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
 //   compaction of the JWT to a URL-safe string
-    private String doGenerateToken(Map<String, Object> claims, String subject)
-    {
+    private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().
                 setClaims(claims)
                 .setSubject(subject)
@@ -90,8 +81,7 @@ public class JwtTokenUtil implements Serializable
     }
 
     //validate token校验token有效与否
-    public Boolean validateToken(String token, UserDetails userDetails)
-    {
+    public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }

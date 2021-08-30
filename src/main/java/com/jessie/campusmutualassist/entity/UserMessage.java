@@ -11,15 +11,13 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserMessage implements Serializable
-{
+public class UserMessage implements Serializable {
     private String data;
     private String source;
     private LocalDateTime time;
 
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
-    public LocalDateTime getTime()
-    {
+    public LocalDateTime getTime() {
         return time;
     }
 }

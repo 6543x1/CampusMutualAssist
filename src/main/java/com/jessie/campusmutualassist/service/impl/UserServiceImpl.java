@@ -14,8 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Service("userService")
-public class UserServiceImpl implements UserService
-{
+public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -27,8 +26,7 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public void saveUser(User user)
-    {
+    public void saveUser(User user) {
         userMapper.saveUser(user);
     }
 
@@ -38,11 +36,9 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public int getUid(String username)
-    {
+    public int getUid(String username) {
         return userMapper.getUid(username);
     }
-
 
 
     @Override
@@ -51,35 +47,29 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public User getUser(String username)
-    {
+    public User getUser(String username) {
         return userMapper.getUser(username);
     }
 
     @Override
-    public void setNickName(String username)
-    {
+    public void setNickName(String username) {
         userMapper.setRealName(username);
     }
 
     @Override
-    public void setMailAddr(int uid, String mailAddr)
-    {
+    public void setMailAddr(int uid, String mailAddr) {
         userMapper.setMailAddr(uid, mailAddr);
     }
 
     @Override
-    public String getMailAddr(String username)
-    {
+    public String getMailAddr(String username) {
         return userMapper.getMailAddrByUsername(username);
     }
 
     @Override
-    public String getMailAddr(int uid)
-    {
+    public String getMailAddr(int uid) {
         return userMapper.getMailAddrByUid(uid);
     }
-
 
 
     @Override
@@ -88,76 +78,61 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public String getRealName(String username)
-    {
+    public String getRealName(String username) {
         return userMapper.getNickNameByUsername(username);
     }
 
     @Override
-    public void editPassword(String uid, String password)
-    {
+    public void editPassword(String uid, String password) {
         userMapper.editPassword(uid, password);
     }
 
     @Override
-    public void setStatus(String username, int status)
-    {
+    public void setStatus(String username, int status) {
         userMapper.setStatus(username, status);
     }
 
 
-
     @Override
-    public void saveImg(User user)
-    {
+    public void saveImg(User user) {
         userMapper.saveImg(user);
     }
 
     @Override
-    public void updateAdditionalScore(int uid, int score)
-    {
+    public void updateAdditionalScore(int uid, int score) {
         //userPortraitDAO.updateAdditionalScore(uid, userPortraitDAO.getAdditionalScore(uid) + score);
     }
 
     @Override
-    public int getAdditionalScore(int uid)
-    {
+    public int getAdditionalScore(int uid) {
         return 0;
     }
 
     @Override
-    public void updatePunishedScore(int uid, int score)
-    {
-       // userPortraitDAO.updatePunishedScore(uid, userPortraitDAO.getPunishedScore(uid) + score);
+    public void updatePunishedScore(int uid, int score) {
+        // userPortraitDAO.updatePunishedScore(uid, userPortraitDAO.getPunishedScore(uid) + score);
     }
 
     @Override
-    public String getImgPath(int uid)
-    {
+    public String getImgPath(int uid) {
         return userMapper.getImgPathByUid(uid);
     }
 
     @Override
-    public int getStatus(int uid)
-    {
+    public int getStatus(int uid) {
         return userMapper.getStatus(uid);
     }
 
     @Override
-    public int calculateEvaluation(int status)
-    {
+    public int calculateEvaluation(int status) {
         int evaluation = 0;
-        if (status >= 105)
-        {
+        if (status >= 105) {
             evaluation = 1;
-        } else if (status >= 70)
-        {
+        } else if (status >= 70) {
             evaluation = 2;
-        } else if (status >= 40)
-        {
+        } else if (status >= 40) {
             evaluation = 3;
-        } else if (status < 40)
-        {
+        } else if (status < 40) {
             evaluation = 4;
         }
         return evaluation;//IDEA不给我弹优化了？？
@@ -165,8 +140,8 @@ public class UserServiceImpl implements UserService
 
     @Override
     public boolean cmpPassword(String username, String password) {
-        BCryptPasswordEncoder bCryptPasswordEncoder=new BCryptPasswordEncoder();
-        String realPassword=userMapper.getPassword(username);
-        return bCryptPasswordEncoder.matches(password,realPassword);
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String realPassword = userMapper.getPassword(username);
+        return bCryptPasswordEncoder.matches(password, realPassword);
     }
 }

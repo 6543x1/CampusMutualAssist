@@ -15,7 +15,7 @@ import java.util.List;
 public interface FilesMapper extends BaseMapper<Files> {
 
     @Insert("insert into files (name, path, hash, classID, type,username,uploadTime) VALUES (#{name},#{path},#{hash},#{classID},#{type},#{username},#{uploadTime})")
-    @Options(useGeneratedKeys = true,keyColumn = "fid",keyProperty = "fid")
+    @Options(useGeneratedKeys = true, keyColumn = "fid", keyProperty = "fid")
     void newFile(Files files);
 
     @Select("select * from files where fid=#{fid}")

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service("aliyunService")
 public class AliyunService {
 
-    public void sendSMS(){
+    public void sendSMS() {
         DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "<accessKeyId>", "<accessSecret>");
         IAcsClient client = new DefaultAcsClient(profile);
 

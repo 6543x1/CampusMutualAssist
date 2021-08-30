@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
  */
 @Service("SigninSignedService")
 public class SigninSignedServiceImpl extends ServiceImpl<SigninSignedMapper, SigninSigned>
-    implements SigninSignedService{
+        implements SigninSignedService {
     @Autowired
     SigninSignedMapper signinSignedMapper;
 
     @Async
     @Override
-    public void newSigned(long signID,String data){
-       signinSignedMapper.saveSigned(signID,data);
+    public void newSigned(long signID, String data) {
+        signinSignedMapper.saveSigned(signID, data);
     }
 }
 

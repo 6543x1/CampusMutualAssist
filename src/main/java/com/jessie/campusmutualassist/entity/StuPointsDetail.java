@@ -10,44 +10,43 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 
  * @TableName stu_points_detail
  */
-@TableName(value ="stu_points_detail")
+@TableName(value = "stu_points_detail")
 @Data
 public class StuPointsDetail implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 
+     *
      */
     @TableField(value = "classID")
     private String classID;
 
     /**
-     * 
+     *
      */
     @TableField(value = "operator")
     private String operator;
 
     /**
-     * 
+     *
      */
     @TableField(value = "target")
     private String target;
 
     /**
-     * 
+     *
      */
     @TableField(value = "points")
     private Integer points;
 
     /**
-     * 
+     *
      */
     @TableField(value = "reason")
     private String reason;
@@ -71,11 +70,11 @@ public class StuPointsDetail implements Serializable {
         }
         StuPointsDetail other = (StuPointsDetail) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getClassID() == null ? other.getClassID() == null : this.getClassID().equals(other.getClassID()))
-            && (this.getOperator() == null ? other.getOperator() == null : this.getOperator().equals(other.getOperator()))
-            && (this.getTarget() == null ? other.getTarget() == null : this.getTarget().equals(other.getTarget()))
-            && (this.getPoints() == null ? other.getPoints() == null : this.getPoints().equals(other.getPoints()))
-            && (this.getReason() == null ? other.getReason() == null : this.getReason().equals(other.getReason()));
+                && (this.getClassID() == null ? other.getClassID() == null : this.getClassID().equals(other.getClassID()))
+                && (this.getOperator() == null ? other.getOperator() == null : this.getOperator().equals(other.getOperator()))
+                && (this.getTarget() == null ? other.getTarget() == null : this.getTarget().equals(other.getTarget()))
+                && (this.getPoints() == null ? other.getPoints() == null : this.getPoints().equals(other.getPoints()))
+                && (this.getReason() == null ? other.getReason() == null : this.getReason().equals(other.getReason()));
     }
 
     @Override

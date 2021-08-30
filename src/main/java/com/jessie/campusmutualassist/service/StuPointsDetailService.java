@@ -14,7 +14,7 @@ public interface StuPointsDetailService extends IService<StuPointsDetail> {
 
     List<StuPointsDetail> classDetails(String classID);
 
-    List<StuPointsDetail> stuClassDetails(String classID,String target);
+    List<StuPointsDetail> stuClassDetails(String classID, String target);
 
     void deleteOldItems(String classID);
 }

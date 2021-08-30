@@ -18,14 +18,14 @@ import java.util.List;
  */
 @Service("signInService")
 public class SignInServiceImpl extends ServiceImpl<SignInMapper, SignIn>
-    implements SignInService {
+        implements SignInService {
     @Autowired
     SignInMapper signInMapper;
     @Autowired
     RedisUtil redisUtil;
 
     @Override
-    @CacheEvict(value = "classSignIn",key="#signIn.classID+'*'")
+    @CacheEvict(value = "classSignIn", key = "#signIn.classID+'*'")
     public void newSignIn(SignIn signIn) {
         signInMapper.newSignIn(signIn);
     }
@@ -36,25 +36,27 @@ public class SignInServiceImpl extends ServiceImpl<SignInMapper, SignIn>
     }
 
     @Override
-    @Cacheable(value = "classSignIn",key="#classID")
+    @Cacheable(value = "classSignIn", key = "#classID")
     public List<SignIn> getStuSignIn(String classID) {
         return signInMapper.getStuSignIn(classID);
     }
+
     @Override
-    @Cacheable(value = "classSignIn",key="#classID+':'+#username")
-    public List getMyNotSign(String classID,String username){
+    @Cacheable(value = "classSignIn", key = "#classID+':'+#username")
+    public List getMyNotSign(String classID, String username) {
         Long[] classSignInID = signInMapper.getClassSignInID(classID);
-        ArrayList<Long> arrayList=new ArrayList<>();
-        for(long signID:classSignInID){
-        if(redisUtil.sIsMember("class:" + classID + ":type:" + "signIn" + ":" + "signId:"+signID,username)){
-            arrayList.add(signID);
-        }
+        ArrayList<Long> arrayList = new ArrayList<>();
+        for (long signID : classSignInID) {
+            if (redisUtil.sIsMember("class:" + classID + ":type:" + "signIn" + ":" + "signId:" + signID, username)) {
+                arrayList.add(signID);
+            }
         }
         return arrayList;
     }
+
     @Override
-    public void deleteSignIn(String classID,long signID){
-        redisUtil.delete("class:" + classID + ":type:" + "signIn"+":"+"signID:"+signID);
+    public void deleteSignIn(String classID, long signID) {
+        redisUtil.delete("class:" + classID + ":type:" + "signIn" + ":" + "signID:" + signID);
         signInMapper.deleteBySignID(signID);
     }
 }

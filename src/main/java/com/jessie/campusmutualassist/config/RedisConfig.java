@@ -35,20 +35,18 @@ import java.util.Random;
 @EnableCaching
 @Import(DefaultListableBeanFactory.class)
 @Slf4j
-public class RedisConfig extends CachingConfigurerSupport
-{
+public class RedisConfig extends CachingConfigurerSupport {
 
     @Autowired
     private RedisConnectionFactory factory;
 
-    private static final Random random=new Random();
+    private static final Random random = new Random();
 
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate()
-    {
+    public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        FastJson2JsonRedisSerializer serializer=new FastJson2JsonRedisSerializer(Object.class);
+        FastJson2JsonRedisSerializer serializer = new FastJson2JsonRedisSerializer(Object.class);
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         serializer.setObjectMapper(mapper);
@@ -65,32 +63,27 @@ public class RedisConfig extends CachingConfigurerSupport
     }
 
     @Bean
-    public HashOperations<String, String, Object> hashOperations(RedisTemplate<String, Object> redisTemplate)
-    {
+    public HashOperations<String, String, Object> hashOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForHash();
     }
 
     @Bean
-    public ValueOperations<String, String> valueOperations(RedisTemplate<String, String> redisTemplate)
-    {
+    public ValueOperations<String, String> valueOperations(RedisTemplate<String, String> redisTemplate) {
         return redisTemplate.opsForValue();
     }
 
     @Bean
-    public ListOperations<String, Object> listOperations(RedisTemplate<String, Object> redisTemplate)
-    {
+    public ListOperations<String, Object> listOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForList();
     }
 
     @Bean
-    public SetOperations<String, Object> setOperations(RedisTemplate<String, Object> redisTemplate)
-    {
+    public SetOperations<String, Object> setOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForSet();
     }
 
     @Bean
-    public ZSetOperations<String, Object> zSetOperations(RedisTemplate<String, Object> redisTemplate)
-    {
+    public ZSetOperations<String, Object> zSetOperations(RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForZSet();
     }
 
@@ -101,29 +94,29 @@ public class RedisConfig extends CachingConfigurerSupport
         RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory);
         //序列化方式2
         //FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);//JSONObject
-        FastJson2JsonRedisSerializer fastJsonRedisSerializer=new FastJson2JsonRedisSerializer(Object.class);
+        FastJson2JsonRedisSerializer fastJsonRedisSerializer = new FastJson2JsonRedisSerializer(Object.class);
         //换用了自定义的序列化器后，缓存突然就正常了不会报JSONObject cant be cast to PageInfo的bug了，我也搞不懂是什么原理，不知道有什么细节上的差别
         RedisSerializationContext.SerializationPair<Object> pair = RedisSerializationContext.SerializationPair.fromSerializer(fastJsonRedisSerializer);
-        RedisCacheConfiguration defaultCacheConfig=RedisCacheConfiguration
+        RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration
                 .defaultCacheConfig()
                 .serializeValuesWith(pair)
                 .entryTtl(Duration.ofSeconds(180));//7200
 
         //初始化RedisCacheManager
-        List<CacheItemConfig> cacheItemConfigs= new ArrayList<>();
+        List<CacheItemConfig> cacheItemConfigs = new ArrayList<>();
         //可能由于测试原因，会导致服务器中实际过期时间更短一些
-        cacheItemConfigs.add(new CacheItemConfig("noticeCache",86400+ random.nextInt(10),5));//86400
-        cacheItemConfigs.add(new CacheItemConfig("classVotes",86400+random.nextInt(10),5));//86400
-        cacheItemConfigs.add(new CacheItemConfig("classSignIn",600,5));//600秒
-        cacheItemConfigs.add(new CacheItemConfig("userPermissions",300,3));//每次经过jwt filter会用到
-        cacheItemConfigs.add(new CacheItemConfig("classMembers",86400,5));//课堂成员，就24小时先顶着吧
+        cacheItemConfigs.add(new CacheItemConfig("noticeCache", 86400 + random.nextInt(10), 5));//86400
+        cacheItemConfigs.add(new CacheItemConfig("classVotes", 86400 + random.nextInt(10), 5));//86400
+        cacheItemConfigs.add(new CacheItemConfig("classSignIn", 600, 5));//600秒
+        cacheItemConfigs.add(new CacheItemConfig("userPermissions", 300, 3));//每次经过jwt filter会用到
+        cacheItemConfigs.add(new CacheItemConfig("classMembers", 86400, 5));//课堂成员，就24小时先顶着吧
         //RedisCacheManager cacheManager=new MyRedisCacheManager(redisCacheWriter,defaultCacheConfig);
 //        Map<String, RedisCacheConfiguration> initialCacheConfiguration = new HashMap<String, RedisCacheConfiguration>() {{
 //            put("noticeCache", RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1))); //1小时
 //            put("ClassVotes", RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10))); // 10分钟
 //            // ...
 //        }};
-        RedisCacheManager cacheManager=new MyRedisCacheManager(redisCacheWriter,defaultCacheConfig,redisTemplate(),cacheItemConfigs,pair);
+        RedisCacheManager cacheManager = new MyRedisCacheManager(redisCacheWriter, defaultCacheConfig, redisTemplate(), cacheItemConfigs, pair);
         //这一步调用自定义的CacheManager，然后自定义CacheManager调用自定义的RedisCache，来达到删除时通配的效果
         //设置白名单---非常重要********
         /*
@@ -153,8 +146,6 @@ public class RedisConfig extends CachingConfigurerSupport
 //        configuration = configuration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(fastJsonRedisSerializer)).entryTtl(Duration.ofDays(30));
 //        return configuration;
 //    }
-
-
 
 
 }

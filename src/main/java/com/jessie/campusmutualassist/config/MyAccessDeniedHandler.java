@@ -13,11 +13,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @Component
-public class MyAccessDeniedHandler implements AccessDeniedHandler
-{
+public class MyAccessDeniedHandler implements AccessDeniedHandler {
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException
-    {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
         response.reset();
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");

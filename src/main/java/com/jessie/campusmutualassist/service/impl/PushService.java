@@ -24,27 +24,30 @@ public class PushService {
     WebSocketServer webSocketServer;
     @Autowired
     UserWechatMapper userWechatMapper;
+
     @Async
-    public void pushUrgeWechatMessage(Set<String> users,String type,String title,String body){
+    public void pushUrgeWechatMessage(Set<String> users, String type, String title, String body) {
         List<String> openIDStrings = userWechatMapper.getOpenIDStrings(users);
-        for(String x:openIDStrings){
-            wechatService.pushUrgeMessage(x,type,title,body);
+        for (String x : openIDStrings) {
+            wechatService.pushUrgeMessage(x, type, title, body);
         }
     }
+
     @Async
-    public void pushSocketMessage(Set<String> users,String message){
-        for(String x:users){
-            webSocketServer.sendTo(message,x);
+    public void pushSocketMessage(Set<String> users, String message) {
+        for (String x : users) {
+            webSocketServer.sendTo(message, x);
         }
     }
+
     @Async
-    public void pushWechatMessage(Set<String> users,String message){
+    public void pushWechatMessage(Set<String> users, String message) {
         List<String> openIDStrings = userWechatMapper.getOpenIDStrings(users);
-        Map<String,String> map=new HashMap<String,String>(){{
-            put("message",message);
+        Map<String, String> map = new HashMap<String, String>() {{
+            put("message", message);
         }};
-        openIDStrings.forEach((openID)->{
-            wechatService.sendTemplateMsg(openID,"o3Gq7E4-wadrZ7xy-6h-zBwd-VzgmAyo5byVhcVw-nU",map);
+        openIDStrings.forEach((openID) -> {
+            wechatService.sendTemplateMsg(openID, "o3Gq7E4-wadrZ7xy-6h-zBwd-VzgmAyo5byVhcVw-nU", map);
         });
     }
 }

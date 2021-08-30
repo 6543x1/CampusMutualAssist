@@ -14,24 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class UserDetailServiceImpl implements UserDetailsService
-{
+public class UserDetailServiceImpl implements UserDetailsService {
     @Autowired
     private UserService userService;
     @Autowired
     private PermissionService permissionService;
-//    @Autowired
+
+    //    @Autowired
 //    private PasswordEncoder passwordEncoder;
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
-    {
-        User user=userService.getUser(username);
-        if (user == null)
-        {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userService.getUser(username);
+        if (user == null) {
             return null;//后续方法会自动抛出异常
         }
-        if (user.getStatus() <= 0)
-        {
+        if (user.getStatus() <= 0) {
             return null;
         }
         //throw new UsernameNotFoundException("没找到用户");

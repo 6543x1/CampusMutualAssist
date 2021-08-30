@@ -34,10 +34,11 @@ import java.util.Random;
 
 import static com.jessie.campusmutualassist.service.impl.MailServiceImpl.getRandomString;
 import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.getCurrentUsername;
+
 @Api(tags = "微信相关操作")
 @RestController
 @RequestMapping("/wechat")
-public class  WechatController {
+public class WechatController {
     @Autowired
     WxMpService wxService;
     @Autowired
@@ -48,16 +49,18 @@ public class  WechatController {
     PushService pushService;
     @Resource(name = "messageRouter")
     WxMpMessageRouter messageRouter;
-    static final Random random=new Random();
+    static final Random random = new Random();
+
     @ApiOperation(value = "绑定微信")
-    @PostMapping(value = "/bind",produces = "application/json;charset=UTF-8")
-    public Result bindWechat(){
-        String key= getRandomString();
-        redisUtil.set("type:"+"wechatBind:"+"key:"+key,getCurrentUsername(),5*60+random.nextInt(10));
-        return Result.success("已经获取到Key，请到公众号中回复绑定+key来绑定或解绑+key来解绑,五分钟内有效",key);
+    @PostMapping(value = "/bind", produces = "application/json;charset=UTF-8")
+    public Result bindWechat() {
+        String key = getRandomString();
+        redisUtil.set("type:" + "wechatBind:" + "key:" + key, getCurrentUsername(), 5 * 60 + random.nextInt(10));
+        return Result.success("已经获取到Key，请到公众号中回复绑定+key来绑定或解绑+key来解绑,五分钟内有效", key);
     }
-    @GetMapping(value = "/accessToken",produces = "application/json;charset=UTF-8")
-    public Result accessToken(){
+
+    @GetMapping(value = "/accessToken", produces = "application/json;charset=UTF-8")
+    public Result accessToken() {
         try {
             System.out.println(wxService.getAccessToken());
         } catch (WxErrorException e) {
@@ -65,10 +68,11 @@ public class  WechatController {
         }
         return Result.success("success");
     }
-    @GetMapping(value = "/sendTemplate",produces = "application/json;charset=UTF-8")
-    public Result sendTemplate(){
-        WxMpTemplateMessage wxMpTemplateMessage=WxMpTemplateMessage.builder().toUser("oUqup56c23bBkqGBcCLOvbkneM80").templateId("klDAhI9LH25atQsT07gUnXE4Z5i7rMmUwY0Pi9Jw6Rg").build();
-        wxMpTemplateMessage.addData(new WxMpTemplateData("content","Hello world","000000"));
+
+    @GetMapping(value = "/sendTemplate", produces = "application/json;charset=UTF-8")
+    public Result sendTemplate() {
+        WxMpTemplateMessage wxMpTemplateMessage = WxMpTemplateMessage.builder().toUser("oUqup56c23bBkqGBcCLOvbkneM80").templateId("klDAhI9LH25atQsT07gUnXE4Z5i7rMmUwY0Pi9Jw6Rg").build();
+        wxMpTemplateMessage.addData(new WxMpTemplateData("content", "Hello world", "000000"));
         try {
             wxService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
         } catch (WxErrorException e) {
@@ -81,39 +85,42 @@ public class  WechatController {
     }
 
 
-    @GetMapping(value = "/quickStart",produces = "application/json;charset=UTF-8")
-    public Result quickStart() throws Exception{
+    @GetMapping(value = "/quickStart", produces = "application/json;charset=UTF-8")
+    public Result quickStart() throws Exception {
         String openid = "不可说";
         WxMpKefuMessage message = WxMpKefuMessage.TEXT().toUser(openid).content("Hello World").build();
         wxService.getKefuService().sendKefuMessage(message);
         return Result.success("success");//届到了！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
     }
-    @GetMapping(value = "/testMenu",produces = "application/json;charset=UTF-8")
-    public Result test(){
-        String accessToken="";
+
+    @GetMapping(value = "/testMenu", produces = "application/json;charset=UTF-8")
+    public Result test() {
+        String accessToken = "";
         try {
-            accessToken= wxService.getAccessToken();
+            accessToken = wxService.getAccessToken();
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
-        WxMpMenuServiceImpl wxMpMenuService=new WxMpMenuServiceImpl(wxService);
-        WxMenu wxMenu=new WxMenu();
-        WxMenuButton wxMenuButton=new WxMenuButton();
+        WxMpMenuServiceImpl wxMpMenuService = new WxMpMenuServiceImpl(wxService);
+        WxMenu wxMenu = new WxMenu();
+        WxMenuButton wxMenuButton = new WxMenuButton();
         wxMenuButton.setType("click");
         wxMenuButton.setName("绑定账号");
         wxMenuButton.setKey("relative_user");
-        List<WxMenuButton> wxMenuButtonList=new ArrayList<>();
+        List<WxMenuButton> wxMenuButtonList = new ArrayList<>();
         wxMenuButtonList.add(wxMenuButton);
         wxMenu.setButtons(wxMenuButtonList);
         try {
-        wxMpMenuService.menuCreate(wxMenu);}catch (Exception e){
+            wxMpMenuService.menuCreate(wxMenu);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         wxService.setMenuService(wxMpMenuService);
 
         return Result.success("创建菜单按钮成功");
     }
-    @RequestMapping(value = "/testToken",produces = "text/plain;charset=UTF-8",method = {RequestMethod.GET,RequestMethod.POST})
+
+    @RequestMapping(value = "/testToken", produces = "text/plain;charset=UTF-8", method = {RequestMethod.GET, RequestMethod.POST})
     public void receiveMsg(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String signature = request.getParameter("signature");
         String nonce = request.getParameter("nonce");
@@ -162,11 +169,11 @@ public class  WechatController {
                 response.getWriter().write(outMessage.toEncryptedXml(wxMpConfigStorage));
             }
 
-      return;
-    }
+            return;
+        }
     }
 
-    @GetMapping(value = "/testToken2",produces = "text/plain;charset=UTF-8")
+    @GetMapping(value = "/testToken2", produces = "text/plain;charset=UTF-8")
     //微信接口测试
     public String test(@RequestParam("signature") String signature,
                        @RequestParam("timestamp") String timestamp,

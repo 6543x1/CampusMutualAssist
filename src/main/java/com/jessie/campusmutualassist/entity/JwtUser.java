@@ -9,8 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JwtUser implements UserDetails
-{
+public class JwtUser implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private final int id;
@@ -24,8 +23,7 @@ public class JwtUser implements UserDetails
             String username,
             String password, List<String> authorities,
             boolean enabled
-    )
-    {
+    ) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -38,8 +36,7 @@ public class JwtUser implements UserDetails
             String username,
             String password, String authoritie,
             boolean enabled
-    )
-    {
+    ) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -47,14 +44,12 @@ public class JwtUser implements UserDetails
         this.enabled = enabled;
     }
 
-    public static long getSerialVersionUID()
-    {
+    public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "JwtUser{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
@@ -64,62 +59,52 @@ public class JwtUser implements UserDetails
                 '}';
     }
 
-    private List<GrantedAuthority> mapToGrantedAuthorities(List<String> authorities)
-    {
+    private List<GrantedAuthority> mapToGrantedAuthorities(List<String> authorities) {
         return authorities.stream()
                 .map(authority -> new SimpleGrantedAuthority(authority))
                 .collect(Collectors.toList());
     }
 
-    private List<GrantedAuthority> mapToGrantedAuthorities(String authoritie)
-    {
+    private List<GrantedAuthority> mapToGrantedAuthorities(String authoritie) {
         return Arrays.asList(new SimpleGrantedAuthority(authoritie));
     }
 
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
     @Override
-    public String getUsername()
-    {
+    public String getUsername() {
         return username;
     }
 
     @Override
-    public boolean isAccountNonExpired()
-    {
+    public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
-    public boolean isAccountNonLocked()
-    {
+    public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
-    public boolean isCredentialsNonExpired()
-    {
+    public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
-    public String getPassword()
-    {
+    public String getPassword() {
         return password;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities()
-    {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
     @Override
-    public boolean isEnabled()
-    {
+    public boolean isEnabled() {
         return enabled;
     }
 

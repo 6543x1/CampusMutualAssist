@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 
  * @TableName student_points
  */
 @Data
@@ -15,17 +14,17 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class StudentPoints implements Serializable {
     /**
-     * 
+     *
      */
     private String username;
 
     /**
-     * 
+     *
      */
     private String classID;
 
     /**
-     * 
+     *
      */
     private Integer points;
 
@@ -44,8 +43,8 @@ public class StudentPoints implements Serializable {
         }
         StudentPoints other = (StudentPoints) that;
         return (this.getUsername() == null ? other.getUsername() == null : this.getUsername().equals(other.getUsername()))
-            && (this.getClassID() == null ? other.getClassID() == null : this.getClassID().equals(other.getClassID()))
-            && (this.getPoints() == null ? other.getPoints() == null : this.getPoints().equals(other.getPoints()));
+                && (this.getClassID() == null ? other.getClassID() == null : this.getClassID().equals(other.getClassID()))
+                && (this.getPoints() == null ? other.getPoints() == null : this.getPoints().equals(other.getPoints()));
     }
 
     @Override

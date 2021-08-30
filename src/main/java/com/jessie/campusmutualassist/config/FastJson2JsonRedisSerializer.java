@@ -1,4 +1,5 @@
 package com.jessie.campusmutualassist.config;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -10,10 +11,11 @@ import org.springframework.data.redis.serializer.SerializationException;
 import org.springframework.util.Assert;
 
 import java.nio.charset.Charset;
+
 /**
  * FastJson2JsonRedisSerializer
- *  Redis使用FastJson序列化
- *  by zhengkai.blog.csdn.net
+ * Redis使用FastJson序列化
+ * by zhengkai.blog.csdn.net
  */
 
 public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T> {
@@ -27,6 +29,7 @@ public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T> {
         //如果遇到反序列化autoType is not support错误，请添加并修改一下包名到bean文件路径
         //ParserConfig.getGlobalInstance().addAccept("com.jessie.campusmutualassist.entity");
     }
+
     public FastJson2JsonRedisSerializer(Class<T> clazz) {
         super();
         this.clazz = clazz;
@@ -49,6 +52,7 @@ public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T> {
 
         return JSON.parseObject(str, clazz);
     }
+
     public void setObjectMapper(ObjectMapper objectMapper) {
         Assert.notNull(objectMapper, "'objectMapper' must not be null");
         //this.objectMapper = objectMapper;

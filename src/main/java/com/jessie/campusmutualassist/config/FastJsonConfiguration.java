@@ -12,13 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class FastJsonConfiguration implements WebMvcConfigurer
-{
+public class FastJsonConfiguration implements WebMvcConfigurer {
     //由于取舍，实际上这个类并没有产生效果，详情见最后面的注解。
     //为什么不注释掉代码呢？因为大片的注释太难看了（
     @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters)
-    {
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
         fastJsonConfig.setSerializerFeatures(
@@ -35,7 +33,7 @@ public class FastJsonConfiguration implements WebMvcConfigurer
         List<MediaType> fastMediaTypes = new ArrayList<>();
         fastMediaTypes.add(MediaType.APPLICATION_JSON);
         fastJsonHttpMessageConverter.setSupportedMediaTypes(fastMediaTypes);
-        converters.add(0,fastJsonHttpMessageConverter);//放到前面才能生效
+        converters.add(0, fastJsonHttpMessageConverter);//放到前面才能生效
 
     }
 }

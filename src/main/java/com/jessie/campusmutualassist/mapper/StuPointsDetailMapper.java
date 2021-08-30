@@ -20,7 +20,7 @@ public interface StuPointsDetailMapper extends BaseMapper<StuPointsDetail> {
     List<StuPointsDetail> classDetails(String classID);
 
     @Select("select * from stu_points_detail where classID=#{classID} and target=#{target}")
-    List<StuPointsDetail> stuClassDetails(String classID,String target);
+    List<StuPointsDetail> stuClassDetails(String classID, String target);
 
     @Delete("delete from stu_points_detail where classID=#{classID} and time<=NOW() ")
     void deleteOldItems(String classID);

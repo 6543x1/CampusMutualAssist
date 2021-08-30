@@ -13,14 +13,12 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable
-{
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
     private static final long serialVersionUID = 1L;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException
-    {
+                         AuthenticationException authException) throws IOException {
         response.reset();
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");

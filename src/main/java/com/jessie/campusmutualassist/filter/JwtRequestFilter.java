@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class JwtRequestFilter extends OncePerRequestFilter{
+public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailServiceImpl userDetailServiceImpl;
 
@@ -37,58 +37,48 @@ public class JwtRequestFilter extends OncePerRequestFilter{
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException
-    {
+            throws ServletException, IOException {
         String requestTokenHeader = request.getHeader("token");
-        if(requestTokenHeader==null){
-            requestTokenHeader=request.getParameter("token");//为了兼容websocket
+        if (requestTokenHeader == null) {
+            requestTokenHeader = request.getParameter("token");//为了兼容websocket
             System.out.println(requestTokenHeader);
         }
         String username = null;
         String jwtToken = null;
         //原本有Bearer前缀 现在我直接干掉了直接放不好吗
-        if (requestTokenHeader != null)
-        {
+        if (requestTokenHeader != null) {
             jwtToken = requestTokenHeader;
-            try
-            {
+            try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-                if (redisUtil.get("Jwt_TOKEN" + ":" + username) == null)
-                {
+                if (redisUtil.get("Jwt_TOKEN" + ":" + username) == null) {
                     throw new NullPointerException();
                 }
 
-            } catch (NullPointerException e)
-            {
+            } catch (NullPointerException e) {
                 System.out.println("token在服务器上不存在,可能是已经过期了");
                 response.reset();
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().print(JSON.toJSONString(Result.error("服务器不存在此token，可能是过期了", 404)));
                 return;
-            } catch (IllegalArgumentException e)
-            {
+            } catch (IllegalArgumentException e) {
                 System.out.println("token内容有误（？是这个吗）");
-            } catch (ExpiredJwtException e)
-            {
+            } catch (ExpiredJwtException e) {
                 System.out.println("JWT Token has expired");
                 response.reset();
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().print(JSON.toJSONString(Result.error("Token过期了请重新登录获取新Token", 401)));
                 return;
             }
-        } else
-        {
+        } else {
             logger.warn("JWT Token does not found");
         }
         // Once we get the token validate it.
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null)
-        {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailServiceImpl.loadUserByUsername(username);
             // if token is valid configure Spring Security to manually set
             // authentication
             //这一步会比较jwt是否正确
-            if (jwtTokenUtil.validateToken(jwtToken, userDetails))
-            {
+            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
                 //如果jwt中的username和SpringSecurity中记录的一致...
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

@@ -20,11 +20,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Service("studentPointsService")
 public class StudentPointsServiceImpl extends ServiceImpl<StudentPointsMapper, StudentPoints>
-    implements StudentPointsService{
+        implements StudentPointsService {
     @Autowired
     StudentPointsMapper studentPointsMapper;
     @Autowired
     private RedissonClient redissonClient;
+
     @Override
     public void newStu(StudentPoints studentPoints) {
         studentPointsMapper.newStu(studentPoints);
@@ -37,23 +38,24 @@ public class StudentPointsServiceImpl extends ServiceImpl<StudentPointsMapper, S
 
     @Override
     public void addPoints(StudentPoints studentPoints) {
-       RLock lock = redissonClient.getLock("PointsLock:"+studentPoints.getUsername());
-        try{
-            if(lock.tryLock(1,3, TimeUnit.SECONDS)){//第一个：等待获取锁的时间 第二个：超时释放时间
+        RLock lock = redissonClient.getLock("PointsLock:" + studentPoints.getUsername());
+        try {
+            if (lock.tryLock(1, 3, TimeUnit.SECONDS)) {//第一个：等待获取锁的时间 第二个：超时释放时间
                 //考虑到一个班级里同时操作加分的可能性不太高（？），所以等待时间并没有设置的很长
                 studentPointsMapper.addPoints(studentPoints);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             lock.unlock();
         }
     }
+
     @Async
     @Override
     public void addStusPoints(Set<String> stuList, String classID, int points) {
-        for(String stu:stuList){
-            addPoints(new StudentPoints(stu,classID,points));
+        for (String stu : stuList) {
+            addPoints(new StudentPoints(stu, classID, points));
         }
     }
 

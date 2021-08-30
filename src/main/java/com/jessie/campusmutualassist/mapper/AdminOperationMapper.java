@@ -10,8 +10,7 @@ import java.util.List;
 
 @Repository
 @Mapper
-public interface AdminOperationMapper
-{
+public interface AdminOperationMapper {
     @Insert("insert into admin_operation (operator, operation, targetUser, targetData,operatedTime,reason) VALUES (#{operator},#{operation},#{targetUser},#{targetData},#{operatedTime},#{reason})")
     void newOperation(AdminOperation adminOperation);
 
@@ -23,6 +22,7 @@ public interface AdminOperationMapper
 
     @Select("select * from admin_operation where operation=#{operation};")
     List<AdminOperation> getOperationsByType(String operation);
+
     @Select("select * from  admin_operation")
     List<AdminOperation> findAll();
 }

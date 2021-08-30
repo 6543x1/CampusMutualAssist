@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdminOperation implements Serializable
-{
+public class AdminOperation implements Serializable {
 
     private String operator;
     private String operation;

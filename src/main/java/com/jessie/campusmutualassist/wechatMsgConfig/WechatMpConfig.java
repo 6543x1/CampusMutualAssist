@@ -18,6 +18,7 @@ import static me.chanjar.weixin.common.api.WxConsts.XmlMsgType.EVENT;
 public class WechatMpConfig {
     private final MsgHandler msgHandler;
     private final SubscribeHandler subscribeHandler;
+
     @Bean
     public WxMpMessageRouter messageRouter(WxMpService wxMpService) {
         final WxMpMessageRouter newRouter = new WxMpMessageRouter(wxMpService);

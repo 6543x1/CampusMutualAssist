@@ -14,15 +14,20 @@ import java.util.List;
 public interface StuSelectionMapper {
     @Select("select su.*,tc.name from stu_selection su join teaching_class tc on tc.id = su.classID where stuName=#{stuName}")
     List<StuSelection> getStuSelections(String stuName);
+
     @Insert("insert into stu_selection (stuName, classID, scores) VALUES (#{stuName},#{classID},#{scores})")
     void newSelections(StuSelection stuSelection);
+
     @Select("select su.*,tc.name from stu_selection su join teaching_class tc on tc.id = su.classID where classID=#{classID}")
     List<StuSelection> getClassSelections(String classID);
+
     @Select("select stuName from stu_selection where classID=#{classID}")
     List<String> getClassSelectStuName(String classID);
+
     @Delete("delete from stu_selection where classID=#{classID}")
     void deleteClass(String classID);
+
     @Delete("delete from stu_selection where classID=#{classID} and stuName=#{username} ")
-    void quitClass(String classID,String username);
+    void quitClass(String classID, String username);
 
 }

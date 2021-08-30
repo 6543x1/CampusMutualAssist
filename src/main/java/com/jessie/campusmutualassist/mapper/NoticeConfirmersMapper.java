@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Insert;
 public interface NoticeConfirmersMapper extends BaseMapper<NoticeConfirmers> {
 
     @Insert("insert into notice_confirmers (nid, confirmers) VALUES (#{nid},#{confirmers})")
-    public void saveConfirmers(long nid,String confirmers);
+    public void saveConfirmers(long nid, String confirmers);
 }
 
 

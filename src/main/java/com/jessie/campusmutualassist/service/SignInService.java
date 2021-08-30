@@ -11,7 +11,9 @@ import java.util.List;
 public interface SignInService extends IService<SignIn> {
 
     void newSignIn(SignIn signIn);
+
     SignIn getSignIn(long signInID);
+
     List<SignIn> getStuSignIn(String classID);
 
     List getMyNotSign(String classID, String username);

@@ -22,7 +22,7 @@ public class AliyunGreenService {
     @Autowired
     IAcsClient iAcsClient;
     @Autowired
-    HashMap<String,String> textSafeDangerMap;
+    HashMap<String, String> textSafeDangerMap;
 
     public Result testTextSafe(String content) {
         TextScanRequest textScanRequest = new TextScanRequest();
@@ -70,15 +70,15 @@ public class AliyunGreenService {
                                 // suggestion == pass表示未命中垃圾。suggestion == block表示命中了垃圾，可以通过1abe1字段:
 //                                System.out.println("args = [" + scene + "]");
 //                                System.out.println("args = [" + suggestion + "]");
-                                if("block".equals(suggestion)){
-                                    String label=((JSONObject)sceneResult).getString("label");
+                                if ("block".equals(suggestion)) {
+                                    String label = ((JSONObject) sceneResult).getString("label");
 //                                    System.out.println(textSafeDangerMap);
-                                    log.info("Hit TextDangerMap:"+label);
-                                    if(textSafeDangerMap.containsKey(label)){
-                                        if(((JSONObject) taskResult).get("filteredContent")!=null){
-                                            return Result.error("内容命中关键词",400,((JSONObject) taskResult).get("filteredContent"));
+                                    log.info("Hit TextDangerMap:" + label);
+                                    if (textSafeDangerMap.containsKey(label)) {
+                                        if (((JSONObject) taskResult).get("filteredContent") != null) {
+                                            return Result.error("内容命中关键词", 400, ((JSONObject) taskResult).get("filteredContent"));
                                         }
-                                    return Result.error("内容涉嫌:"+textSafeDangerMap.get(label),403,"自行检查");
+                                        return Result.error("内容涉嫌:" + textSafeDangerMap.get(label), 403, "自行检查");
                                     }
                                     //为啥返回结果有时候没有违禁词在哪的提示?
                                 }

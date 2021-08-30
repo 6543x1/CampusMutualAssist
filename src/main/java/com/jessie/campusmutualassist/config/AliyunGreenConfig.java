@@ -16,8 +16,9 @@ public class AliyunGreenConfig {
     String ALIYUN_ACCESS_KEY_SECRET;
     @Value("${aliyun.regionID}")
     String REGION_ID;
+
     @Bean
-    public IAcsClient iAcsClient(){
+    public IAcsClient iAcsClient() {
         IClientProfile profile = DefaultProfile.getProfile(REGION_ID, ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET);
         return new DefaultAcsClient(profile);
     }

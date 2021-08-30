@@ -7,20 +7,19 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 
  * @TableName notice_permission
  */
-@TableName(value ="notice_permission")
+@TableName(value = "notice_permission")
 @Data
 public class NoticePermission implements Serializable {
     /**
-     * 
+     *
      */
     @TableField(value = "reader")
     private String reader;
 
     /**
-     * 
+     *
      */
     @TableField(value = "nid")
     private Integer nid;
@@ -41,7 +40,7 @@ public class NoticePermission implements Serializable {
         }
         NoticePermission other = (NoticePermission) that;
         return (this.getReader() == null ? other.getReader() == null : this.getReader().equals(other.getReader()))
-            && (this.getNid() == null ? other.getNid() == null : this.getNid().equals(other.getNid()));
+                && (this.getNid() == null ? other.getNid() == null : this.getNid().equals(other.getNid()));
     }
 
     @Override

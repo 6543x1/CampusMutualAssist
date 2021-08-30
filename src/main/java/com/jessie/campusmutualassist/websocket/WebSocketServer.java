@@ -37,9 +37,9 @@ public class WebSocketServer {
         System.out.println("open");
         this.session = session;
         //如果存在就先删除一个，防止重复推送消息，实际这里实现了set，不删除问题也不大
-        webSocketMap.put(code,this);
+        webSocketMap.put(code, this);
         this.code = code;
-        log.info("建立WebSocket连接，code：" + code+"，当前连接数："+webSocketMap.size());
+        log.info("建立WebSocket连接，code：" + code + "，当前连接数：" + webSocketMap.size());
     }
 
     /**
@@ -48,7 +48,7 @@ public class WebSocketServer {
     @OnClose
     public void onClose() {
         webSocketMap.remove(code);
-        log.info("关闭WebSocket连接，code：" + this.code+"，当前连接数："+webSocketMap.size());
+        log.info("关闭WebSocket连接，code：" + this.code + "，当前连接数：" + webSocketMap.size());
     }
 
     /**
@@ -94,19 +94,19 @@ public class WebSocketServer {
      * 定点推送
      */
     public boolean sendTo(String message, @PathParam("code") String code) {
-            try {
-                WebSocketServer item= webSocketMap.get(code);
-                if (item.code.equals(code)) {
-                    log.info("推送消息到[" + code + "]，推送内容:" + message);
-                    item.sendMessage(message);
-                }
-            } catch (NullPointerException e){
-                log.info("推送失败：当前用户不在线");
-                return false;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
+        try {
+            WebSocketServer item = webSocketMap.get(code);
+            if (item.code.equals(code)) {
+                log.info("推送消息到[" + code + "]，推送内容:" + message);
+                item.sendMessage(message);
             }
+        } catch (NullPointerException e) {
+            log.info("推送失败：当前用户不在线");
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 

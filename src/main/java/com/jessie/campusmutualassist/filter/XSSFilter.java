@@ -13,11 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Configuration
-public class XSSFilter extends OncePerRequestFilter
-{
+public class XSSFilter extends OncePerRequestFilter {
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException
-    {
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         Logger logger = LoggerFactory.getLogger(XSSFilter.class);
         logger.info("XSS FILTER running");
         filterChain.doFilter(new XssHttpServletRequestWrapper(httpServletRequest), httpServletResponse);

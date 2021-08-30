@@ -4,24 +4,27 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
+
 import lombok.Data;
 
 /**
  * 持久化投票信息到数据库中
+ *
  * @TableName vote_voters
  */
-@TableName(value ="vote_voters")
+@TableName(value = "vote_voters")
 @Data
 public class VoteVoters implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(value = "vid")
     private Integer vid;
 
     /**
-     * 
+     *
      */
     @TableField(value = "voters")
     private Object voters;
@@ -42,7 +45,7 @@ public class VoteVoters implements Serializable {
         }
         VoteVoters other = (VoteVoters) that;
         return (this.getVid() == null ? other.getVid() == null : this.getVid().equals(other.getVid()))
-            && (this.getVoters() == null ? other.getVoters() == null : this.getVoters().equals(other.getVoters()));
+                && (this.getVoters() == null ? other.getVoters() == null : this.getVoters().equals(other.getVoters()));
     }
 
     @Override

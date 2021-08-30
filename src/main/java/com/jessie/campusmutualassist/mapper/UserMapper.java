@@ -11,14 +11,15 @@ import java.util.Set;
 
 @Repository
 @Mapper
-public interface UserMapper
-{
+public interface UserMapper {
 
     @Insert("insert into user (username,password,status,role,evaluation,realName) values (#{username},#{password},#{status},#{role},#{evaluation},#{realName})")
     @Options(useGeneratedKeys = true, keyProperty = "uid", keyColumn = "uid")
     void saveUser(User user);
+
     @Update("update user set mobileNumber=#{mobileNumber} where username=#{username}")
-    void savePhoneNumber(@Param("username") String username,@Param("mobile") String mobileNumber);
+    void savePhoneNumber(@Param("username") String username, @Param("mobile") String mobileNumber);
+
     @Select("select count(1) from user where username=#{username}")
     boolean queryUser(String username);
 
@@ -28,13 +29,15 @@ public interface UserMapper
 
     @Select("select * from user where username= #{username}")
     User getUser(String username);
+
     //上面这个方法可以优化一下，只要Username和Password用于登录
     User getNoPasswordUser(String username);
 
     @Select("select realName from user where username=#{username}")
     String getNickNameByUsername(String username);
+
     @MapKey("username")
-    List<Map<String,String>> getRealNameWithUsername(Set<String> usernameSet);
+    List<Map<String, String>> getRealNameWithUsername(Set<String> usernameSet);
     //mybatis这个东西不能直接返回Map，必须用List封装Map，然后再把里面Map一个个取出来，放入新的Map...合着你这Map当Pair使用是吧
 
     @Select("select mailAddr from user where username=#{username}")
@@ -72,8 +75,6 @@ public interface UserMapper
 
     @Select("select password from user where username=#{username}")
     String getPassword(String username);
-
-
 
 
 }

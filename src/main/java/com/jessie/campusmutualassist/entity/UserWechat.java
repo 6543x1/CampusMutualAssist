@@ -8,14 +8,13 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 
  * @TableName user_wechat
  */
-@TableName(value ="user_wechat")
+@TableName(value = "user_wechat")
 @Data
 public class UserWechat implements Serializable {
     /**
-     * 
+     *
      */
     @TableField(value = "username")
     private String username;
@@ -27,7 +26,7 @@ public class UserWechat implements Serializable {
     private String openID;
 
     /**
-     * 
+     *
      */
     @TableField(value = "tags")
     private String tags;
@@ -48,8 +47,8 @@ public class UserWechat implements Serializable {
         }
         UserWechat other = (UserWechat) that;
         return (this.getUsername() == null ? other.getUsername() == null : this.getUsername().equals(other.getUsername()))
-            && (this.getOpenID() == null ? other.getOpenID() == null : this.getOpenID().equals(other.getOpenID()))
-            && (this.getTags() == null ? other.getTags() == null : this.getTags().equals(other.getTags()));
+                && (this.getOpenID() == null ? other.getOpenID() == null : this.getOpenID().equals(other.getOpenID()))
+                && (this.getTags() == null ? other.getTags() == null : this.getTags().equals(other.getTags()));
     }
 
     @Override

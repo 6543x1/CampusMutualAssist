@@ -4,24 +4,27 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
+
 import lombok.Data;
 
 /**
  * 持久化签到信息保存到数据库（为什么不是signer呢？因为signer意思不太对）
+ *
  * @TableName signin_signed
  */
-@TableName(value ="signin_signed")
+@TableName(value = "signin_signed")
 @Data
 public class SigninSigned implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(value = "signID")
     private Integer signID;
 
     /**
-     * 
+     *
      */
     @TableField(value = "signed")
     private Object signed;
@@ -42,7 +45,7 @@ public class SigninSigned implements Serializable {
         }
         SigninSigned other = (SigninSigned) that;
         return (this.getSignID() == null ? other.getSignID() == null : this.getSignID().equals(other.getSignID()))
-            && (this.getSigned() == null ? other.getSigned() == null : this.getSigned().equals(other.getSigned()));
+                && (this.getSigned() == null ? other.getSigned() == null : this.getSigned().equals(other.getSigned()));
     }
 
     @Override

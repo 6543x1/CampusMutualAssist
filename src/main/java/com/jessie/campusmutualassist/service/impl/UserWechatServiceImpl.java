@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserWechatServiceImpl extends ServiceImpl<UserWechatMapper, UserWechat>
-    implements UserWechatService{
+        implements UserWechatService {
 
 }
 

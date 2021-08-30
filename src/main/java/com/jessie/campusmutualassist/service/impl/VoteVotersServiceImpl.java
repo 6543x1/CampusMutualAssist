@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
  */
 @Service("VoteVotersService")
 public class VoteVotersServiceImpl extends ServiceImpl<VoteVotersMapper, VoteVoters>
-    implements VoteVotersService{
+        implements VoteVotersService {
     @Autowired
     VoteVotersMapper voteVotersMapper;
 
     @Async
     @Override
-    public void newVoters(long vid,String data){
-        voteVotersMapper.saveVoters(vid,data);
+    public void newVoters(long vid, String data) {
+        voteVotersMapper.saveVoters(vid, data);
     }
 }
 

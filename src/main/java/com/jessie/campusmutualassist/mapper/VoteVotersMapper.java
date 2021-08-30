@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Insert;
  */
 public interface VoteVotersMapper extends BaseMapper<VoteVoters> {
     @Insert("insert into vote_voters (vid, voters) VALUES (#{vid},#{voters})")
-    public void saveVoters(long vid,String voters);
+    public void saveVoters(long vid, String voters);
 }
 
 

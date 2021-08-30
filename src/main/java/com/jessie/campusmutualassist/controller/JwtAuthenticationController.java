@@ -45,32 +45,29 @@ public class JwtAuthenticationController {
     private UserDetailServiceImpl userDetailService;
     @Value("${jwt.header}")
     private String tokenHeader;
-    private static Logger logger=LoggerFactory.getLogger(JwtAuthenticationController.class);
-    @ApiOperation(value = "登录",notes = "登录是/user/login")
+    private static Logger logger = LoggerFactory.getLogger(JwtAuthenticationController.class);
+
+    @ApiOperation(value = "登录", notes = "登录是/user/login")
     @PostMapping(value = "${jwt.route.authentication.path}", produces = "application/json;charset=UTF-8")
-    public Result createAuthenticationToken(JwtRequest authenticationRequest) throws Exception
-    {
+    public Result createAuthenticationToken(JwtRequest authenticationRequest) throws Exception {
         System.out.println("username:" + authenticationRequest.getUsername() + ",password:" + authenticationRequest.getPassword());
-        try
-        {
-            if (userService.getUser(authenticationRequest.getUsername()).getStatus() <= 0)
-            {
+        try {
+            if (userService.getUser(authenticationRequest.getUsername()).getStatus() <= 0) {
                 throw new BannedUserException();
             }
             authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-        } catch (BannedUserException e)
-        {
+        } catch (BannedUserException e) {
             return Result.error("账号被封禁了，有疑问联系管理员", 403);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-            if("INVALID_CREDENTIALS".equals(e.getMessage())){
-                if(!redisUtil.hasKey("username:"+authenticationRequest.getUsername()+":type:WrongPassCount")) {
+            if ("INVALID_CREDENTIALS".equals(e.getMessage())) {
+                if (!redisUtil.hasKey("username:" + authenticationRequest.getUsername() + ":type:WrongPassCount")) {
                     redisUtil.set("username:" + authenticationRequest.getUsername() + ":type:WrongPassCount", "1", 60 * 60);
-                }else{redisUtil.incrBy("username:"+authenticationRequest.getUsername()+":type:WrongPassCount",1);
-                if("5".equals(redisUtil.get("username:" + authenticationRequest.getUsername() + ":type:WrongPassCount"))){
-                    return Result.error("一小时内连续输错五次，请一小时后重新再试密码");
-                }
+                } else {
+                    redisUtil.incrBy("username:" + authenticationRequest.getUsername() + ":type:WrongPassCount", 1);
+                    if ("5".equals(redisUtil.get("username:" + authenticationRequest.getUsername() + ":type:WrongPassCount"))) {
+                        return Result.error("一小时内连续输错五次，请一小时后重新再试密码");
+                    }
                 }
             }
             return Result.error("账号或密码错误", 401);
@@ -83,33 +80,28 @@ public class JwtAuthenticationController {
         return Result.success("loginSuccess", new JwtResponse(token, userService.getNoPasswordUser(authenticationRequest.getUsername())));
     }
 
-    private void authenticate(String username, String password) throws Exception
-    {
-        try
-        {
+    private void authenticate(String username, String password) throws Exception {
+        try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e)
-        {
+        } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);
-        } catch (BadCredentialsException e)
-        {
+        } catch (BadCredentialsException e) {
             throw new Exception("INVALID_CREDENTIALS", e);
         }
     }
 
     @GetMapping(value = "/token", produces = "application/json;charset=UTF-8")
-    public User getAuthenticatedUser(HttpServletRequest request)
-    {
+    public User getAuthenticatedUser(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
         String username = jwtTokenUtil.getUsernameFromToken(token);
         System.out.println("username=" + username);
         System.out.println(jwtTokenUtil.getUidFromToken(token));
         return userService.getUser(username);
     }
+
     @PostMapping(value = "/user/logout", produces = "application/json;charset=UTF-8")
-    public Result logout()
-    {
-       redisUtil.delete("Jwt_TOKEN" + ":" + getCurrentUsername());
-       return Result.success("登出成功");
+    public Result logout() {
+        redisUtil.delete("Jwt_TOKEN" + ":" + getCurrentUsername());
+        return Result.success("登出成功");
     }
 }

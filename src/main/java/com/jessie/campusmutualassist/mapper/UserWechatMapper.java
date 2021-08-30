@@ -15,7 +15,7 @@ import java.util.Set;
 public interface UserWechatMapper extends BaseMapper<UserWechat> {
 
     @Insert("insert into user_wechat (username, openID) values (#{username},#{openID})")
-    void newOpenID(String username,String openID);
+    void newOpenID(String username, String openID);
 
     @Select("select openID from  user_wechat where username=#{username}")
     String getOpenID(String username);

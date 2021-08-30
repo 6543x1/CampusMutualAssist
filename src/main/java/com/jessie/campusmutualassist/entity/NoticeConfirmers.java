@@ -4,24 +4,27 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
+
 import lombok.Data;
 
 /**
  * 用于持久化地保存原本在Redis中的确认数据
+ *
  * @TableName notice_confirmers
  */
-@TableName(value ="notice_confirmers")
+@TableName(value = "notice_confirmers")
 @Data
 public class NoticeConfirmers implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(value = "nid")
     private Integer nid;
 
     /**
-     * 
+     *
      */
     @TableField(value = "confirmers")
     private Object confirmers;
@@ -42,7 +45,7 @@ public class NoticeConfirmers implements Serializable {
         }
         NoticeConfirmers other = (NoticeConfirmers) that;
         return (this.getNid() == null ? other.getNid() == null : this.getNid().equals(other.getNid()))
-            && (this.getConfirmers() == null ? other.getConfirmers() == null : this.getConfirmers().equals(other.getConfirmers()));
+                && (this.getConfirmers() == null ? other.getConfirmers() == null : this.getConfirmers().equals(other.getConfirmers()));
     }
 
     @Override

@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Insert;
  */
 public interface SigninSignedMapper extends BaseMapper<SigninSigned> {
     @Insert("insert into signin_signed (signID, signed) VALUES (#{signID},#{signed})")
-    public void saveSigned(long signID,String signed);
+    public void saveSigned(long signID, String signed);
 }
 
 

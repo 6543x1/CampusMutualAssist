@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
  */
 public class CacheContainer {
 
-    private static final String DEFAULT_CACHE_NAME="default";
+    private static final String DEFAULT_CACHE_NAME = "default";
 
-    private static final Map<String,CacheItemConfig> CACHE_CONFIG_HOLDER=new ConcurrentHashMap(){
+    private static final Map<String, CacheItemConfig> CACHE_CONFIG_HOLDER = new ConcurrentHashMap() {
         {
-            put(DEFAULT_CACHE_NAME,new CacheItemConfig(){
+            put(DEFAULT_CACHE_NAME, new CacheItemConfig() {
                 @Override
                 public String getName() {
                     return DEFAULT_CACHE_NAME;
@@ -36,24 +36,24 @@ public class CacheContainer {
         }
     };
 
-    public static void init(List<CacheItemConfig> cacheItemConfigs){
-        if(CollectionUtils.isEmpty(cacheItemConfigs)){
+    public static void init(List<CacheItemConfig> cacheItemConfigs) {
+        if (CollectionUtils.isEmpty(cacheItemConfigs)) {
             return;
         }
         cacheItemConfigs.forEach(cacheItemConfig -> {
-            CACHE_CONFIG_HOLDER.put(cacheItemConfig.getName(),cacheItemConfig);
+            CACHE_CONFIG_HOLDER.put(cacheItemConfig.getName(), cacheItemConfig);
         });
 
     }
 
-    public static CacheItemConfig getCacheItemConfigByCacheName(String cacheName){
-        if(CACHE_CONFIG_HOLDER.containsKey(cacheName)) {
+    public static CacheItemConfig getCacheItemConfigByCacheName(String cacheName) {
+        if (CACHE_CONFIG_HOLDER.containsKey(cacheName)) {
             return CACHE_CONFIG_HOLDER.get(cacheName);
         }
         return CACHE_CONFIG_HOLDER.get(DEFAULT_CACHE_NAME);
     }
 
-    public static List<CacheItemConfig> getCacheItemConfigs(){
+    public static List<CacheItemConfig> getCacheItemConfigs() {
         return CACHE_CONFIG_HOLDER
                 .values()
                 .stream()

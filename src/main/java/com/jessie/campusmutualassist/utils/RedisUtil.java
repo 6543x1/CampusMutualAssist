@@ -8,11 +8,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
 @Component
 /*
-* util的原作者。。。本来用xxxOperations好好的，然后就。。。全部用Template了..估计也是copy别人的...
-* 这种轮子实在是懒得自己写能用的部分了...能用就行，里面也有自己补充的一些函数,已经造好的轮子就不动了
-* */
+ * util的原作者。。。本来用xxxOperations好好的，然后就。。。全部用Template了..估计也是copy别人的...
+ * 这种轮子实在是懒得自己写能用的部分了...能用就行，里面也有自己补充的一些函数,已经造好的轮子就不动了
+ * */
 public class RedisUtil {
     @Autowired(required = true)
     private RedisTemplate<String, String> redisTemplate;
@@ -129,49 +130,45 @@ public class RedisUtil {
     /**
      * 设置指定 key 的值
      */
-    public void set(String key,String value,long expire){
-        redisTemplate.opsForValue().set(key,value,expire,TimeUnit.SECONDS);
+    public void set(String key, String value, long expire) {
+        redisTemplate.opsForValue().set(key, value, expire, TimeUnit.SECONDS);
         //友情提示：如果没写最后一个参数，调用的是set(K key, V value, long offset)这个方法，其底层调用的是redis的setrange命令，这个命令看官网介绍
         //其含义是从指定的偏移量开始，覆盖整个值范围内从key存储的字符串的一部分。如果偏移量大于key处字符串的当前长度，则该字符串将填充零字节以使偏移量适合。不存在的键被视为空字符串，因此此命令将确保它包含足够大的字符串以能够将值设置为offset。
         //调用set(K key, V value, long timeout, TimeUnit unit)这个方法，其底层调用的是redis命令setex。
         //就说怎么有点奇怪....不知道这个set方法是我自己写错了，还是一开始copy的时候copy下来了
         //还好因为用RDM时被超大的Token卡了好久（token大小爆炸）深究了一下，要不这东西正式上线就是灾难，人一多内存要爆炸，安全性也有问题
     }
+
     public void set(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
     }
-    /**
-    *  以Json保存Object类型
-    * */
-    public void setObject(String key, Object value, long expire)
-    {
 
-        try
-        {
+    /**
+     * 以Json保存Object类型
+     */
+    public void setObject(String key, Object value, long expire) {
+
+        try {
             valueOperations.set(key, toJson(value));
 
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        if (expire != -1)
-        {
+        if (expire != -1) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
     }
-    /**
-     *  以Json保存Object类型
-     * */
-    public void setObject(String key, Object value)
-    {
 
-        try
-        {
+    /**
+     * 以Json保存Object类型
+     */
+    public void setObject(String key, Object value) {
+
+        try {
 
             valueOperations.set(key, toJson(value));
 
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -182,27 +179,27 @@ public class RedisUtil {
     public String get(String key) {
         return redisTemplate.opsForValue().get(key);
     }
+
     /**
      * 以Object方式获取指定 key 的值
      */
-    public <T> T getObject(String key, Class<T> clazz, long expire)
-    {
+    public <T> T getObject(String key, Class<T> clazz, long expire) {
 
 
         String value = valueOperations.get(key);
-        if (expire != -1)
-        {
+        if (expire != -1) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }
         return value == null ? null : fromJson(value, clazz);
     }
+
     /**
      * 以Object方式获取指定 key 的值
      */
-    public <T> T getObject(String key, Class<T> clazz)
-    {
+    public <T> T getObject(String key, Class<T> clazz) {
         return getObject(key, clazz, -1);
     }
+
     /**
      * 返回 key 中字符串值的子字符
      */
@@ -235,16 +232,15 @@ public class RedisUtil {
      * 设置ASCII码, 字符串'a'的ASCII码是97, 转为二进制是'01100001', 此方法是将二进制第offset位值变为value
      *
      * @param offset 位置
-     * @param value 值,true为1, false为0
+     * @param value  值,true为1, false为0
      */
     public boolean setBit(String key, long offset, boolean value) {
         return redisTemplate.opsForValue().setBit(key, offset, value);
     }
 
     /**
-     *
      * @param timeout 过期时间
-     * @param unit 时间单位, 天:TimeUnit.DAYS 小时:TimeUnit.HOURS 分钟:TimeUnit.MINUTES 秒:TimeUnit.SECONDS 毫秒:TimeUnit.MILLISECONDS
+     * @param unit    时间单位, 天:TimeUnit.DAYS 小时:TimeUnit.HOURS 分钟:TimeUnit.MINUTES 秒:TimeUnit.SECONDS 毫秒:TimeUnit.MILLISECONDS
      */
     public void setEx(String key, String value, long timeout, TimeUnit unit) {
         redisTemplate.opsForValue().set(key, value, timeout, unit);
@@ -299,7 +295,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param increment
      * @return
@@ -326,6 +321,7 @@ public class RedisUtil {
 
     /**
      * 获取所有给定字段的值
+     *
      * @return
      */
     public Map<Object, Object> hGetAll(String key) {
@@ -346,9 +342,10 @@ public class RedisUtil {
     public void hPutAll(String key, Map<String, String> maps) {
         redisTemplate.opsForHash().putAll(key, maps);
     }
-    public void hPutAll(String key, Map<String, String> maps,long expire) {
-        hashOperations.putAll(key,maps);
-        redisTemplate.expire(key,expire,TimeUnit.SECONDS);
+
+    public void hPutAll(String key, Map<String, String> maps, long expire) {
+        hashOperations.putAll(key, maps);
+        redisTemplate.expire(key, expire, TimeUnit.SECONDS);
     }
 
 
@@ -429,7 +426,7 @@ public class RedisUtil {
      * 获取列表指定范围内的元素
      *
      * @param start 开始位置, 0是开始位置
-     * @param end 结束位置, -1返回所有
+     * @param end   结束位置, -1返回所有
      */
     public List<String> lRange(String key, long start, long end) {
         return redisTemplate.opsForList().range(key, start, end);
@@ -443,7 +440,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param value
      * @return
@@ -453,7 +449,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param value
      * @return
@@ -477,7 +472,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param value
      * @return
@@ -487,7 +481,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param value
      * @return
@@ -497,7 +490,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param value
      * @return
@@ -542,7 +534,7 @@ public class RedisUtil {
      * 移出并获取列表的第一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
      *
      * @param timeout 等待时间
-     * @param unit 时间单位
+     * @param unit    时间单位
      */
     public String lBLeftPop(String key, long timeout, TimeUnit unit) {
         return redisTemplate.opsForList().leftPop(key, timeout, unit);
@@ -561,7 +553,7 @@ public class RedisUtil {
      * 移出并获取列表的最后一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止
      *
      * @param timeout 等待时间
-     * @param unit 时间单位
+     * @param unit    时间单位
      */
     public String lBRightPop(String key, long timeout, TimeUnit unit) {
         return redisTemplate.opsForList().rightPop(key, timeout, unit);
@@ -771,7 +763,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param options
      * @return
@@ -790,7 +781,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param values
      * @return
@@ -800,7 +790,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param values
      * @return
@@ -836,7 +825,7 @@ public class RedisUtil {
      * 获取集合的元素, 从小到大排序
      *
      * @param start 开始位置
-     * @param end 结束位置, -1查询所有
+     * @param end   结束位置, -1查询所有
      */
     public Set<String> zRange(String key, long start, long end) {
         return redisTemplate.opsForZSet().range(key, start, end);
@@ -872,7 +861,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param min
      * @param max
@@ -920,7 +908,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param min
      * @param max
@@ -984,7 +971,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param otherKeys
      * @param destKey
@@ -1015,7 +1001,6 @@ public class RedisUtil {
     }
 
     /**
-     *
      * @param key
      * @param options
      * @return
@@ -1027,12 +1012,10 @@ public class RedisUtil {
     /**
      * Object转成JSON数据
      */
-    private String toJson(Object object)
-    {
+    private String toJson(Object object) {
 
         if (object instanceof Integer || object instanceof Long || object instanceof Float ||
-                object instanceof Double || object instanceof Boolean || object instanceof String)
-        {
+                object instanceof Double || object instanceof Boolean || object instanceof String) {
             return String.valueOf(object);
         }
 
@@ -1042,8 +1025,7 @@ public class RedisUtil {
     /**
      * JSON数据，转成Object
      */
-    private <T> T fromJson(String json, Class<T> clazz)
-    {
+    private <T> T fromJson(String json, Class<T> clazz) {
         return JSON.parseObject(json, clazz);
     }
 }

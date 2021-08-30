@@ -8,17 +8,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApplicationContextHelper implements ApplicationContextAware {
 
-	private static ApplicationContext ctx;
+    private static ApplicationContext ctx;
 
-	@Override
-	synchronized public void setApplicationContext(ApplicationContext appContext)
-			throws BeansException {
+    public static ApplicationContext getApplicationContext() {
+        return ctx;
+    }
 
-		ApplicationContextHelper.ctx = appContext;
+    @Override
+    synchronized public void setApplicationContext(ApplicationContext appContext)
+            throws BeansException {
 
-	}
+        ApplicationContextHelper.ctx = appContext;
 
-	public static ApplicationContext getApplicationContext() {
-		return ctx;
-	}
+    }
 }
