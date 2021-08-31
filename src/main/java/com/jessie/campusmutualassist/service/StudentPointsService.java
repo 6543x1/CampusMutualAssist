@@ -3,6 +3,7 @@ package com.jessie.campusmutualassist.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jessie.campusmutualassist.entity.StudentPoints;
 import com.jessie.campusmutualassist.entity.StuPointsWithRealName;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.Set;
@@ -17,7 +18,8 @@ public interface StudentPointsService extends IService<StudentPoints> {
 
     void addPoints(StudentPoints studentPoints);
 
-    void addStusPoints(Set<String> stuList, String classID, int points);
+    @Async
+    void addStusPoints(Set<String> students, String classID, int points, String reason,String operator);
 
     StudentPoints StuPoints(String username);
 

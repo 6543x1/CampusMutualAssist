@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -46,6 +47,18 @@ public class FilesServiceImpl extends ServiceImpl<FilesMapper, Files>
     @Cacheable(value = "filesByHash", key = "#hash")//可以设置短些时间
     public Files getFilesByHash(String hash) {
         return filesMapper.getFilesByHash(hash);
+    }
+
+    @Override
+    public boolean delete(long fid){
+        Files files = filesMapper.getFile(fid);
+        if(files==null){
+            return false;
+        }
+        File file=new File(files.getPath()+files.getName());
+        file.delete();
+        filesMapper.deleteByFid(fid);
+        return true;
     }
 
 

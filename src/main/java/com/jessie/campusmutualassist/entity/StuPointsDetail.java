@@ -57,6 +57,10 @@ public class StuPointsDetail implements Serializable {
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
+    public StuPointsDetail() {
+        this.id=0;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {

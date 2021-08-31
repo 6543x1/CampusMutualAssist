@@ -14,11 +14,11 @@ public interface NoticeMapper {
     @Options(useGeneratedKeys = true, keyProperty = "nid", keyColumn = "nid")
     void newNotice(Notice notice);
 
-    @Select("select * from notice where classID=#{classID}")
+    @Select("select * from notice where classID=#{classID} order by nid desc")
     List<Notice> getClassNotices(String classID);
 
     @Select("select * from notice where nid=#{nid}")
-    List<Notice> getNotice(long nid);
+    Notice getNotice(long nid);
 
     @Select("select deadLine  from notice where nid=#{nid}")
     LocalDateTime getNoticeDeadLine(long nid);

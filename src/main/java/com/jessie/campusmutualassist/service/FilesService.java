@@ -17,4 +17,6 @@ public interface FilesService extends IService<Files> {
     List<Files> getClassFiles(String classID);
 
     Files getFilesByHash(String hash);
+
+    boolean delete(long fid);
 }

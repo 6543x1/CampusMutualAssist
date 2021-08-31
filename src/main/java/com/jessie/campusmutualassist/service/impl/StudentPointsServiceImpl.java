@@ -1,6 +1,7 @@
 package com.jessie.campusmutualassist.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jessie.campusmutualassist.aop.PointsOperationLog;
 import com.jessie.campusmutualassist.entity.StuPointsWithRealName;
 import com.jessie.campusmutualassist.entity.StudentPoints;
 import com.jessie.campusmutualassist.mapper.StudentPointsMapper;
@@ -53,11 +54,13 @@ public class StudentPointsServiceImpl extends ServiceImpl<StudentPointsMapper, S
 
     @Async
     @Override
-    public void addStusPoints(Set<String> stuList, String classID, int points) {
-        for (String stu : stuList) {
+    @PointsOperationLog(module = "学生加法", type = "common", desc = "加分")
+    public void addStusPoints(Set<String> students, String classID, int points, String reason,String operator) {
+        students.forEach((stu)->{
             addPoints(new StudentPoints(stu, classID, points));
-        }
+        });
     }
+
 
     @Override
     public StudentPoints StuPoints(String username) {

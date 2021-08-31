@@ -11,9 +11,7 @@ import java.io.Serializable;
 public class TeachingClass implements Serializable {
 
     private String name;
-    private String schedule;
     private String teacher;
-    private String college;
     private String id;
 
 }

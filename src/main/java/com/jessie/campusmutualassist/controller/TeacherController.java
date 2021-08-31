@@ -1,22 +1,20 @@
 package com.jessie.campusmutualassist.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.jessie.campusmutualassist.aop.PointsOperationLog;
 import com.jessie.campusmutualassist.entity.*;
 import com.jessie.campusmutualassist.entity.myEnum.SignType;
 import com.jessie.campusmutualassist.service.*;
 import com.jessie.campusmutualassist.service.impl.AliyunGreenService;
 import com.jessie.campusmutualassist.service.impl.DumpService;
 import com.jessie.campusmutualassist.service.impl.PushService;
+import com.jessie.campusmutualassist.utils.DigestUtil;
 import com.jessie.campusmutualassist.utils.JwtTokenUtil;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +33,7 @@ import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.g
 @Api(tags = "老师通用操作")
 @RestController
 @RequestMapping("/classes")
+@Slf4j
 public class TeacherController {
 
     @Autowired
@@ -68,6 +66,8 @@ public class TeacherController {
     UserService userService;
     @Autowired
     AliyunGreenService aliyunGreenService;
+    @Autowired
+    FilesService filesService;
 
     static final Random random = new Random();
 
@@ -112,83 +112,11 @@ public class TeacherController {
         return Result.success("查询老师创建的课程成功", myClass);
     }
 
-    @ApiOperation(value = "以Excel方式导入学生名单")
+    @ApiOperation(value = "(已弃用)以Excel方式导入学生名单")
     @PreAuthorize("hasAnyAuthority('teacher'+#classID)")
     @PostMapping(value = "/{classID}/addStudents", produces = "application/json;charset=UTF-8")
     public Result addStudents(@PathVariable("classID") String classID, @RequestParam("excel") MultipartFile excel) throws Exception {
-        System.out.println(TeacherController.class.getClassLoader().getResource(""));
-        File file = new File(TeacherController.class.getResource("").toString().substring(5) + classID + "/");
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        File file2 = new File(file, excel.getOriginalFilename());
-        excel.transferTo(file2);
-        String suffix = excel.getOriginalFilename();
-        suffix = suffix.substring(suffix.lastIndexOf(".") + 1);
-        Workbook workbook;
-        if ("xlsx".equals(suffix)) {
-            workbook = new XSSFWorkbook(file2);
-        } else if ("xls".equals(suffix)) {
-            FileInputStream fis = new FileInputStream(file2);
-            workbook = new HSSFWorkbook(fis);
-        } else {
-            return Result.error("ERROR");
-        }
-        Sheet sheet = workbook.getSheetAt(0);     //读取sheet 0
-
-        int firstRowIndex = sheet.getFirstRowNum() + 1;   //第一行是列名，所以不读
-        int lastRowIndex = sheet.getLastRowNum();
-        System.out.println("firstRowIndex: " + firstRowIndex);
-        System.out.println("lastRowIndex: " + lastRowIndex);
-
-        Row row0 = sheet.getRow(firstRowIndex);
-        int theNoIndex = 0;
-        if (row0 != null) {
-            int firstCellIndex = row0.getFirstCellNum();
-            int lastCellIndex = row0.getLastCellNum();
-            for (int cIndex = firstCellIndex; cIndex < lastCellIndex; cIndex++) {   //遍历列
-                Cell cell = row0.getCell(cIndex);
-                if (cell != null && cell.toString().contains("学号")) {
-                    theNoIndex = cIndex;
-                    System.out.println("学号位于" + theNoIndex);
-                    break;
-                }
-            }
-        }
-        ArrayList<String> stuNameList = new ArrayList<>();
-        ArrayList<String> notJoinList = new ArrayList<>();
-        for (int rIndex = firstRowIndex + 1; rIndex <= lastRowIndex; rIndex++) {   //遍历行
-            System.out.println("rIndex: " + rIndex);
-            Row row = sheet.getRow(rIndex);
-            if (row != null) {
-                Cell cell = row.getCell(theNoIndex);
-
-                if (cell != null) {
-                    cell.setCellType(CellType.STRING);//强转String了。。这玩意自动把长数字文本识别成数字
-
-                    System.out.println(cell.toString());
-                    try {
-                        stuSelectionService.newSelections(new StuSelection(cell.toString(), "", classID, 0));
-                        stuNameList.add(cell.toString() + "@fzu.edu.cn");
-                        //System.out.println(cell.getCellTypeEnum());
-                        if (cell.toString().contains(".")) {
-                            System.out.println("学号所在的列不是文本型，导入失败！请调整为文本型后重新上传");
-                        }
-                    } catch (Exception e) {
-                        notJoinList.add(cell.toString());
-                    }
-                    //非文本型读取后会变成数字(强行toString情况下），有时候变成科学计数法了。。。。并且缺失掉0，实在是懒得做这个检测
-                    //所以只能要求硬性设置为文本型
-                }
-            }
-        }
-        redisUtil.sAdd("class:" + classID + "type:" + "members", (String[]) stuNameList.toArray());
-        file2.delete();
-        if (notJoinList.size() != 0) {
-            return Result.error("部分学生未导入成功", 400, notJoinList);
-        } else {
-            return Result.success("学生导入成功");
-        }
+      return Result.error("本方法已经弃用！");
     }
 
     @ApiOperation(value = "导出班级活跃分")
@@ -198,7 +126,59 @@ public class TeacherController {
         dumpService.dumpClassPointsXlsx(classID, getCurrentUsername(), classID);
         return Result.success("后台导出中，稍后可以在班级文件中看到。");
     }
-
+    @ApiOperation(value = "上传文件", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "upload", value = "上传文件", required = true, dataType = "__file", paramType = "form"),
+            @ApiImplicitParam(name = "classID", value = "班级的ID", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "hash", value = "文件哈希值,如果提供，服务器会在上传后比较是否一致，不一致则上传失败", required = false),
+            @ApiImplicitParam(name = "type",value = "文件类型（文档/压缩包），实在懒得判断文件类型了，那可太麻烦了")
+    })
+    @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/upload", produces = "application/json;charset=UTF-8")
+    public Result Upload(@PathVariable("classID") String classID, @RequestParam("upload") MultipartFile upload, @RequestParam(value = "hash", required = false) String hash,@RequestParam(defaultValue = "其他") String type) throws Exception {
+        String path = "D:/camFiles/" + classID + "/";
+        String hashCode = "";
+        File file = new File(path);
+        Files files = new Files();
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        try {
+            String filename = upload.getOriginalFilename();
+            String suffix = filename.substring(filename.lastIndexOf(".") + 1);
+            File file2 = new File(path + upload.getOriginalFilename());
+            upload.transferTo(file2);
+            log.info("new file write to disk");
+            hashCode = DigestUtil.getSHA256(file2);
+            if (hash != null && !hash.equals(hashCode)) {
+                file2.delete();
+                return Result.error("文件的hash码不匹配");
+            }
+            files.setName(upload.getOriginalFilename());
+            files.setClassID(classID);
+            files.setHash(hashCode);
+            files.setPath(path);
+            files.setUsername(getCurrentUsername());
+            files.setType(type);
+            files.setUploadTime(LocalDateTime.now());
+            filesService.newFile(files);
+            log.info("new file write to mysql");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return Result.error("找不到文件的名字", 404);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("未知错误", 500);
+        }
+        return Result.success("上传成功", files.getFid());
+    }
+    @ApiOperation(value = "删除文件")
+    @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/deleteFile", produces = "application/json;charset=UTF-8")
+    public Result DeleteFile(@PathVariable("classID") String classID,long fid) {
+        filesService.delete(fid);
+        return Result.success("删除成功");//反正结果上来说不存在就算删除成功了...吧？
+    }
     @ApiOperation(value = "获取当前待加入的学生列表")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @GetMapping(value = "/{classID}/getJoinList", produces = "application/json;charset=UTF-8")
@@ -413,7 +393,6 @@ public class TeacherController {
     }
 
     @ApiOperation(value = "课堂随机选人加活跃分", notes = "会直接体现在随机选人的全部结果中，传入时，连带username:时间戳")
-    @PointsOperationLog(module = "课堂回答加分", type = "common", desc = "课堂加分")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/addCourseRandomStu", produces = "application/json;charset=UTF-8")
     public Result addRandomStuPointsInCourse(@PathVariable("classID") String classID, String student, int points) {
@@ -422,7 +401,7 @@ public class TeacherController {
         }
         student = student.split(":")[0];
         redisUtil.hPut("class:" + classID + ":" + "type:" + "CourseRandomSelect", student, String.valueOf(points));
-        studentPointsService.addStusPoints(Collections.singleton(student), classID, points);
+        studentPointsService.addStusPoints(Collections.singleton(student), classID, points,"课堂回答加分",getCurrentUsername());
         //此处要@Async，插入操作肯定要异步了
 //        StuPointsDetail stuPointsDetail=new StuPointsDetail();
 //        stuPointsDetail.setPoints(points);
@@ -435,37 +414,41 @@ public class TeacherController {
 
 
     @ApiOperation(value = "加活跃分", notes = "活跃分上限为100，超过自动记为100分")
-    @PointsOperationLog(module = "老师加分", type = "common", desc = "普通加分")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/addStuPoints", produces = "application/json;charset=UTF-8")
     public Result addStuPoints(@PathVariable("classID") String classID, @RequestParam("students") Set<String> students, int points, @RequestParam(defaultValue = "加分") String reason) {
-        if (points < -100 || points > 100) {
-            return Result.error("分数超出范围！");
+        if (points < -1 || points > 1) {
+            return Result.error("分数仅限于-1和1");
         }
         if (students.size() == 0) {
             return Result.error("学生为空");
         }
-        studentPointsService.addStusPoints(students, classID, points);
-        //此处要@Async，插入操作肯定要异步了
-//        StuPointsDetail stuPointsDetail=new StuPointsDetail();
-//        stuPointsDetail.setPoints(points);
-//        stuPointsDetail.setClassID(classID);
-//        stuPointsDetail.setOperator(getCurrentUsername());
-//        stuPointsDetail.setReason(reason);
-//
-//        stuPointsDetailService.newDetail(stuPointsDetail,students);
+        studentPointsService.addStusPoints(students, classID, points,reason,getCurrentUsername());
         return Result.success("已加分");
     }
 
+    @ApiOperation(value = "缺勤扣分", notes = "活跃分上限为100，超过自动记为100分")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "reason",value = "理由，默认为缺勤",required = false)
+    })
+    @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/absent", produces = "application/json;charset=UTF-8")
+    public Result absent(@PathVariable("classID") String classID, @RequestParam("students") Set<String> students,@RequestParam(defaultValue = "记为缺勤") String reason) {
+        if (students.size() == 0) {
+            return Result.error("学生为空");
+        }
+        studentPointsService.addStusPoints(students, classID, -3,reason,getCurrentUsername());
+        return Result.success("已对缺勤学生扣分");
+    }
+
     @ApiOperation(value = "清空活跃分到60", notes = "会清空当前时间之前的全部记录！需要再次输入密码")
-    @PointsOperationLog(module = "清空全部分数", type = "common", desc = "清空")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/remakeStuPoints", produces = "application/json;charset=UTF-8")
     public Result clearStuPoints(@PathVariable("classID") String classID, String password) {
         if (userService.cmpPassword(getCurrentUsername(), password)) {
             studentPointsService.remakePoints(classID);//同时会清空当前时间前的全部记录,
             stuPointsDetailService.deleteOldItems(classID);
-            return Result.success("已加分");
+            return Result.success("已清空，分数重置到60");
         }
         return Result.error("密码错误，需要正确的密码才能清空！", 403);
     }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -98,6 +99,7 @@ public class StuController {
             }
         }
         //请勿添加过多选项，以免响应缓慢
+        studentPointsService.addStusPoints(Collections.singleton(getCurrentUsername()),classID,1,"参与投票自动加分",getCurrentUsername());
         return Result.success("投票成功");
     }
     //我觉得投票的结果还是要存到数据库里去，可以用消息队列来解决这个问题，要不就@Async
@@ -114,6 +116,7 @@ public class StuController {
         } else {
             return Result.error("签到不存在或已过期！", 404);
         }
+        studentPointsService.addStusPoints(Collections.singleton(getCurrentUsername()),classID,1,"签到自动加分",getCurrentUsername());
         return Result.success("签到成功");
     }
 
@@ -125,6 +128,8 @@ public class StuController {
         if (!noticeService.getNoticeDeadLine(nid)) {
             return Result.error("超时确认成功");
         }
+        studentPointsService.addStusPoints(Collections.singleton(getCurrentUsername()),classID,1,"确认公告自动加分",getCurrentUsername());
+
         return Result.success("已确认");
     }
 

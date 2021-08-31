@@ -4,11 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.jessie.campusmutualassist.entity.*;
 import com.jessie.campusmutualassist.service.*;
-import com.jessie.campusmutualassist.utils.DigestUtil;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -16,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -205,60 +201,14 @@ public class ClassController {
     public Files getAFile(@PathVariable("classID") String classID, long fid) {
         return filesService.getFile(fid);
     }
-
-    @ApiOperation(value = "上传文件", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "upload", value = "上传文件", required = true, dataType = "__file", paramType = "form"),
-            @ApiImplicitParam(name = "classID", value = "班级的ID", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "hash", value = "文件哈希值,如果提供，服务器会在上传后比较是否一致，不一致则上传失败", required = false)
-    })
-    @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
-    @PostMapping(value = "/upload", produces = "application/json;charset=UTF-8")
-    public Result Upload(@PathVariable("classID") String classID, @RequestParam("upload") MultipartFile upload, @RequestParam(value = "hash", required = false) String hash) throws Exception {
-        //String path="/usr/camFiles/"+classID+"/";
-        String path = "D:/camFiles/" + classID + "/";
-        String hashCode = "";
-        File file = new File(path);
-        Files files = new Files();
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        try {
-            String filename = upload.getOriginalFilename();
-            String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-            File file2 = new File(path + upload.getOriginalFilename());
-            upload.transferTo(file2);
-            log.info("new file write to disk");
-            hashCode = DigestUtil.getSHA256(file2);
-            if (hash != null && !hash.equals(hashCode)) {
-                file2.delete();
-                return Result.error("文件的hash码不匹配");
-            }
-
-            files.setName(upload.getOriginalFilename());
-            files.setClassID(classID);
-            files.setHash(hashCode);
-            files.setPath(path);
-            files.setUsername(getCurrentUsername());
-            files.setType("其它");
-            files.setUploadTime(LocalDateTime.now());
-            filesService.newFile(files);
-            log.info("new file write to mysql");
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return Result.error("找不到文件的名字", 404);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Result.error("未知错误", 500);
-        }
-        return Result.success("上传成功", files.getFid());
-    }
-
     @ApiOperation(value = "下载文件", notes = "")
     @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
     @GetMapping(value = "/download", produces = "application/json;charset=UTF-8")
     public Result down(@PathVariable("classID") String classID, int fid, HttpServletRequest request, HttpServletResponse response) {
         Files files = filesService.getFile(fid);
+        if(!files.getClassID().equals(classID)){
+            return Result.error("本班级中不存在该文件!");
+        }
         String path = files.getPath() + files.getName();
         try {
             //获取页面输出流
@@ -273,7 +223,7 @@ public class ClassController {
             outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-            return Result.error("服务器出错");
+            return Result.error("服务器下载时出错");
         }
         return Result.error("那肯定没开始下载");
     }

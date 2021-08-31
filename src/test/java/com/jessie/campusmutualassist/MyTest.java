@@ -8,7 +8,6 @@ import com.aliyuncs.green.model.v20180509.TextScanRequest;
 import com.aliyuncs.http.FormatType;
 import com.aliyuncs.http.HttpResponse;
 import com.github.pagehelper.PageInfo;
-import com.jessie.campusmutualassist.controller.TeacherController;
 import com.jessie.campusmutualassist.entity.StuPointsDetail;
 import com.jessie.campusmutualassist.entity.StuPointsWithRealName;
 import com.jessie.campusmutualassist.mapper.UserMapper;
@@ -22,6 +21,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +34,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.time.LocalDate;
 import java.util.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -187,19 +188,28 @@ public class MyTest {
     @Test
     public void writeToXlsx() throws Exception {
         String classID = "CIRD9F";
-        String path = TeacherController.class.getResource("").toString().substring(5) + classID + "/";
+        String path = "D:\\camFiles\\";
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();
         }
-        File file2 = new File(path, classID + "Test2.xlsx");
-        file2.createNewFile();
+        String fileTime= LocalDate.now().toString();
+        System.out.println(fileTime);
+
+        File file2 = new File(path, "本班活跃分详情"+fileTime+".xlsx");
+
+        if(!file2.exists()){
+        file2.createNewFile();}
+        else{
+            file2.delete();
+            file2.createNewFile();
+        }
+        System.out.println(file2.getName());
         Workbook workbook = new XSSFWorkbook();
 
         Sheet sheet = workbook.createSheet("活跃分总览");     //读取sheet 0
 
-//        int firstRowIndex = 1;   //第一行是列名，所以不读
-//        int lastRowIndex = 100;
+
 //        System.out.println("firstRowIndex: " + firstRowIndex);
 //        System.out.println("lastRowIndex: " + lastRowIndex);
         Row firstRow = sheet.createRow(0);
@@ -223,16 +233,29 @@ public class MyTest {
             cellPoints.setCellValue(list.get(rIndex - 1).getPoints());
             //非文本型读取后会变成数字(强行toString情况下），有时候变成科学计数法了。。。。并且缺失掉0，实在是懒得做这个检测
         }       //所以只能要求硬性设置为文本型
+        sheet.setColumnWidth(0,10*256);
         Sheet sheet2 = workbook.createSheet("详细加分情况");
+        int firstRowIndex = 4;   //前面0-4设置合并单元格
+        Row infoRow=sheet2.createRow(0);
+        Cell infoCell=infoRow.createCell(0);
+        Font font = workbook.createFont();
+        font.setColor(Font.COLOR_RED);
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setWrapText(true);
+        cellStyle.setFont(font);
+        infoCell.setCellValue("活跃度变化：所有类别活动的分数变化范围在-1~1之间。特别地，课堂回答“记为缺勤”扣3分，老师们可根据实际情况，自行设置分数比例进行统计");
+        infoCell.setCellStyle(cellStyle);
+        CellRangeAddress region = new CellRangeAddress(0, 3, 0, 4);
+        sheet2.addMergedRegion(region);
         String[] titles = {"学号", "类别", "分数变化", "时间", "操作人"};
         List<StuPointsDetail> DetailList = stuPointsDetailService.classDetails(classID);
-        Row firstRow2 = sheet2.createRow(0);
+        Row firstRow2 = sheet2.createRow(firstRowIndex);
         for (int i = 0; i < titles.length; i++) {
             Cell cell = firstRow2.createCell(i);
             cell.setCellValue(titles[i]);
         }
         for (int rIndex = 1; rIndex <= DetailList.size(); rIndex++) {
-            Row row = sheet2.createRow(rIndex);
+            Row row = sheet2.createRow(firstRowIndex+rIndex);
             Cell cellNo = row.createCell(0);
             cellNo.setCellType(CellType.STRING);
             cellNo.setCellValue(DetailList.get(rIndex - 1).getTarget());
@@ -246,7 +269,11 @@ public class MyTest {
             cellOperator.setCellValue(DetailList.get(rIndex - 1).getOperator());
             //非文本型读取后会变成数字(强行toString情况下），有时候变成科学计数法了。。。。并且缺失掉0，实在是懒得做这个检测
         }       //所以只能要求硬性设置为文本型
-
+//        sheet2.setColumnWidth(1,20*256);//这个宽度可以在excel中拖动时查看多宽
+//        sheet2.setColumnWidth(3,20*256);
+       // sheet2.autoSizeColumn(1);
+        sheet2.setColumnWidth(1,15*256);
+        sheet2.autoSizeColumn(3);
         workbook.write(new FileOutputStream(file2));
         workbook.close();
     }
