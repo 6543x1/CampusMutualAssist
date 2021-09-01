@@ -7,7 +7,6 @@ import com.jessie.campusmutualassist.service.*;
 import com.jessie.campusmutualassist.service.impl.AliyunGreenService;
 import com.jessie.campusmutualassist.service.impl.DumpService;
 import com.jessie.campusmutualassist.service.impl.PushService;
-import com.jessie.campusmutualassist.utils.DigestUtil;
 import com.jessie.campusmutualassist.utils.JwtTokenUtil;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import io.swagger.annotations.Api;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -126,59 +124,50 @@ public class TeacherController {
         dumpService.dumpClassPointsXlsx(classID, getCurrentUsername(), classID);
         return Result.success("后台导出中，稍后可以在班级文件中看到。");
     }
+
     @ApiOperation(value = "上传文件", notes = "")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "upload", value = "上传文件", required = true, dataType = "__file", paramType = "form"),
             @ApiImplicitParam(name = "classID", value = "班级的ID", required = true, dataType = "String"),
             @ApiImplicitParam(name = "hash", value = "文件哈希值,如果提供，服务器会在上传后比较是否一致，不一致则上传失败", required = false),
-            @ApiImplicitParam(name = "type",value = "文件类型（文档/压缩包），实在懒得判断文件类型了，那可太麻烦了")
+            @ApiImplicitParam(name = "type", value = "文件类型（文档/压缩包），实在懒得判断文件类型了，那可太麻烦了")
     })
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/upload", produces = "application/json;charset=UTF-8")
-    public Result Upload(@PathVariable("classID") String classID, @RequestParam("upload") MultipartFile upload, @RequestParam(value = "hash", required = false) String hash,@RequestParam(defaultValue = "其他") String type) throws Exception {
-        String path = "D:/camFiles/" + classID + "/";
-        String hashCode = "";
-        File file = new File(path);
-        Files files = new Files();
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        try {
-            String filename = upload.getOriginalFilename();
-            String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-            File file2 = new File(path + upload.getOriginalFilename());
-            upload.transferTo(file2);
-            log.info("new file write to disk");
-            hashCode = DigestUtil.getSHA256(file2);
-            if (hash != null && !hash.equals(hashCode)) {
-                file2.delete();
-                return Result.error("文件的hash码不匹配");
-            }
-            files.setName(upload.getOriginalFilename());
-            files.setClassID(classID);
-            files.setHash(hashCode);
-            files.setPath(path);
-            files.setUsername(getCurrentUsername());
-            files.setType(type);
-            files.setUploadTime(LocalDateTime.now());
-            filesService.newFile(files);
-            log.info("new file write to mysql");
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return Result.error("找不到文件的名字", 404);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Result.error("未知错误", 500);
-        }
-        return Result.success("上传成功", files.getFid());
+    public Result Upload(@PathVariable("classID") String classID, @RequestParam("upload") MultipartFile upload, @RequestParam(value = "hash", required = false) String hash, @RequestParam(defaultValue = "其他") String type) throws Exception {
+        return filesService.saveUpload(upload, classID, getCurrentUsername(), hash, type);
     }
+
+    @ApiOperation(value = "给公告上传文件", notes = "在班级文件中不可见，只能通过查看公告来查看")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "upload", value = "上传文件", required = true, dataType = "__file", paramType = "form"),
+            @ApiImplicitParam(name = "classID", value = "班级的ID", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "hash", value = "文件哈希值,如果提供，服务器会在上传后比较是否一致，不一致则上传失败", required = false),
+            @ApiImplicitParam(name = "type", value = "文件类型（文档/压缩包），实在懒得判断文件类型了，那可太麻烦了")
+    })
+    @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/uploadNoticeFiles", produces = "application/json;charset=UTF-8")
+    public Result uploadNoticeFiles(@PathVariable("classID") String classID, @RequestParam("upload") MultipartFile upload, @RequestParam(value = "hash", required = false) String hash, @RequestParam(defaultValue = "其他") String type) throws Exception {
+        return filesService.saveNoticeFiles(upload, classID, getCurrentUsername(), hash, type);
+
+    }
+
+    @ApiOperation(value = "从已有文件中给公告添加文件")
+    @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/attachFilesToNotice")
+    public Result attachFilesToNotice(@PathVariable("classID") String classID, long nid, @RequestParam("fids") List<Long> fids) {
+        noticeService.addFilesToNotice(nid, fids);
+        return Result.success("添加成功");
+    }
+
     @ApiOperation(value = "删除文件")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/deleteFile", produces = "application/json;charset=UTF-8")
-    public Result DeleteFile(@PathVariable("classID") String classID,long fid) {
+    public Result DeleteFile(@PathVariable("classID") String classID, long fid) {
         filesService.delete(fid);
         return Result.success("删除成功");//反正结果上来说不存在就算删除成功了...吧？
     }
+
     @ApiOperation(value = "获取当前待加入的学生列表")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @GetMapping(value = "/{classID}/getJoinList", produces = "application/json;charset=UTF-8")

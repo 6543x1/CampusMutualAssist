@@ -3,6 +3,7 @@ package com.jessie.campusmutualassist.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.jessie.campusmutualassist.entity.*;
+import com.jessie.campusmutualassist.exception.NoAccessException;
 import com.jessie.campusmutualassist.service.*;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import io.swagger.annotations.Api;
@@ -94,6 +95,28 @@ public class ClassController {
         List<Notice> noticeList = noticeService.getClassPublicNotices(classID);
         return Result.success("获取公告成功", noticeList);
     }
+
+    @ApiOperation(value = "查看班级公告（包含文件）")
+    @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
+    @GetMapping(value = "/noticesWithFiles", produces = "application/json;charset=UTF-8")
+    public Result receiveAllPublicNoticesWithFiles(@PathVariable("classID") String classID) {
+        List<NoticeWithFiles> noticeList = noticeService.getPublicNoticesWithFiles(classID);
+        return Result.success("获取公告成功", noticeList);
+    }
+
+    @ApiOperation(value = "单独查看某个班级公告（包含文件）")
+    @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
+    @GetMapping(value = "/noticeWithFiles", produces = "application/json;charset=UTF-8")
+    public Result aPublicNoticesWithFiles(@PathVariable("classID") String classID, long nid) {
+        NoticeWithFiles notice = null;
+        try {
+            notice = noticeService.getNoticeWithFile(nid, getCurrentUsername());
+        } catch (NoAccessException e) {
+            return Result.error("你无权限查看此公告！");
+        }
+        return Result.success("获取单个公告成功", notice);
+    }
+
 
     @ApiOperation(value = "查看非公开公告（部分人可见）")
     @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
@@ -201,12 +224,13 @@ public class ClassController {
     public Files getAFile(@PathVariable("classID") String classID, long fid) {
         return filesService.getFile(fid);
     }
+
     @ApiOperation(value = "下载文件", notes = "")
     @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
     @GetMapping(value = "/download", produces = "application/json;charset=UTF-8")
     public Result down(@PathVariable("classID") String classID, int fid, HttpServletRequest request, HttpServletResponse response) {
         Files files = filesService.getFile(fid);
-        if(!files.getClassID().equals(classID)){
+        if (!files.getClassID().equals(classID)) {
             return Result.error("本班级中不存在该文件!");
         }
         String path = files.getPath() + files.getName();

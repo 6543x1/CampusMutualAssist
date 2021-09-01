@@ -2,6 +2,8 @@ package com.jessie.campusmutualassist.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jessie.campusmutualassist.entity.Files;
+import com.jessie.campusmutualassist.entity.Result;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,4 +21,8 @@ public interface FilesService extends IService<Files> {
     Files getFilesByHash(String hash);
 
     boolean delete(long fid);
+
+    Result saveUpload(MultipartFile upload, String classID, String username, String hash, String type);
+
+    Result saveNoticeFiles(MultipartFile upload, String classID, String username, String hash, String type);
 }

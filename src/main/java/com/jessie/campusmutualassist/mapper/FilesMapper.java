@@ -18,13 +18,13 @@ public interface FilesMapper extends BaseMapper<Files> {
     @Options(useGeneratedKeys = true, keyColumn = "fid", keyProperty = "fid")
     void newFile(Files files);
 
-    @Select("select * from files where fid=#{fid}")
+    @Select("select fid,name,classID,type,username,hash,username from files where fid=#{fid}")
     Files getFile(long fid);
 
-    @Select("select * from files where classID=#{classID}")
+    @Select("select fid,name,classID,type,username,hash,username from files where classID=#{classID}")
     List<Files> getClassFiles(String classID);
 
-    @Select("select * from files where hash=#{hash} limit 1")
+    @Select("select fid,name,classID,type,username,hash,username from files where hash=#{hash} limit 1")
     Files getFilesByHash(String hash);
     //笑死 一开始limit1没写，然后上传三个就报500
 

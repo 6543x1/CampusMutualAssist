@@ -3,6 +3,8 @@ package com.jessie.campusmutualassist.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jessie.campusmutualassist.entity.Notice;
+import com.jessie.campusmutualassist.entity.NoticeWithFiles;
+import com.jessie.campusmutualassist.exception.NoAccessException;
 import com.jessie.campusmutualassist.mapper.NoticeMapper;
 import com.jessie.campusmutualassist.mapper.NoticePermissionMapper;
 import com.jessie.campusmutualassist.service.MailService;
@@ -11,6 +13,7 @@ import com.jessie.campusmutualassist.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +40,10 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    @CacheEvict(value = "noticeCache", key = "#notice.classID+'*'")//这个Key是通配的吗？还是...可以删除？
+    @Caching(evict = {
+            @CacheEvict(value = "noticeCache", key = "#notice.classID+'*'"),
+            @CacheEvict(value = "noticesWithFile", key = "#notice.classID+'*'")
+    })
     public void newNotice(Notice notice) {
         noticeMapper.newNotice(notice);
     }
@@ -108,4 +114,28 @@ public class NoticeServiceImpl implements NoticeService {
         redisUtil.delete("class:" + classID + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid);
         noticeMapper.deleteNotice(nid);
     }
+
+    @Override
+    @Cacheable(value = "noticesWithFile", key = "#classID")
+    public List<NoticeWithFiles> getPublicNoticesWithFiles(String classID) {
+        return noticeMapper.getPublicNoticesWithFiles(classID);
+    }
+
+    @Override
+    @Cacheable(value = "noticeWithFile", key = "#nid")
+    public NoticeWithFiles getNoticeWithFile(long nid, String username) throws NoAccessException {
+        NoticeWithFiles notice = noticeMapper.getNoticeWithFiles(nid);
+        System.out.println(username);
+        System.out.println(noticePermissionMapper.isReaderOfNotice(nid, username));
+        if (!notice.isPublic() && !noticePermissionMapper.isReaderOfNotice(nid, username)) {
+            throw new NoAccessException();
+        }
+        return notice;
+    }
+
+    @Override
+    public void addFilesToNotice(long nid, List<Long> fids) {
+        noticeMapper.addFilesToNotice(nid, fids);
+    }
+
 }

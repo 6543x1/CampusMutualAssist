@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jessie.campusmutualassist.mapper.NoticeMapper">
+
+    <resultMap id="noticeWithFilesMap" type="com.jessie.campusmutualassist.entity.NoticeWithFiles">
+        <!--   一对一可以association 一对多要collection     -->
+        <id property="nid" column="nid"/>
+        <result property="classID" column="classID"/>
+        <result property="title" column="title"/>
+        <result property="body" column="body"/>
+        <result property="confirm" column="confirm"/>
+        <result property="deadLine" column="deadLine"/>
+        <result property="public" column="isPublic"/>
+        <result property="publishedTime" column="publishedTime"/>
+        <result property="publisher" column="publisher"/>
+        <collection property="files" column="fid" select="com.jessie.campusmutualassist.mapper.FilesMapper.getFile"/>
+    </resultMap>
+
+    <resultMap id="FilesResult" type="com.jessie.campusmutualassist.entity.Files">
+        <id property="fid" column="fid"/>
+        <result property="name" column="name"/>
+        <result property="classID" column="classID"/>
+        <result property="hash" column="hash"/>
+        <result property="type" column="type"/>
+        <result property="uploadTime" column="uploadTime"/>
+        <result property="username" column="username"/>
+    </resultMap>
+
+    <select id="getPublicNoticesWithFiles" resultType="com.jessie.campusmutualassist.entity.NoticeWithFiles"
+            resultMap="noticeWithFilesMap">
+        select n.*, nf.fid
+        from notice n
+                 left join notice_files nf on n.nid = nf.nid
+        where n.classID = #{classID}
+          and n.isPublic = true
+        order by n.nid desc
+    </select>
+    <select id="getNoticeWithFiles" resultType="com.jessie.campusmutualassist.entity.NoticeWithFiles"
+            resultMap="noticeWithFilesMap">
+        select n.*, nf.fid
+        from notice n
+                 left join notice_files nf on n.nid = nf.nid
+        where n.nid = #{nid}
+    </select>
+    <insert id="addFilesToNotice">
+        insert into notice_files (nid, fid) VALUES
+        <foreach collection="fids" item="item" separator=",">
+            (#{nid},#{item})
+        </foreach>
+    </insert>
+</mapper>

@@ -2,6 +2,7 @@ package com.jessie.campusmutualassist.service;
 
 import com.github.pagehelper.PageInfo;
 import com.jessie.campusmutualassist.entity.Notice;
+import com.jessie.campusmutualassist.entity.NoticeWithFiles;
 
 import java.util.List;
 import java.util.Set;
@@ -28,4 +29,10 @@ public interface NoticeService {
     boolean getNoticeDeadLine(long nid);
 
     void deleteNotice(long nid, String classID);
+
+    List<NoticeWithFiles> getPublicNoticesWithFiles(String classID);
+
+    NoticeWithFiles getNoticeWithFile(long nid, String username);
+
+    void addFilesToNotice(long nid, List<Long> fids);
 }
