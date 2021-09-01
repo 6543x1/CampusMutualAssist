@@ -1,7 +1,9 @@
 package com.jessie.campusmutualassist.mapper;
 
 import com.jessie.campusmutualassist.entity.Notice;
+import com.jessie.campusmutualassist.entity.NoticeWithFiles;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -37,4 +39,10 @@ public interface NoticeMapper {
 
     @Delete("delete from notice where nid=#{nid}")
     void deleteNotice(long nid);
+
+    List<NoticeWithFiles> getPublicNoticesWithFiles(String classID);
+
+    void addFilesToNotice(@Param("nid") long nid, @Param("fids") List<Long> fids);
+
+    NoticeWithFiles getNoticeWithFiles(long nid);
 }
