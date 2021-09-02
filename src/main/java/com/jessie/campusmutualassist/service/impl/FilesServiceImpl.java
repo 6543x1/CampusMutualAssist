@@ -57,15 +57,49 @@ public class FilesServiceImpl extends ServiceImpl<FilesMapper, Files>
     }
 
     @Override
-    public boolean delete(long fid){
-        Files files = filesMapper.getFile(fid);
+    @Caching(evict = {
+            @CacheEvict(value = "fileByFid", key = "#fid"),
+            @CacheEvict(value = "classFiles", key = "#classID"),
+            @CacheEvict(value = "classFilesWithPath", key = "#fid")
+
+    })
+    public boolean delete(long fid, String classID) {
+        Files files = filesMapper.getFileWithPath(fid);
         if (files == null) {
             return false;
         }
-        File file = new File(files.getPath() + files.getName());
-        file.delete();
+        if (filesMapper.getFilesCounts(files.getHash()) == 1) {//如果只有这一个文件，就删除
+            File file = null;
+            if (files.isFastUpload()) {
+                file = new File(files.getPath());
+            } else {
+                file = new File(files.getPath() + files.getName());
+            }
+            file.delete();
+        }
         filesMapper.deleteByFid(fid);
         return true;
+    }
+
+    @Override
+    public Result fastUpload(Files files, String classID, String fileName, String hash, String username) {
+        files.setFastUpload(true);
+        files.setPath(files.getPath() + files.getName());
+        filesMapper.updateFilesToFastUpload(files);//先将原来文件变成快传上传的，便于删除时统计数据
+        try {
+            files.setName(fileName);
+            files.setClassID(classID);
+            files.setUsername(username);
+            files.setUploadTime(LocalDateTime.now());
+            newFile(files);
+            log.info("new file write to mysql");
+        } catch (NullPointerException e) {
+            return Result.error("找不到文件的名字", 404);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("未知错误", 500);
+        }
+        return Result.success("快传成功");
     }
 
     @Override
@@ -83,6 +117,12 @@ public class FilesServiceImpl extends ServiceImpl<FilesMapper, Files>
             type = "Notice-" + "其他";
         }
         return realSave(upload, classID, username, hash, type, path);
+    }
+
+    @Override
+    @Cacheable(value = "classFilesWithPath", key = "#fid")
+    public Files getFileWithPath(long fid) {
+        return filesMapper.getFileWithPath(fid);
     }
 
     public Result realSave(MultipartFile upload, String classID, String username, String hash, String type, String path) {

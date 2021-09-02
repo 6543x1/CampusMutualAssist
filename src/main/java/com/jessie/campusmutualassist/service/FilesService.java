@@ -20,9 +20,13 @@ public interface FilesService extends IService<Files> {
 
     Files getFilesByHash(String hash);
 
-    boolean delete(long fid);
+    boolean delete(long fid, String classID);
+
+    Result fastUpload(Files files, String classID, String fileName, String hash, String username);
 
     Result saveUpload(MultipartFile upload, String classID, String username, String hash, String type);
 
     Result saveNoticeFiles(MultipartFile upload, String classID, String username, String hash, String type);
+
+    Files getFileWithPath(long fid);
 }

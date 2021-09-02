@@ -1,5 +1,6 @@
 package com.jessie.campusmutualassist.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -66,6 +67,10 @@ public class Files implements Serializable {
 
     @TableField(value = "uploadTime")
     private LocalDateTime uploadTime;
+
+    @JSONField(serialize = false)
+    @TableField(value = "fastUpload")
+    private boolean fastUpload;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

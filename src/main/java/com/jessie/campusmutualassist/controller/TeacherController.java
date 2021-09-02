@@ -138,6 +138,17 @@ public class TeacherController {
         return filesService.saveUpload(upload, classID, getCurrentUsername(), hash, type);
     }
 
+    @ApiOperation(value = "快传文件", notes = "快传要传文件的SHA256(用16进制表示，一共64位），同时注意把文件名也要传上来")
+    @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
+    @PostMapping(value = "/{classID}/fastUpload", produces = "application/json;charset=UTF-8")
+    public Result FastUpload(@PathVariable("classID") String classID, String hash, String fileName) throws Exception {
+        Files files = filesService.getFilesByHash(hash);
+        if (files == null) {
+            return Result.error("快传失败，服务器无此类型文件，使用普通上传");
+        }
+        return filesService.fastUpload(files, classID, fileName, hash, getCurrentUsername());
+    }
+
     @ApiOperation(value = "给公告上传文件", notes = "在班级文件中不可见，只能通过查看公告来查看")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "upload", value = "上传文件", required = true, dataType = "__file", paramType = "form"),
@@ -164,7 +175,7 @@ public class TeacherController {
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/deleteFile", produces = "application/json;charset=UTF-8")
     public Result DeleteFile(@PathVariable("classID") String classID, long fid) {
-        filesService.delete(fid);
+        filesService.delete(fid, classID);
         return Result.success("删除成功");//反正结果上来说不存在就算删除成功了...吧？
     }
 

@@ -2,10 +2,7 @@ package com.jessie.campusmutualassist.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jessie.campusmutualassist.entity.Files;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -21,17 +18,26 @@ public interface FilesMapper extends BaseMapper<Files> {
     @Select("select fid,name,classID,type,username,hash,username from files where fid=#{fid}")
     Files getFile(long fid);
 
+    @Select("select * from files where fid=#{fid}")
+    Files getFileWithPath(long fid);
+
     @Select("select fid,name,classID,type,username,hash,username from files where classID=#{classID}")
     List<Files> getClassFiles(String classID);
 
-    @Select("select fid,name,classID,type,username,hash,username from files where hash=#{hash} limit 1")
+    @Select("select * from files where hash=#{hash} limit 1")
     Files getFilesByHash(String hash);
+
+    @Select("select count(fid) from files where hash=#{hash}")
+    int getFilesCounts(String hash);
     //笑死 一开始limit1没写，然后上传三个就报500
 
     void newFile2(Files files);
 
     @Delete("delete from files where fid=#{fid}")
     void deleteByFid(long fid);
+
+    @Update("update files set path=#{path},fastUpload=#{fastUpload} where fid=#{fid}")
+    void updateFilesToFastUpload(Files files);
 }
 
 

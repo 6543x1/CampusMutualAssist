@@ -229,7 +229,7 @@ public class ClassController {
     @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
     @GetMapping(value = "/download", produces = "application/json;charset=UTF-8")
     public Result down(@PathVariable("classID") String classID, int fid, HttpServletRequest request, HttpServletResponse response) {
-        Files files = filesService.getFile(fid);
+        Files files = filesService.getFileWithPath(fid);
         if (!files.getClassID().equals(classID)) {
             return Result.error("本班级中不存在该文件!");
         }
@@ -258,32 +258,6 @@ public class ClassController {
     public List getClassFiles(@PathVariable("classID") String classID) {
         List<Files> files = filesService.getClassFiles(classID);
         return files;
-    }
-
-    @ApiOperation(value = "快传文件", notes = "快传要传文件的SHA256(用16进制表示，一共64位），同时注意把文件名也要传上来")
-    @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
-    @PostMapping(value = "/fastUpload", produces = "application/json;charset=UTF-8")
-    public Result FastUpload(HttpServletRequest request, @PathVariable("classID") String classID, String hash, String fileName) throws Exception {
-        Files files = filesService.getFilesByHash(hash);
-        if (files == null) {
-            return Result.error("快传失败，服务器无此类型文件，使用普通上传");
-        }
-
-        try {
-            files.setName(fileName);
-            files.setClassID(classID);
-            files.setUsername(getCurrentUsername());
-            files.setUploadTime(LocalDateTime.now());
-            filesService.newFile(files);
-            log.info("new file write to mysql");
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            return Result.error("找不到文件的名字", 404);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Result.error("未知错误", 500);
-        }
-        return Result.success("快传成功");
     }
 
     @ApiOperation(value = "查询班级的签到")
