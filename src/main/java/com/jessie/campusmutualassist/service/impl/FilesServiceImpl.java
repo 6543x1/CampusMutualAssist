@@ -1,6 +1,8 @@
 package com.jessie.campusmutualassist.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.jessie.campusmutualassist.entity.Files;
 import com.jessie.campusmutualassist.entity.Result;
 import com.jessie.campusmutualassist.mapper.FilesMapper;
@@ -32,7 +34,7 @@ public class FilesServiceImpl extends ServiceImpl<FilesMapper, Files>
     @Override
     @Caching(evict = {
             @CacheEvict(value = "fileByFid", key = "#files.fid"),
-            @CacheEvict(value = "classFiles", key = "#files.classID")
+            @CacheEvict(value = "classFiles", key = "#files.classID+'*'")
     })
     public void newFile(Files files) {
         filesMapper.newFile(files);
@@ -48,6 +50,14 @@ public class FilesServiceImpl extends ServiceImpl<FilesMapper, Files>
     @Cacheable(value = "classFiles", key = "#classID")
     public List<Files> getClassFiles(String classID) {
         return filesMapper.getClassFiles(classID);
+    }
+
+    @Override
+    @Cacheable(value = "classFiles", key = "#classID")
+    public PageInfo getClassFilesPage(String classID, int pageNum) {
+        PageHelper.startPage(pageNum, 10);
+        List<Files> list = filesMapper.getClassFiles(classID);
+        return new PageInfo<>(list);
     }
 
     @Override

@@ -73,9 +73,9 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Cacheable(value = "noticeCache", key = "#classID+':'+#num")
     public PageInfo getClassNoticesPage(String classID, int num) {
-        PageHelper.startPage(num, 1);
+        PageHelper.startPage(num, 10);
         List<Notice> list = noticeMapper.getClassPublicNotices(classID);
-        System.out.println("getClassNoticesPage没有使用缓存");
+        //System.out.println("getClassNoticesPage没有使用缓存");
         return new PageInfo<>(list);
     }
     //实在不行，可以只缓存第一页，这样效率不会降低太多
@@ -119,6 +119,14 @@ public class NoticeServiceImpl implements NoticeService {
     @Cacheable(value = "noticesWithFile", key = "#classID")
     public List<NoticeWithFiles> getPublicNoticesWithFiles(String classID) {
         return noticeMapper.getPublicNoticesWithFiles(classID);
+    }
+
+    @Override
+    @Cacheable(value = "noticesWithFile", key = "#classID+'-'+#pageNum")
+    public PageInfo getPublicNoticesWithFilesPage(String classID, int pageNum) {
+        PageHelper.startPage(pageNum, 10);
+        List<NoticeWithFiles> list = noticeMapper.getPublicNoticesWithFiles(classID);
+        return new PageInfo<>(list);
     }
 
     @Override

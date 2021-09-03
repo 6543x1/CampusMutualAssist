@@ -3,6 +3,7 @@ package com.jessie.campusmutualassist.service;
 import com.github.pagehelper.PageInfo;
 import com.jessie.campusmutualassist.entity.Notice;
 import com.jessie.campusmutualassist.entity.NoticeWithFiles;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Set;
@@ -31,6 +32,9 @@ public interface NoticeService {
     void deleteNotice(long nid, String classID);
 
     List<NoticeWithFiles> getPublicNoticesWithFiles(String classID);
+
+    @Cacheable(value = "noticesWithFile", key = "#classID")
+    PageInfo getPublicNoticesWithFilesPage(String classID, int pageNum);
 
     NoticeWithFiles getNoticeWithFile(long nid, String username);
 

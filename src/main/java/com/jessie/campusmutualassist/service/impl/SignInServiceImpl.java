@@ -1,6 +1,8 @@
 package com.jessie.campusmutualassist.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.jessie.campusmutualassist.entity.SignIn;
 import com.jessie.campusmutualassist.service.SignInService;
 import com.jessie.campusmutualassist.mapper.SignInMapper;
@@ -31,6 +33,7 @@ public class SignInServiceImpl extends ServiceImpl<SignInMapper, SignIn>
     }
 
     @Override
+    @Cacheable(value = "classSignIn", key = "#signInID")
     public SignIn getSignIn(long signInID) {
         return signInMapper.getSignIn(signInID);
     }
@@ -39,6 +42,14 @@ public class SignInServiceImpl extends ServiceImpl<SignInMapper, SignIn>
     @Cacheable(value = "classSignIn", key = "#classID")
     public List<SignIn> getStuSignIn(String classID) {
         return signInMapper.getStuSignIn(classID);
+    }
+
+    @Override
+    @Cacheable(value = "classSignIn", key = "#classID+'-'+#pageNum")
+    public PageInfo getStuSignInPage(String classID, int pageNum) {
+        PageHelper.startPage(pageNum, 10);
+        List<SignIn> list = signInMapper.getStuSignIn(classID);
+        return new PageInfo<>(list);
     }
 
     @Override
