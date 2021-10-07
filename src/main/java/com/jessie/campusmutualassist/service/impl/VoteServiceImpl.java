@@ -33,7 +33,7 @@ public class VoteServiceImpl extends ServiceImpl<VoteMapper, Vote>
     }
 
     @Override
-    @Cacheable(value = "ClassVotes", key = "#classID+':'+#pageNum")
+    @Cacheable(value = "ClassVotes", key = "#classID+'-'+#pageNum")
     public PageInfo<Vote> getClassVotesPage(String classID, int pageNum) {
         PageHelper.startPage(pageNum, 10, "vid desc");
         List<Vote> list = voteMapper.getClassVotes(classID);//结果应该要逆序的....这样可以吗？

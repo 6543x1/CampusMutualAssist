@@ -304,14 +304,14 @@ public class TeacherController {
         if (minTimes != 0) {
             notice.setDeadLine(LocalDateTime.now().plusSeconds(minTimes));
         }
-        Result textSafeResult = aliyunGreenService.testTextSafe(notice.getBody());
-        if (!textSafeResult.isStatus()) {
-            if (textSafeResult.getCode() != 400) {
-                return textSafeResult;
-            } else {
-                notice.setBody(textSafeResult.getData().toString());
-            }
-        }
+//        Result textSafeResult = aliyunGreenService.testTextSafe(notice.getBody());
+//        if (!textSafeResult.isStatus()) {
+//            if (textSafeResult.getCode() != 400) {
+//                return textSafeResult;
+//            } else {
+//                notice.setBody(textSafeResult.getData().toString());
+//            }
+//        }
         if (notice.isPublic()) {
             noticeService.newNotice(notice);
         } else {
