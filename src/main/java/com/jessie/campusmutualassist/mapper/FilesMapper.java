@@ -1,5 +1,4 @@
 package com.jessie.campusmutualassist.mapper;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jessie.campusmutualassist.entity.Files;
 import org.apache.ibatis.annotations.*;
@@ -32,6 +31,9 @@ public interface FilesMapper extends BaseMapper<Files> {
     //笑死 一开始limit1没写，然后上传三个就报500
 
     void newFile2(Files files);
+
+
+    int insertAll(Files files);
 
     @Delete("delete from files where fid=#{fid}")
     void deleteByFid(long fid);

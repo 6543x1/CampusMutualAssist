@@ -5,20 +5,31 @@
 <mapper namespace="com.jessie.campusmutualassist.mapper.FilesMapper">
 
     <resultMap id="BaseResultMap" type="com.jessie.campusmutualassist.entity.Files">
-            <id property="fid" column="fid" jdbcType="INTEGER"/>
-            <id property="name" column="name" jdbcType="VARCHAR"/>
+        <id property="fid" column="fid" jdbcType="INTEGER"/>
+        <id property="name" column="name" jdbcType="VARCHAR"/>
             <result property="path" column="path" jdbcType="VARCHAR"/>
             <result property="hash" column="hash" jdbcType="VARCHAR"/>
             <result property="classID" column="classID" jdbcType="VARCHAR"/>
-            <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        fid,name,path,
+        fid
+        ,name,path,
         hash,classID,type
     </sql>
 
     <insert id="newFile2" parameterType="com.jessie.campusmutualassist.entity.Files">
+
+    </insert>
+    <insert id="insertAll">
+        insert into files
+        (fid, name, path,
+         hash, classID, type,
+         username, uploadTime, fastUpload)
+        values (#{fid,jdbcType=NUMERIC}, #{name,jdbcType=VARCHAR}, #{path,jdbcType=VARCHAR},
+                #{hash,jdbcType=VARCHAR}, #{classID,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
+                #{username,jdbcType=VARCHAR}, #{uploadTime}, #{fastUpload})
 
     </insert>
 </mapper>

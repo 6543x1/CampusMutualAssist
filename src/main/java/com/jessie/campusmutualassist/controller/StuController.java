@@ -75,7 +75,7 @@ public class StuController {
         return Result.success("查询学生信息成功", stuSelections);
     }
 
-    @ApiOperation(value = "学生投票，多选投票在selections中加上多个选项即可")
+    @ApiOperation(value = "学生投票", notes = "多选投票在selections中加上多个选项即可")
     @PreAuthorize("hasAnyAuthority('student_'+#classID)")//和下面保持一致
     @PostMapping(value = "/{classID}/vote", produces = "application/json;charset=UTF-8")
     public Result vote(@PathVariable("classID") String classID, long vid, @RequestParam("selections") Set<String> selections) {

@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.getCurrentUsername;
 
-@Api("登录登出")
+@Api(tags = "登录登出")
 @RestController
 @CrossOrigin
 public class JwtAuthenticationController {
@@ -99,6 +99,7 @@ public class JwtAuthenticationController {
         return userService.getUser(username);
     }
 
+    @ApiOperation(value = "登出")
     @PostMapping(value = "/user/logout", produces = "application/json;charset=UTF-8")
     public Result logout() {
         redisUtil.delete("Jwt_TOKEN" + ":" + getCurrentUsername());

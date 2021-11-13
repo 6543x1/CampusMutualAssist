@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = "管理员（还没东西）")
+@Api(tags = "管理员（暂时还没东西）")
 @RestController
 public class AdminController {
     //管理员封人的时候，使用乐观锁

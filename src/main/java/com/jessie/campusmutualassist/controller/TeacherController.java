@@ -81,8 +81,10 @@ public class TeacherController {
         */
     @ApiOperation(value = "创建班级")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "name", value = "班级名字", dataType = "String"),
-            @ApiImplicitParam(name = "schedule", value = "班级上课时间地点", dataType = "String")
+            @ApiImplicitParam(name = "name", value = "班级名字", dataType = "String", required = true),
+            @ApiImplicitParam(name = "schedule", value = "班级上课时间地点", dataType = "String", required = true),
+            @ApiImplicitParam(name = "id", value = "这个不用写！会自动生成"),
+            @ApiImplicitParam(name = "teacher", value = "这个也不用写！")
     })
     @PreAuthorize("hasAnyAuthority('teacher')")
     @PostMapping(value = "/createClass", produces = "application/json;charset=UTF-8")

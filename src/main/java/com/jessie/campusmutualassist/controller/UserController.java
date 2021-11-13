@@ -81,7 +81,7 @@ public class UserController {
         return result;
     }
 
-    @ApiOperation(value = "注册", notes = "需要验证邮箱")
+    @ApiOperation(value = "注册", notes = "需要验证邮箱,这个方法不发送邮件, 发送邮件是/user/sendMail")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "username", value = "用户名，请使用学号，不要带邮箱", dataType = "String"),
             @ApiImplicitParam(name = "password", value = "密码", dataType = "String"),
@@ -263,7 +263,7 @@ public class UserController {
         return JSON.toJSONString(res);
     }
 
-    @ApiOperation(value = "通过邮箱找回密码（发送验证码）", notes = "默认发送到username@fzu.edu.cn")
+    @ApiOperation(value = "发送验证码到邮箱，注册和找回密码时使用", notes = "注册和找回密码时使用,默认发送到username@fzu.edu.cn")
     @PostMapping(value = "/sendMail", produces = "application/json;charset=UTF-8")
     public Result SendPwMail(HttpServletRequest request, String username) throws Exception {
         if (username == null) {

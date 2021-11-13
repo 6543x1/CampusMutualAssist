@@ -10,7 +10,8 @@
                  join user u on up.username = u.username
         where up.permission in (#{p1}, #{p2})
         group by up.username
-        order by up.username having count(distinct up.permission)=2
+        having count(distinct up.permission) = 2
+        order by up.username
     </select>
     <!--#    Mysql 8.0之后group by不再默认包含order by 某个列，会导致5.7和8.0查询结果不一致，所以需要手动指定按哪个列来排序！-->
     <select id="getClassMemByPermission" resultType="com.jessie.campusmutualassist.entity.SimpleStu" parameterType="java.lang.String">
