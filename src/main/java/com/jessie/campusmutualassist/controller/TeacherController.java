@@ -82,9 +82,9 @@ public class TeacherController {
     @ApiOperation(value = "创建班级")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "name", value = "班级名字", dataType = "String", required = true),
-            @ApiImplicitParam(name = "schedule", value = "班级上课时间地点", dataType = "String", required = true),
-            @ApiImplicitParam(name = "id", value = "这个不用写！会自动生成"),
-            @ApiImplicitParam(name = "teacher", value = "这个也不用写！")
+            // @ApiImplicitParam(name = "schedule", value = "班级上课时间地点", dataType = "String", required = true),
+            @ApiImplicitParam(name = "id", value = "这个不用写！会自动生成六位的ID"),
+            @ApiImplicitParam(name = "teacher", value = "这个也不用写！会自动生成")
     })
     @PreAuthorize("hasAnyAuthority('teacher')")
     @PostMapping(value = "/createClass", produces = "application/json;charset=UTF-8")
@@ -208,7 +208,7 @@ public class TeacherController {
         return Result.success("同意成功");
     }
 
-    @ApiOperation(value = "驱逐学生(踢出班级)")
+    @ApiOperation(value = "驱逐学生(踢出班级)", notes = "请不要在CIRD9F和25VEO4班级中,对student1、student2、student3使用")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/removeStu", produces = "application/json;charset=UTF-8")
     public Result removeStu(@PathVariable("classID") String classID, String username) {
@@ -360,7 +360,7 @@ public class TeacherController {
 
     @ApiOperation("活动随机选人")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "num", value = "选取的人数")
+            @ApiImplicitParam(name = "num", value = "选取的人数（默认为1）")
     }
     )
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")

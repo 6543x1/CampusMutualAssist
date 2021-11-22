@@ -10,11 +10,12 @@ import com.jessie.campusmutualassist.utils.JwtTokenUtil;
 import com.jessie.campusmutualassist.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +26,7 @@ import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.g
 @Api(tags = "学生通用操作类")
 @RestController
 @RequestMapping("/classes")
+@Slf4j
 public class StuController {
     @Autowired
     TeachingClassService teachingClassService;
@@ -50,7 +52,7 @@ public class StuController {
     @ApiOperation(value = "加入班级", notes = "老师生成班级后会获得一个ID，请妥善保存")
     @PreAuthorize("hasAnyAuthority('student')")
     @PostMapping(value = "/{classID}/join", produces = "application/json;charset=UTF-8")
-    public Result joinClass(@PathVariable("classID") String classID, HttpServletRequest request) {
+    public Result joinClass(@PathVariable("classID") String classID) {
         if (redisUtil.hasKey("classID" + ":" + classID + ":type:" + "Auto_AcceptStu")) {
             redisUtil.sAdd("class:" + classID + ":" + "type:" + "members", getCurrentUsername());
             return Result.success("已经成功加入");
@@ -61,7 +63,7 @@ public class StuController {
         studentPoints.setPoints(0);
         studentPoints.setClassID(classID);
         studentPoints.setUsername(getCurrentUsername());
-        studentPointsService.newStu(studentPoints);
+        studentPointsService.newStu(studentPoints);//这个有用吗？？？
         return Result.success("已经成功申请加入该班级，请等待同意");
     }
 
@@ -78,7 +80,7 @@ public class StuController {
     @ApiOperation(value = "学生投票", notes = "多选投票在selections中加上多个选项即可")
     @PreAuthorize("hasAnyAuthority('student_'+#classID)")//和下面保持一致
     @PostMapping(value = "/{classID}/vote", produces = "application/json;charset=UTF-8")
-    public Result vote(@PathVariable("classID") String classID, long vid, @RequestParam("selections") Set<String> selections) {
+    public Result vote(@PathVariable("classID") String classID, @ApiParam(value = "对应投票的ID") long vid, @RequestParam("selections") Set<String> selections) {
         if (redisUtil.sIsMember("class:" + classID + ":" + "type:" + "Voter" + ":" + "vid:" + vid, getCurrentUsername())) {
             return Result.error("你已投票，请勿重复投票");
         }
@@ -128,13 +130,13 @@ public class StuController {
         if (!noticeService.getNoticeDeadLine(nid)) {
             return Result.error("超时确认成功");
         }
-        studentPointsService.addStusPoints(Collections.singleton(getCurrentUsername()),classID,1,"确认公告自动加分",getCurrentUsername());
+        studentPointsService.addStusPoints(Collections.singleton(getCurrentUsername()), classID, 1, "确认公告自动加分", getCurrentUsername());
 
         return Result.success("已确认");
     }
 
-    @ApiOperation(value = "退出班级")
-    @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
+    @ApiOperation(value = "退出班级（慎用）", notes = "请不要随意退出CIRD9F和25VEO4这两个测试班级！")
+    @PreAuthorize("hasAnyAuthority('student_'+#classID)")
     @PostMapping(value = "/{classID}/quit", produces = "application/json;charset=UTF-8")
     public Result quit(@PathVariable("classID") String classID, String username) {
         stuSelectionService.quitClass(classID, username);

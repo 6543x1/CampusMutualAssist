@@ -140,6 +140,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean cmpPassword(String username, String password) {
+        if (username == null || password == null) {
+            return false;
+        }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String realPassword = userMapper.getPassword(username);
         return bCryptPasswordEncoder.matches(password, realPassword);

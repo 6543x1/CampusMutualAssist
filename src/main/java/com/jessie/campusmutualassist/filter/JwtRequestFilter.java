@@ -40,8 +40,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String requestTokenHeader = request.getHeader("token");
         if (requestTokenHeader == null) {
-            requestTokenHeader = request.getParameter("token");//为了兼容websocket
-            System.out.println(requestTokenHeader);
+            if (request.getRequestURI().contains("websocket")) {
+                requestTokenHeader = request.getParameter("token");//为了兼容websocket
+            }
+//            System.out.println(requestTokenHeader);
         }
         String username = null;
         String jwtToken = null;
@@ -55,22 +57,24 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
 
             } catch (NullPointerException e) {
-                System.out.println("token在服务器上不存在,可能是已经过期了");
+                logger.info("token在服务器上不存在,可能是已经过期了");
                 response.reset();
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().print(JSON.toJSONString(Result.error("服务器不存在此token，可能是过期了", 404)));
+                response.setStatus(401);
                 return;
             } catch (IllegalArgumentException e) {
-                System.out.println("token内容有误（？是这个吗）");
+                logger.info("token内容有误（？是这个吗）");
             } catch (ExpiredJwtException e) {
-                System.out.println("JWT Token has expired");
+                logger.info("JWT Token has expired");
                 response.reset();
                 response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().print(JSON.toJSONString(Result.error("Token过期了请重新登录获取新Token", 401)));
+                response.getWriter().print(JSON.toJSONString(Result.error("token已经过期，请重新登录", 401)));
+                response.setStatus(401);
                 return;
             }
         } else {
-            logger.warn("JWT Token does not found");
+            logger.info("JWT Token does not found");
         }
         // Once we get the token validate it.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

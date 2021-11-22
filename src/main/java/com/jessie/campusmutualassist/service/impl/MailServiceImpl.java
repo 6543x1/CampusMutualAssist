@@ -34,7 +34,7 @@ public class MailServiceImpl implements MailService {
                 int choice = 65;//默认用大写了，六位重复率应该比较低吧
                 val.append((char) (choice + random.nextInt(26)));
             } else { // 数字
-                val.append(String.valueOf(random.nextInt(10)));
+                val.append(random.nextInt(10));
             }
         }
         return val.toString();

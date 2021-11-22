@@ -227,9 +227,8 @@ public class UserController {
 
     @ApiOperation(value = "设置邮箱（不同于福大邮箱）", notes = "暂时先别用")
     @PostMapping(value = "/setMailAddr", produces = "application/json;charset=UTF-8")
-    public String setMailAddress(String mailAddr, HttpServletRequest request) throws Exception {
+    public String setMailAddress(String mailAddr) throws Exception {
         String username = getCurrentUsername();
-        int uid = jwtTokenUtil.getUidFromToken(request.getHeader("token"));
         if (username == null) {
             return JSON.toJSONString(Result.error("找不到用户名(服务器出错联系管理员)"));
         }
@@ -245,8 +244,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/confirmAddr", produces = "text/html;charset=UTF-8")
-    public String confirmAddr(HttpServletRequest request, String mailCode) throws Exception {
-        String token = request.getHeader("token");
+    public String confirmAddr(String mailCode) throws Exception {
         Result res;
         String username = getCurrentUsername();
         if (username == null) {

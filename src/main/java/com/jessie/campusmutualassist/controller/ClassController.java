@@ -64,7 +64,9 @@ public class ClassController {
             notes = "建议前端保存名字和username映射关系到本地，节约服务器宝贵资源（）")
     @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
     @GetMapping(value = "/getStuList", produces = "application/json;charset=UTF-8")
+    //获取分数！！！！建议改一下链接
     public List getStuScores(@PathVariable("classID") String classID) {
+
 //        Set<String> mySet;
 //        if(redisUtil.hasKey("class:" + classID + ":" + "type:" + "members")){
 //        mySet=redisUtil.sGetMembers("class:" + classID + ":" + "type:" + "members");
@@ -104,7 +106,7 @@ public class ClassController {
         return Result.success("获取公告成功", noticeList);
     }
 
-    @ApiOperation(value = "单独查看某个班级公告（包含文件）")
+    @ApiOperation(value = "单独查看某个班级的某一个公告（包含文件）")
     @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
     @GetMapping(value = "/noticeWithFiles", produces = "application/json;charset=UTF-8")
     public Result aPublicNoticesWithFiles(@PathVariable("classID") String classID, long nid) {

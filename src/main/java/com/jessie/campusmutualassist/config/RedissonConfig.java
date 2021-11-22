@@ -16,6 +16,9 @@ public class RedissonConfig {
     private String port;
     // 配置文件中你自己的redis密码
 
+    @Value("${spring.redis.password}")
+    private String password;
+
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
 
@@ -23,6 +26,7 @@ public class RedissonConfig {
         config.useSingleServer().setAddress("redis://" + host + ":" + port)
                 .setConnectionMinimumIdleSize(10)
                 .setSubscriptionConnectionPoolSize(64)
+                .setPassword(password)
         ;
         //添加主从配置
         return Redisson.create(config);
