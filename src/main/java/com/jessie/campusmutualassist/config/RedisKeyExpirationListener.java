@@ -57,7 +57,7 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
         if ("noticeUrge".equals(type)) {
             String classID = Key[3];
             int nid = Integer.parseInt(Key[5]);
-            Set<String> notConfirmed = redisUtil.sDifference("class:" + classID + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid, "class:" + classID + ":" + "type:" + "members");
+            Set<String> notConfirmed = redisUtil.sDifference("class:" + classID + ":" + "type:" + "members", "class:" + classID + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid);
             noticeService.urge(notConfirmed);
             pushService.pushUrgeWechatMessage(notConfirmed, "公告", "老师催你了去读公告了！", "无摘要");
             noticeConfirmersService.newConfirmers(nid, JSONObject.toJSONString(redisUtil.get("class:" + classID + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid)));
@@ -71,7 +71,7 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
         } else if ("signInExpire".equals(type)) {
             String classID = Key[3];
             int signID = Integer.parseInt(Key[5]);
-            Set<String> SignInList = redisUtil.sDifference("class:" + classID + ":type:" + "signIn" + ":" + "signId:" + signID, "class:" + classID + ":" + "type:" + "members");
+            Set<String> SignInList = redisUtil.sDifference("class:" + classID + ":" + "type:" + "members", "class:" + classID + ":type:" + "signIn" + ":" + "signId:" + signID);
             signinSignedService.newSigned(signID, JSONObject.toJSONString(SignInList));
         } else {
             log.info("Detected Expired Key: " + theInfo);

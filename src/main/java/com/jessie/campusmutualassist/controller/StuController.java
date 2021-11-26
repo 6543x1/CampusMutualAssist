@@ -1,8 +1,9 @@
 package com.jessie.campusmutualassist.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.jessie.campusmutualassist.entity.Result;
 import com.jessie.campusmutualassist.entity.StuSelection;
-import com.jessie.campusmutualassist.entity.StudentPoints;
 import com.jessie.campusmutualassist.entity.Vote;
 import com.jessie.campusmutualassist.service.*;
 import com.jessie.campusmutualassist.service.impl.PushService;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.getCurrentUsername;
 
@@ -59,11 +59,7 @@ public class StuController {
         } else {
             redisUtil.sAdd("class:" + classID + ":" + "type:" + "JoinQueue", getCurrentUsername());
         }
-        StudentPoints studentPoints = new StudentPoints();
-        studentPoints.setPoints(0);
-        studentPoints.setClassID(classID);
-        studentPoints.setUsername(getCurrentUsername());
-        studentPointsService.newStu(studentPoints);//这个有用吗？？？
+
         return Result.success("已经成功申请加入该班级，请等待同意");
     }
 
@@ -80,29 +76,44 @@ public class StuController {
     @ApiOperation(value = "学生投票", notes = "多选投票在selections中加上多个选项即可")
     @PreAuthorize("hasAnyAuthority('student_'+#classID)")//和下面保持一致
     @PostMapping(value = "/{classID}/vote", produces = "application/json;charset=UTF-8")
-    public Result vote(@PathVariable("classID") String classID, @ApiParam(value = "对应投票的ID") long vid, @RequestParam("selections") Set<String> selections) {
+    public Result vote(@PathVariable("classID") String classID, @ApiParam(value = "对应投票的ID") long vid, @RequestParam("selections") String selections) {
         if (redisUtil.sIsMember("class:" + classID + ":" + "type:" + "Voter" + ":" + "vid:" + vid, getCurrentUsername())) {
             return Result.error("你已投票，请勿重复投票");
         }
+
+        String res = JSON.toJSON(selections).toString();
+        List<String> list = JSONArray.parseArray(res, String.class);
         Vote vote = voteService.getVote(vid);
         if (vote.getDeadLine().isBefore(LocalDateTime.now())) {
             return Result.error("投票已经过期!");//emmmm...因为从数据库取出来了就懒得再去redis看还存在不存在了
         }
-        if (vote.getLimitation() < selections.size()) {
+        if (vote.getLimitation() < list.size()) {
             return Result.error("最多只能选择" + vote.getLimitation() + "项选项！");
         }
-        for (String x : selections) {
+        for (String x : list) {
             redisUtil.zIncrementScore("class:" + classID + ":" + "type:" + "VoteSelections" + ":" + "vid:" + vid, x, 1);
         }
         redisUtil.sAdd("class:" + classID + ":" + "type:" + "Voter" + ":" + "vid" + vid, getCurrentUsername());
         if (!vote.isAnonymous()) {
-            for (String x : selections) {
+            for (String x : list) {
                 redisUtil.sAdd("class:" + classID + ":" + "type:" + "Voter" + ":" + "vid:" + vid + ":Selection:" + x, getCurrentUsername());
             }
         }
         //请勿添加过多选项，以免响应缓慢
-        studentPointsService.addStusPoints(Collections.singleton(getCurrentUsername()),classID,1,"参与投票自动加分",getCurrentUsername());
+        studentPointsService.addStusPoints(Collections.singleton(getCurrentUsername()), classID, 1, "参与投票自动加分", getCurrentUsername());
         return Result.success("投票成功");
+    }
+
+    @ApiOperation(value = "测试用投票", notes = "多选投票在selections中加上多个选项即可")
+    @PreAuthorize("hasAnyAuthority('student_'+#classID)")//和下面保持一致
+    @PostMapping(value = "/{classID}/testVote", produces = "application/json;charset=UTF-8")
+    public Result testVote(@PathVariable("classID") String classID, @ApiParam(value = "对应投票的ID") long vid, String selections) {
+//        Set<String> strings = JSON.parseObject(selections,Set.class);
+        String res = JSON.toJSON(selections).toString();//解决单选
+        log.info("selections:" + selections);
+        log.info(res);
+        List<String> list = JSONArray.parseArray(res, String.class);
+        return Result.success("测试投票结果如下：你的" + vid + "选项为", list);
     }
     //我觉得投票的结果还是要存到数据库里去，可以用消息队列来解决这个问题，要不就@Async
 

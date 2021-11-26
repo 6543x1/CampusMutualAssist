@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -196,6 +197,11 @@ public class TeacherController {
         //此处应该启动一个新的线程吧?
         for (String student : students) {
             try {
+                StudentPoints studentPoints = new StudentPoints();
+                studentPoints.setPoints(0);
+                studentPoints.setClassID(classID);
+                studentPoints.setUsername(student);
+                studentPointsService.newStu(studentPoints);//这个有用吗？？？
                 stuSelectionService.newSelections(new StuSelection(student, "", classID, 0));
                 permissionService.setUserPermission(student, "student_" + classID);
                 redisUtil.sAdd("class:" + classID + ":" + "type:" + "members", student);
@@ -236,7 +242,7 @@ public class TeacherController {
         return Result.success("已经允许自动加入，24小时有效");
     }
 
-    @ApiOperation(value = "创建投票")
+    @ApiOperation(value = "创建投票/发布投票")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")
     @PostMapping(value = "/{classID}/createVote", produces = "application/json;charset=UTF-8")
     public Result createVote(@PathVariable("classID") String classID, String title,
@@ -297,12 +303,16 @@ public class TeacherController {
     public Result publishNotice(@PathVariable("classID") String classID, Notice notice,
                                 @RequestParam(required = false, defaultValue = "0") int minTimes,
                                 @RequestParam(required = false) List<String> students) {
+        if (notice.getDeadLine() != null) {
+            minTimes = Math.toIntExact(Duration.between(LocalDateTime.now(), notice.getDeadLine()).toMinutes() * 60);
+        }
         if (minTimes != 0 && minTimes < 179) {
             return Result.error("提醒时间不宜小于三分钟，请设置的长一些。");
         }
         notice.setClassID(classID);
         notice.setPublishedTime(LocalDateTime.now());
         notice.setPublisher(getCurrentUsername());
+
         if (minTimes != 0) {
             notice.setDeadLine(LocalDateTime.now().plusSeconds(minTimes));
         }
@@ -342,7 +352,7 @@ public class TeacherController {
     @PostMapping(value = "/{classID}/notice/{nid}/urge", produces = "application/json;charset=UTF-8")
     public Result urgeNotice(@PathVariable("nid") int nid, @PathVariable("classID") String classID) {
         String classID2 = noticeService.getClassID(nid);
-        Set<String> notConfirmed = redisUtil.sDifference("class:" + classID2 + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid, "class:" + classID + ":" + "type:" + "members");
+        Set<String> notConfirmed = redisUtil.sDifference("class:" + classID + ":" + "type:" + "members", "class:" + classID2 + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid);
         noticeService.urge(notConfirmed);
         pushService.pushUrgeWechatMessage(notConfirmed, "公告", "老师催你了去读公告了！", "无摘要");
         return Result.success("在催了在催了");
@@ -352,7 +362,7 @@ public class TeacherController {
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID)")//{title}待持久化到数据库后，会以ID取代之
     @PostMapping(value = "/{classID}/vote/{title}/urge", produces = "application/json;charset=UTF-8")
     public Result urgeVote(@PathVariable("vid") long vid, @PathVariable("classID") String classID) {
-        Set<String> notConfirmed = redisUtil.sDifference("class:" + classID + ":" + "type:" + "Voter" + ":" + "vid:" + vid, "class:" + classID + ":" + "type:" + "members");
+        Set<String> notConfirmed = redisUtil.sDifference("class:" + classID + ":" + "type:" + "members", "class:" + classID + ":" + "type:" + "Voter" + ":" + "vid:" + vid);
         mailService.urgeStu(notConfirmed, "快去投票！");
         pushService.pushUrgeWechatMessage(notConfirmed, "投票", "老师催你了去投票了！", "无摘要");
         return Result.success("在催了在催了");

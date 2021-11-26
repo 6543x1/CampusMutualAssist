@@ -5,7 +5,7 @@
         select u.username, u.realName, sp.points
         from user u
                  join student_points sp on u.username = sp.username
-        where u.username in
-              (select stuName from stu_selection where classID = #{classID})
+                 join stu_selection ss on u.username = ss.stuName
+        where ss.classID = #{classID}
     </select>
 </mapper>

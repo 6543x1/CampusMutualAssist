@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.getCurrentUsername;
+
 /**
  *
  */
@@ -27,7 +29,7 @@ public class VoteServiceImpl extends ServiceImpl<VoteMapper, Vote>
     RedisUtil redisUtil;
 
     @Override
-    @CacheEvict(value = "classVotes", key = "#vote.classID+'*'")
+    @CacheEvict(value = "ClassVotes", key = "#vote.classID+'*'")
     public void newVote(Vote vote) {
         voteMapper.newVote(vote);
     }
@@ -49,6 +51,12 @@ public class VoteServiceImpl extends ServiceImpl<VoteMapper, Vote>
         List<Vote> list = voteMapper.getClassVotes(classID);//结果应该要逆序的....这样可以吗？
         for (Vote vote : list) {
             vote.setSelections(redisUtil.zReverseRange("class:" + classID + ":" + "type:" + "VoteSelections" + ":" + "vid:" + vote.getVid(), 0, -1));
+
+            if (!redisUtil.sIsMember("class:" + classID + ":" + "type:" + "Voter" + ":" + "vid" + vote.getVid(), getCurrentUsername())) {
+                vote.setVoted(false);
+            } else {
+                vote.setVoted(true);
+            }
         }
         return list;
     }

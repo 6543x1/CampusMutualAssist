@@ -153,7 +153,11 @@ public class ClassController {
     @GetMapping(value = "/notice/noticeConfirmedStu", produces = "application/json;charset=UTF-8")
     public Result noticeUnConfirmed(@PathVariable("classID") String classID, long nid) {
         Set<String> memSet = redisUtil.sGetMembers("class:" + classID + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid);
-        return Result.success("已获取确认名单", memSet);
+        Set<String> notConfirmed = redisUtil.sDifference("class:" + classID + ":" + "type:" + "members", "class:" + classID + ":type:" + "noticeConfirmed" + ":" + "nid:" + nid);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("confirmed", memSet);
+        jsonObject.put("unconfirmed", notConfirmed);
+        return Result.success("已获取确认名单", jsonObject);
     }
 
     @ApiOperation(value = "获取当前班级的最新随机选人结果")
@@ -169,6 +173,7 @@ public class ClassController {
         return Result.success("获取成功", jsonObject);
     }
 
+
     @ApiOperation(value = "获取当前班级的最新课堂！随机选人结果")
     @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")
     @GetMapping(value = "/CourseRandomStu", produces = "application/json;charset=UTF-8")
@@ -182,12 +187,16 @@ public class ClassController {
         return Result.success("已获取随机选人结果", jsonObject);//别问，问就是IDE自动生成名字懒得改，虽然这个名字怪怪的
     }
 
-    @ApiOperation(value = "获取还没签到的学生")
+    @ApiOperation(value = "获取签到情况")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID,'student_'+#classID)")
     @PostMapping(value = "/getSignInDetail", produces = "application/json;charset=UTF-8")
     public Result checkSignIn(@PathVariable("classID") String classID, String signID) {
         Set<String> notSingInList = redisUtil.sGetMembers("class:" + classID + ":type:" + "signIn" + ":" + "signId:" + signID);
-        return Result.success("未签到的学生", notSingInList);
+        Set<String> signInList = redisUtil.sDifference("class:" + classID + ":" + "type:" + "members", "class:" + classID + ":type:" + "signIn" + ":" + "signId:" + signID);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("signed", signInList);
+        jsonObject.put("unSigned", notSingInList);
+        return Result.success("签到的学生/未签到情况", jsonObject);
     }
 
     @ApiOperation(value = "查询是否自动同意学生加入")
@@ -201,13 +210,18 @@ public class ClassController {
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID,'student_'+#classID)")
     @GetMapping(value = "/voter", produces = "application/json;charset=UTF-8")
     public Result getVoter(@PathVariable("classID") String classID, String vid) {
-        return Result.success("查询成功", redisUtil.sGetMembers("class:" + classID + ":" + "type:" + "members"));
+        Set<String> voteList = redisUtil.sGetMembers("class:" + classID + ":" + "type:" + "Voter" + ":" + "vid" + vid);
+        Set<String> notVoteList = redisUtil.sDifference("class:" + classID + ":" + "type:" + "members", "class:" + classID + ":" + "type:" + "Voter" + ":" + "vid" + vid);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("voted", voteList);
+        jsonObject.put("notVoted", notVoteList);
+        return Result.success("查询成功", jsonObject);
     }
 
     @ApiOperation(value = "查询投票每个人对应选项选的啥")
     @PreAuthorize("hasAnyAuthority('teacher_'+#classID,'student_'+#classID)")
     @GetMapping(value = "/voterSelections", produces = "application/json;charset=UTF-8")
-    public HashMap getVoterResult(@PathVariable("classID") String classID, String vid) {
+    public Result getVoterResult(@PathVariable("classID") String classID, String vid) {
         Set<String> selections = redisUtil.zRange("class:" + classID + ":" + "type:" + "VoteSelections" + ":" + "vid:" + vid, 0, -1);
         HashMap<String, Set<String>> selectorMap = new HashMap<>();
         for (String selection : selections) {
@@ -217,7 +231,7 @@ public class ClassController {
                 selectorMap.put(selection, null);
             }
         }
-        return selectorMap;
+        return Result.success("查询成功", selectorMap);
     }
 
     @ApiOperation(value = "单文件直接获取")
@@ -266,6 +280,7 @@ public class ClassController {
     @PreAuthorize("hasAnyAuthority('student_'+#classID,'teacher_'+#classID)")//和下面保持一致
     @GetMapping(value = "/signIn", produces = "application/json;charset=UTF-8")
     public List<SignIn> getSignIn(@PathVariable("classID") String classID) {
+
         return signInService.getStuSignIn(classID);
     }
 

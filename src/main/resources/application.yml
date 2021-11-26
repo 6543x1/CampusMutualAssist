@@ -7,10 +7,10 @@ server: #端口如果不配默认8080
 
 spring:
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/classaffairsmanage?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/classaffairsmanage?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
-    password: 123456
+    password:
   mail:
     host: smtp.office365.com
     username: 6543x1@outlook.com
@@ -38,6 +38,7 @@ spring:
     port: 6379
     #Redis数据库索引（默认为0）
     database: 0
+    password:
     jedis:
       pool:
         #连接池最大连接数（使用0表示没有限制）
@@ -59,7 +60,7 @@ spring:
   activemq:
     broker-url: tcp://localhost:61616 #8161是监控端，61616是给Java使用的
     user: admin
-    password: admin
+    password:
     pool:
       enabled: true #注意pool版本与SpringBoot版本搭配，不要用了旧版pool
       max-connections: 50
@@ -99,7 +100,7 @@ jwt:
   route:
     authentication:
       path: /user/login
-  header: Authorization
+  header: token
   expiration: 604800
   secret: unknown
   # secret是使用的密钥，目前暂时固定，因为弄成随机有点麻烦，要不直接用Bcrypt?。。。好像jjwt不支持
@@ -108,14 +109,15 @@ springfox:
     swagger-ui:
       enabled: true #上线到服务器后应该予以关闭
 aliyun:
-  accessKeyId: 123456
-  accessSecret: 123456
+  accessKeyId:
+  accessSecret:
+  regionID: cn-shanghai
 wx:
   mp:
-    app-id: 123
-    secret: 123
+    app-id:
+    secret:
     token: wechatTestCAM
-#    aes-key: #目前公众号明文
+    #    aes-key: #目前公众号明文
     #wx redis配置
     config-storage:
       type: redistemplate
@@ -123,4 +125,6 @@ wx:
       redis:
         host: 127.0.0.1
         port: 6379
+        password: 123456cnmA
       http-client-type: httpclient
+

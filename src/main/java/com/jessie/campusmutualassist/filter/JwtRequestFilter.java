@@ -45,6 +45,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
 //            System.out.println(requestTokenHeader);
         }
+        if (request.getRequestURI().contains("login") || request.getRequestURI().contains("register")) {
+
+        }
         String username = null;
         String jwtToken = null;
         //原本有Bearer前缀 现在我直接干掉了直接放不好吗

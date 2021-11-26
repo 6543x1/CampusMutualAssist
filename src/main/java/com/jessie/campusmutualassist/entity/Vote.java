@@ -32,4 +32,5 @@ public class Vote implements Serializable {
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime deadLine;
     //友情提示：现在不加这个format注解时间会变成乱码
+    boolean voted;
 }

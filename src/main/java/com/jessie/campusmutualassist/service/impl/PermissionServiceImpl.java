@@ -44,7 +44,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     }
 
-    public static List getCurrentPermission() {
+    public static List<GrantedAuthority> getCurrentPermission() {
 
         Collection<? extends GrantedAuthority> authorities;
         List<GrantedAuthority> list;

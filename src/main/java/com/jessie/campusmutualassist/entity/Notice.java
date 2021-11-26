@@ -25,7 +25,7 @@ public class Notice implements Serializable {
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedTime;
     @ApiModelProperty(value = "服务器自动生成")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deadLine;
     @ApiModelProperty(value = "服务器自动生成")

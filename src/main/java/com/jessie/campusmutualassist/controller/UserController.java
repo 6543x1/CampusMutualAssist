@@ -242,7 +242,7 @@ public class UserController {
         mailService.sendResetPw(mailAddr, username + "的请求码(六位字符）:" + theCode);
         return JSON.toJSONString(Result.success("SuccessPlzConfirm"));
     }
-
+    @ApiOperation(value = "确认邮箱地址？")
     @PostMapping(value = "/confirmAddr", produces = "text/html;charset=UTF-8")
     public String confirmAddr(String mailCode) throws Exception {
         Result res;

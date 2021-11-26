@@ -71,6 +71,7 @@ public class SignIn implements Serializable {
     @TableField(value = "publisher")
     private String publisher;
 
+    private boolean signed;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

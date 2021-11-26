@@ -704,7 +704,7 @@ public class RedisUtil {
     }
 
     /**
-     * 获取两个集合的差集
+     * 获取两个集合的差集(是返回第一个集合和其他集合的差异！如果第一个集合被其他集合包含，那将没有差异)
      */
     public Set<String> sDifference(String key, String otherKey) {
         return redisTemplate.opsForSet().difference(key, otherKey);

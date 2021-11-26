@@ -184,40 +184,40 @@
             <artifactId>knife4j-spring-boot-starter</artifactId>
             <version>3.0.2</version>
         </dependency>
-        <!--     阿里云服务相关   -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-core</artifactId>
-            <version>4.5.24</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-green</artifactId>
-            <version>3.6.5</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun.oss</groupId>
-            <artifactId>aliyun-sdk-oss</artifactId>
-            <version>2.8.3</version>
-        </dependency>
-        <!--整合ActiveMQ-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-activemq</artifactId>
-        </dependency>
-<!--    这个才是给新版SpringBoot用的ActiveMQ连接池    -->
-        <dependency>
-            <groupId>org.messaginghub</groupId>
-            <artifactId>pooled-jms</artifactId>
-        </dependency>
-<!--   2.0+以下版本使用的是PooledConnectionFactory，它存在于org.apache.activemq.pool.PooledConnectionFactory
-        2.1+版本使用的是JmsPoolConnectionFactory，它存在于org.messaginghub.pooled.jms.JmsPoolConnectionFactory     -->
-<!--    网络上教程太老导致出事故...    -->
+        <!--        &lt;!&ndash;     阿里云服务相关   &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.aliyun</groupId>-->
+        <!--            <artifactId>aliyun-java-sdk-core</artifactId>-->
+        <!--            <version>4.5.24</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.aliyun</groupId>-->
+        <!--            <artifactId>aliyun-java-sdk-green</artifactId>-->
+        <!--            <version>3.6.5</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.aliyun.oss</groupId>-->
+        <!--            <artifactId>aliyun-sdk-oss</artifactId>-->
+        <!--            <version>2.8.3</version>-->
+        <!--        </dependency>-->
+        <!--        &lt;!&ndash;整合ActiveMQ&ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-starter-activemq</artifactId>-->
+        <!--        </dependency>-->
+        <!--&lt;!&ndash;    这个才是给新版SpringBoot用的ActiveMQ连接池    &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.messaginghub</groupId>-->
+        <!--            <artifactId>pooled-jms</artifactId>-->
+        <!--        </dependency>-->
+        <!--   2.0+以下版本使用的是PooledConnectionFactory，它存在于org.apache.activemq.pool.PooledConnectionFactory
+                2.1+版本使用的是JmsPoolConnectionFactory，它存在于org.messaginghub.pooled.jms.JmsPoolConnectionFactory     -->
+        <!--    网络上教程太老导致出事故...    -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-<!--   微信SDK     -->
+        <!--   微信SDK     -->
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>wx-java-mp-spring-boot-starter</artifactId>

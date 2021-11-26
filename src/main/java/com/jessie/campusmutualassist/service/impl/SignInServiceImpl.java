@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jessie.campusmutualassist.service.impl.PermissionServiceImpl.getCurrentUsername;
+
 /**
  *
  */
@@ -41,7 +43,15 @@ public class SignInServiceImpl extends ServiceImpl<SignInMapper, SignIn>
     @Override
     @Cacheable(value = "classSignIn", key = "#classID")
     public List<SignIn> getStuSignIn(String classID) {
-        return signInMapper.getStuSignIn(classID);
+        List<SignIn> list = signInMapper.getStuSignIn(classID);
+        for (SignIn signIn : list) {
+            if (redisUtil.sIsMember("class:" + classID + ":type:" + "signIn" + ":" + "signId:" + signIn.getSignID(), getCurrentUsername())) {
+                signIn.setSigned(true);
+            } else {
+                signIn.setSigned(false);
+            }
+        }
+        return list;
     }
 
     @Override

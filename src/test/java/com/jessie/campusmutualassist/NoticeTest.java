@@ -1,5 +1,6 @@
 package com.jessie.campusmutualassist;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jessie.campusmutualassist.entity.Notice;
 import com.jessie.campusmutualassist.entity.NoticeWithFiles;
@@ -64,6 +65,13 @@ public class NoticeTest {
         list.add(1L);
         list.add(2L);
         noticeMapper.addFilesToNotice(18, list);
+    }
+
+    @Test
+    public void testMultiSelections() {
+        String str = "[\"A\",\"B\",\"C\",\"D\"]";
+        List<String> list = JSONArray.parseArray(str, String.class);
+        System.out.println(list);
     }
 
 }
