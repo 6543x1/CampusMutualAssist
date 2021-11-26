@@ -25,7 +25,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
         response.setStatus(401);
 //        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         PrintWriter pw = response.getWriter();
-        pw.print(JSONObject.toJSON(Result.error("未登录被拒绝", 401)));
+        pw.print(JSONObject.toJSON(Result.error("未登录被拒绝", 401, request.getRequestURI())));
         pw.flush();
         pw.close();
     }
