@@ -10,11 +10,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/classaffairsmanage?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
-    password: 123456cnm
+    password:
   mail:
     host: smtp.office365.com
     username: 6543x1@outlook.com
-    password: 123456cnmA
+    password:
     properties:
       mail:
         smtp:
@@ -38,7 +38,7 @@ spring:
     port: 6379
     #Redis数据库索引（默认为0）
     database: 0
-    password: 123456cnmA
+    password:
     jedis:
       pool:
         #连接池最大连接数（使用0表示没有限制）
@@ -109,14 +109,14 @@ springfox:
     swagger-ui:
       enabled: true #上线到服务器后应该予以关闭
 aliyun:
-  accessKeyId: LTAI5tS5mLDzPe28MD3ci2c2
-  accessSecret: uFZoDwlITOM1Lf8GVRHqHDHDb4BLpK
-  regionID: cn-shanghai
+  accessKeyId:
+  accessSecret:
+  regionID:
 wx:
   mp:
-    app-id: wx11ca935e13bb174a
-    secret: 597869e8058d0eb033b16f7b81424203
-    token: wechatTestCAM
+    app-id:
+    secret:
+    token: wech
     #    aes-key: #目前公众号明文
     #wx redis配置
     config-storage:
@@ -125,6 +125,6 @@ wx:
       redis:
         host: 127.0.0.1
         port: 6379
-        password: 123456cnmA
+        password:
       http-client-type: httpclient
 
