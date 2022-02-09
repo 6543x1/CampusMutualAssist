@@ -27,6 +27,10 @@ public interface UserWechatMapper extends BaseMapper<UserWechat> {
     void cancelBind(String username);
 
     List<String> getOpenIDStrings(Set<String> users);
+
+    int updateSelective(UserWechat userWechat);
+
+    int insertSelective(UserWechat userWechat);
 }
 
 

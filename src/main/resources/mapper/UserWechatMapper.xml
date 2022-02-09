@@ -17,10 +17,34 @@
         select openID from user_wechat
         <where>
             username in
-                <foreach collection="users" item="item" separator="," open="(" close=")" index="">
-                    #{item}
-                </foreach>
+            <foreach collection="users" item="item" separator="," open="(" close=")" index="">
+                #{item}
+            </foreach>
         </where>
-#  试了下，null值会失败，不会打印出全部信息
+        # 试了下，null值会失败，不会打印出全部信息
     </select>
+    <update id="updateSelective">
+        update user_wechat
+        <set>
+            <if test="tags != null">tags=#{tags,jdbcType=VARCHAR},</if>
+            -- 原来是因为我只有一个tags的属性啊 那没事了
+        </set>
+        where username = #{username,jdbcType=VARCHAR}
+        openID = #{openID,jdbcType=VARCHAR}
+    </update>
+    <insert id="insertSelective">
+        insert into user_wechat
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null">username,</if>
+            <if test="openID != null">openID,</if>
+            <if test="tags != null">tags,</if>
+            <!--            -->
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null">#{username,jdbcType=VARCHAR},</if>
+            <if test="openID != null">#{openID,jdbcType=VARCHAR},</if>
+            <if test="tags != null">#{tags,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
 </mapper>

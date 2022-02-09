@@ -12,6 +12,6 @@ public class TeachingClass implements Serializable {
 
     private String name;
     private String teacher;
-    private String classID;
+    private String id;
 
 }

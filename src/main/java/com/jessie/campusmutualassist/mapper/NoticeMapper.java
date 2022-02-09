@@ -25,7 +25,7 @@ public interface NoticeMapper {
     @Select("select deadLine  from notice where nid=#{nid}")
     LocalDateTime getNoticeDeadLine(long nid);
 
-    @Select("select * from notice where classID=#{classID} and isPublic=true")
+    @Select("select * from notice where classID=#{classID} and isPublic=true order by deadLine desc")
     List<Notice> getClassPublicNotices(String classID);
 
     @Select("select n.* from notice n join notice_permission np on n.nid =np.nid where n.classID=#{classID} and n.isPublic = false and np.reader =#{username}")

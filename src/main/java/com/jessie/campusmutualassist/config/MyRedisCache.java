@@ -27,7 +27,7 @@ public class MyRedisCache extends RedisCache {
     private final RedisCacheWriter cacheWriter;
     private final ConversionService conversionService;
     private RedisOperations redisOperations;
-    private static final Lock REFRESH_CACKE_LOCK = new ReentrantLock();
+    private static final Lock REFRESH_CACHE_LOCK = new ReentrantLock();
 
 
     protected MyRedisCache(String name, RedisCacheWriter cacheWriter, RedisCacheConfiguration cacheConfig) {
@@ -99,10 +99,11 @@ public class MyRedisCache extends RedisCache {
                 } else {
                     ThreadTaskHelper.run(() -> {
                         try {
-                            REFRESH_CACKE_LOCK.lock();
+                            REFRESH_CACHE_LOCK.lock();
                             if (ThreadTaskHelper.hasRunningRefreshCacheTask(cacheKey)) {
                                 logger.info("do not need to refresh");
                             } else {
+                                ThreadTaskHelper.putRefreshCacheTask(cacheKey);
                                 logger.info("refresh key:{}", cacheKey);
                                 MyRedisCache.this.getCacheSupport().refreshCacheByKey(MyRedisCache.super.getName(), key.toString());
                                 //注意此处this的含义有歧义（默认是此处taskHelper的this） 所以前面需要指定MyRedisCache
@@ -112,7 +113,7 @@ public class MyRedisCache extends RedisCache {
                         } catch (Exception e) {
                             e.printStackTrace();
                         } finally {
-                            REFRESH_CACKE_LOCK.unlock();
+                            REFRESH_CACHE_LOCK.unlock();
                         }
                     });
                 }
